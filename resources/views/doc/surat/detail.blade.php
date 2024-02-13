@@ -1,0 +1,294 @@
+@extends('doc.main-layout')
+
+@php
+    use Carbon\Carbon;
+    $batasPengajuan = Carbon::parse($surat->created_at)->addDays(3);
+    $sisaHari = now()->diffInDays($batasPengajuan, false);
+@endphp
+
+@section('title')
+    SITEI | Distribusi Dokuen & Surat
+@endsection
+
+@section('sub-title')
+    Detail Pengajuan Surat
+@endsection
+
+@section('content')
+    <section class="row">
+        <div class="col-lg-8">
+            <div class="dokumen-card">
+                <div>
+                    <h2>Pengajuan Surat</h2>
+                    <div class="divider-green"></div>
+                </div>
+
+                @switch($surat->status)
+                    @case('proses')
+                        @if ($sisaHari >= 0)
+                            <div class="rounded-2 py-3 text-center fw-semibold text-white" style="background-color: #fbbf24">
+                                {{ $surat->keterangan_status }}
+                            </div>
+                        @else
+                            <div class="bg-danger rounded-2 py-3 text-center fw-semibold ">
+                                Pengajuan Telah Melewati Batas Waktu
+                            </div>
+                        @endif
+                    @break
+
+                    @case('diterima')
+                        <div class="bg-success rounded-2 py-3 text-center fw-semibold text-white">Surat Sudah Dapat Diambil</div>
+                    @break
+
+                    @case('ditolak')
+                        <div class="bg-danger rounded-2 py-3 text-center fw-semibold text-white">
+                            Pengajuan Ditolak: <span class="fw-medium">{{ $surat->alasan_ditolak }}</span>
+                        </div>
+                    @break
+
+                    @default
+                @endswitch
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Nama Surat</div>
+                    <div class="value text-capitalize">{{ $surat->nama }}</div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Keterangan</div>
+                    <div class="value">{{ $surat->keterangan }}</div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Tanggal Pengajuan</div>
+                    <div class="value">
+                        {{ Carbon::parse($surat->created_at)->translatedFormat('l, d F Y') }}
+                    </div>
+                </div>
+                @if (!$surat->user_handler)
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Batas Pengajuan</div>
+                        <div class="value">
+                            {{ $batasPengajuan->translatedFormat('l, d F Y') }}
+
+                            <span style="font-weight: 300" class="text-danger">
+                                @if ($sisaHari > 0)
+                                    ({{ $sisaHari }} Hari Lagi)
+                                @elseif ($sisaHari == 0)
+                                    (Hari Terakhir)
+                                @else
+                                    (Masa Berakhir)
+                                @endif
+                            </span>
+                        </div>
+                    </div>
+                @endif
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Lampiran</div>
+                    @if ($surat->url_lampiran)
+                        <a href="@if ($surat->is_local_file) {{ asset('storage/' . $surat->url_lampiran) }}
+                    @else
+                        {{ $surat->url_lampiran }} @endif"
+                            target="_blank" class="btn btn-outline-success px-5 rounded-3" style="width:max-content">
+                            Lihat Lampiran
+                        </a>
+                    @else
+                        <div class="value">(Tidak ada file terlampir)</div>
+                    @endif
+                </div>
+                @if ($surat->user_handler)
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Softfile Surat</div>
+                        <div>
+                            <a class="btn btn-success rounded-3 px-4" target="_blank"
+                                href="{{ asset('storage/' . $surat->url_surat_jadi) }}">Lihat Surat</a>
+                        </div>
+                    </div>
+                @endif
+                @if ($surat->user_created == $userId)
+                    @if ($surat->status == 'proses' && $sisaHari >= 0)
+                        <a href="{{ route('surat.edit', $surat->id) }}"
+                            class="btn btn-outline-success py-2 fw-semibold rounded-3 mt-3">
+                            Ubah Pengajuan
+                        </a>
+                    @endif
+                    @if ($surat->status == 'ditolak' || $sisaHari < 0)
+                        <form action="{{ route('surat.delete', $surat->id) }}" method="POST" id="show-delete-confirm"
+                            class="d-flex ">
+                            @method('delete')
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger py-2 fw-semibold rounded-3"
+                                style="width: 100%">
+                                Hapus Pengajuan
+                            </button>
+                        </form>
+                    @endif
+                @endif
+                @if ($jenisUser == 'admin' && $surat->status == 'proses' && $sisaHari >= 0)
+                    <button data-toggle="modal" data-target="#accept_modal" class="btn btn-success rounded-3 py-2 px-4">
+                        Tandai Selesai
+                    </button>
+                    <button id="btnReject" class="btn btn-outline-danger rounded-3 py-2 px-4">
+                        Tolak Surat
+                    </button>
+                    {{-- Modal isi detail surat --}}
+                    <div class="modal fade w-100" id="accept_modal" tabindex="-1" role="dialog" aria-labelledby="accepted"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                            <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
+                                <form action="{{ route('surat.done', $surat->id) }}" method="POST"
+                                    enctype="multipart/form-data" class="d-flex gap-1 flex-column">
+                                    @csrf
+                                    @method('post')
+                                    <h5 class="modal-title">Detail Surat Selesai</h5>
+                                    <div class="divider-green"></div>
+                                    <div class="mt-3">
+                                        <label for="nomor_surat" class="fw-semibold">Nomor Surat</label>
+                                        <input type="text"
+                                            class="form-control @error('nomor_surat') is-invalid @enderror rounded-3 py-4"
+                                            name="nomor_surat" placeholder="Nomor Surat" id="nomor_surat"
+                                            value="{{ old('nomor_surat') }}">
+                                        @error('nomor_surat')
+                                            <div class="invalid-feedback">{{ $message }} </div>
+                                        @enderror
+                                    </div>
+                                    <div class="mt-2 mb-3">
+                                        <label for="surat" class="fw-semibold">
+                                            Hasil Surat <span style="font-size: 12px">(PDF)</span>
+                                        </label>
+                                        <input type="file"
+                                            class="form-control rounded-3 @error('surat') is-invalid @enderror"
+                                            name="surat" id="surat">
+                                        @error('surat')
+                                            <div class="invalid-feedback">{{ $message }} </div>
+                                        @enderror
+                                    </div>
+                                    <button type="submit" class="rounded-3 btn btn-success py-3">Kirim</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+        {{-- Section Kanan --}}
+        <div class="col-lg-4">
+            <div class="dokumen-card">
+                <div>
+                    <h2>Pengaju Surat</h2>
+                    <div class="divider-green"></div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">{{ $surat->jenis_user == 'dosen' ? 'NIP' : 'NIM' }}</div>
+                    <div class="value text-capitalize">{{ $surat->user_created }}</div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Nama</div>
+                    <div class="value text-capitalize">{{ data_get($surat, $surat->jenis_user . '.nama') }}</div>
+                </div>
+                @if (optional($surat->dosen)->role_id)
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Jabatan</div>
+                        <div class="value text-capitalize">{{ $surat->dosen->role->role_akses }}</div>
+                    </div>
+                @endif
+                @if ($surat->jenis_user == 'mahasiswa')
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Prodi</div>
+                        <div class="value text-capitalize">{{ $surat->mahasiswa->prodi->nama_prodi }}</div>
+                    </div>
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Angkatan</div>
+                        <div class="value text-capitalize">{{ $surat->mahasiswa->angkatan }}</div>
+                    </div>
+                @endif
+            </div>
+            @if ($surat->user_handler)
+                <div class="dokumen-card" style="margin-top: 16px">
+                    <div>
+                        <h2>Pengurus Surat</h2>
+                        <div class="divider-green"></div>
+                    </div>
+                    @if ($surat->user_handler)
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">Nama</div>
+                            <div class="value text-capitalize">
+                                {{ $surat->handler->nama }}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">Jabatan</div>
+                            <div class="value text-capitalize">
+                                {{ $surat->handler->role->role_akses }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+    </section>
+@endsection
+
+@section('footer')
+    <section class="bg-dark p-1">
+        <div class="container">
+            <p class="developer">Dikembangkan oleh Prodi Teknik Informatika UNRI <a class="text-success fw-bold"
+                    formtarget="_blank" target="_blank" href="https://pangidoannsh.vercel.app">( Pangidoan Nugroho
+                    Syahputra
+                    Harahap)</a></p>
+        </div>
+    </section>
+@endsection
+
+@push('scripts')
+    <script>
+        $('#show-delete-confirm').submit((e) => {
+            const form = $(this).closest("form");
+            e.preventDefault();
+            Swal.fire({
+                title: 'Hapus Pengajuan Surat "{{ $surat->nama }}"',
+                text: 'Apakah Anda Yakin?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Batal',
+                confirmButtonText: 'Hapus',
+                confirmButtonColor: '#dc3545'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    e.currentTarget.submit()
+                }
+            })
+        })
+    </script>
+    <script>
+        function rejectSurat() {
+            Swal.fire({
+                title: 'Tolak Pengajuan Surat',
+                text: 'Apakah Anda Yakin?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Batal',
+                confirmButtonText: 'Tolak',
+                confirmButtonColor: '#dc3545'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Tolak Pengajuan Surat',
+                        html: `
+                        <form id="reasonForm" action="{{ route('surat.reject', $surat->id) }}" method="POST">
+                            @csrf
+                            @method('post')
+                            <label for="alasan">Alasan Penolakan :</label>
+                            <textarea class="form-control" id="alasan" name="alasan" rows="4" cols="50" required></textarea>
+                            <br>
+                            <button type="submit" class="btn btn-danger p-2 px-3">Kirim</button>
+                            <button type="button" onclick="Swal.close();" class="btn btn-secondary p-2 px-3">Batal</button>
+                        </form>
+                    `,
+                        showCancelButton: false,
+                        showConfirmButton: false,
+                    });
+                }
+            });
+        }
+
+        $("#btnReject").on("click", rejectSurat)
+    </script>
+@endpush

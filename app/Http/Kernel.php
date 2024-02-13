@@ -65,5 +65,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'cekrole' => \App\Http\Middleware\CekRole::class,
         'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+        'cek-jenis-user' => \App\Http\Middleware\CekJenisUser::class
     ];
 }

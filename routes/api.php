@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DistribusiDokumen\DistribusiDokumenController;
+use App\Http\Controllers\DistribusiDokumen\PengumumanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,5 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get("/mahasiswa", [DistribusiDokumenController::class, 'mahasiswa']);

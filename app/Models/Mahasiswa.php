@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 class Mahasiswa extends Authenticatable
 {
@@ -44,14 +45,22 @@ class Mahasiswa extends Authenticatable
     {
         return $this->belongsTo(Konsentrasi::class);
     }
-    
+
     public function pendaftarankp()
     {
         return $this->belongsTo(PendaftaranKP::class);
     }
- 
 
-    
+    public static function getMahasiswaByAngkatan()
+    {
+        return self::select("nim", "nama", "prodi_id", "angkatan")
+            ->orderBy("angkatan", "desc")
+            ->get()
+            ->groupBy('prodi_id')
+            ->map(function ($groupedAngkatan) {
+                return $groupedAngkatan->groupBy('angkatan')->take(7);
+            });
+    }
 
     /**
      * The attributes that should be hidden for serialization.

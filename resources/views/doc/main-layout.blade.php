@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title')</title>
 
+    <title>@yield('title')</title>
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -16,9 +16,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
 
+    <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
     <!-- <link rel="stylesheet" href="{{ asset('/assets/css/style.css') }}"> -->
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/assets/css/dokumen.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/css/style.css?v=0.001') }}">
     <!--<link rel="stylesheet" href="{{ asset('/assets/dataTables/datatables.min.css') }}">-->
 
@@ -28,24 +30,6 @@
     <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap4.min.css" rel="stylesheet">
 
     <script src="https://kit.fontawesome.com/9c94b38548.js" crossorigin="anonymous"></script>
-
-    <!-- <script type="text/javascript">
-        function mousedwn(e) {
-            try {
-                if (event.button == 2 || event.button == 3) return false
-            } catch (e) {
-                if (e.which == 3) return false
-            }
-        }
-        document.oncontextmenu = function() {
-            return false
-        };
-        document.ondragstart = function() {
-            return false
-        };
-        document.onmousedown = mousedwn
-    </script> -->
-
 
 </head>
 
@@ -67,6 +51,8 @@
                                 <a class="navbar-brand mt-1 " href="/">SITEI
                                 @elseif (Str::length(Auth::guard('mahasiswa')->user()) > 0)
                                     <a class="navbar-brand mt-1 " href="/">SITEI
+                                    @else
+                                        <a class="navbar-brand mt-1 " href="">SITEI
                         @endif
                         </a>
                     </div>
@@ -78,34 +64,12 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav">
 
-                            {{-- Menu Persetujuan --}}
-
-                            {{-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-          @if (Auth::guard('dosen')->user()->role_id == 9 || Auth::guard('dosen')->user()->role_id == 10 || Auth::guard('dosen')->user()->role_id == 11)
-          <li class="nav-item">
-            <a class="nav-link {{Request::is ('persetujuan-kp-skripsi*') ? 'text-success' : '' }} {{Request::is ('persetujuan-koordinator*') ? 'text-success' : '' }}{{Request::is ('riwayat-koordinator*') ? 'text-success' : '' }}" aria-current="page" href="/persetujuan-kp-skripsi">Persetujuan</a>
-          </li>
-          @endif
-          @endif
-
-          @if (Str::length(Auth::guard('dosen')->user()) > 0)
-          @if (Auth::guard('dosen')->user()->role_id == 6 || Auth::guard('dosen')->user()->role_id == 7 || Auth::guard('dosen')->user()->role_id == 8)
-          <li class="nav-item">
-            <a class="nav-link {{Request::is ('persetujuan-kp-skripsi*') ? 'text-success' : '' }} {{Request::is ('persetujuan-kaprodi*') ? 'text-success' : '' }} {{Request::is ('riwayat-kaprodi*') ? 'text-success' : '' }}" aria-current="page" href="/persetujuan-kp-skripsi">Persetujuan</a>
-          </li>
-          @endif
-          @endif --}}
-
-                            {{-- Menu KP/TA Dosen --}}
-
                             @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                {{-- <li class="nav-item">
-            <a class="nav-link {{Request::is ('pendaftaran*') ? 'text-success' : '' }}{{Request::is ('kp-skripsi*') ? 'text-success' : '' }}{{Request::is ('kerja-praktek*') ? 'text-success' : '' }} {{Request::is ('skripsi*') ? 'text-success' : '' }} {{Request::is ('pembimbing*') ? 'text-success' : '' }}" aria-current="page" href="/kp-skripsi">KP/Skripsi</a>
-          </li> --}}
 
                                 <li class="nav-item dropdown baru">
-                                    <a id="dropdownSubMenu1" href="" aria-current="page" aria-haspopup="true"
-                                        aria-expanded="false" class="nav-link dropdown-toggle">KP/Skripsi</a>
+                                    <a id="dropdownSubMenu1" href="/persetujuan-kp-skripsi" aria-current="page"
+                                        aria-haspopup="true" aria-expanded="false"
+                                        class="nav-link dropdown-toggle">KP/Skripsi</a>
                                     <ul aria-labelledby="dropdownSubMenu1"
                                         class="dropdown-menu border-0 shadow"style="border-radius:10px;">
 
@@ -151,22 +115,22 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
+                                    <a id="dokumendropdown" href="#" aria-current="page" aria-haspopup="true"
+                                        aria-expanded="false"
+                                        class="nav-link dropdown-toggle {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
                                     <ul aria-labelledby="dokumendropdown"
                                         class="dropdown-menu border-0 shadow"style="border-radius:10px;">
                                         <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
+                                            <a class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }} "
                                                 aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
+                                            <a class="nav-link {{ Request::is('distribusi-dokumen/pengumuman*') ? 'text-success' : '' }} "
                                                 aria-current="page"
                                                 href="{{ route('pengumuman.index') }}">Pengumuman</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
+                                            <a class="nav-link {{ Request::is('distribusi-dokumen/arsip*') ? 'text-success' : '' }} "
                                                 aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
                                         </li>
                                     </ul>
@@ -217,13 +181,13 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
+                                    <a id="dokumendropdown" href="#" aria-current="page" aria-haspopup="true"
+                                        aria-expanded="false"
+                                        class="nav-link dropdown-toggle {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
                                     <ul aria-labelledby="dokumendropdown"
                                         class="dropdown-menu border-0 shadow"style="border-radius:10px;">
                                         <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }}"
+                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
                                                 aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
                                         </li>
                                         <li class="nav-item">
@@ -237,37 +201,7 @@
                                         </li>
                                     </ul>
                                 </li>
-
-                                <!-- <li class="nav-item dropdown baru">
-            <a id="dropdownSubMenu1" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">KP/TA</a>
-            <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-              <li>
-                <a href="/usulankp/create" class="dropdown-item mb-1 {{ Request::is('usulankp*') ? 'text-success' : '' }} ">KP</a>
-              </li>
-              <li><a href="/usuljudul/create" class="dropdown-item mb-1 {{ Request::is('usuljudul*') ? 'text-success' : '' }}">Skripsi</a></li>
-              <li><a href="/statistik" class="dropdown-item mb-1 {{ Request::is('statistik*') ? 'text-success' : '' }}">Statistik</a></li>
-            </ul>
-          </li> -->
                             @endif
-
-                            {{-- Menu Statistik --}}
-
-                            {{-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-          @if (Auth::guard('dosen')->user()->role_id == 9 || Auth::guard('dosen')->user()->role_id == 10 || Auth::guard('dosen')->user()->role_id == 11)
-          <li class="nav-item">
-            <a class="nav-link {{Request::is ('statistik*') ? 'text-success' : '' }}" aria-current="page" href="/statistik">Statistik</a>
-          </li>
-          @endif
-          @endif
-
-          @if (Str::length(Auth::guard('dosen')->user()) > 0)
-          @if (Auth::guard('dosen')->user()->role_id == 6 || Auth::guard('dosen')->user()->role_id == 7 || Auth::guard('dosen')->user()->role_id == 8)
-          <li class="nav-item">
-            <a class="nav-link {{Request::is ('statistik*') ? 'text-success' : '' }}" aria-current="page" href="/statistik">Statistik</a>
-          </li>
-          @endif
-          @endif --}}
-
                             @if (Str::length(Auth::guard('web')->user()) > 0)
                                 @if (Auth::guard('web')->user()->role_id == 2 ||
                                         Auth::guard('web')->user()->role_id == 3 ||
@@ -337,7 +271,7 @@
                                             aria-current="page" href="/inventaris/peminjamanadm">Inventaris</a>
                                     </li>
                                     <li class="nav-item dropdown baru">
-                                        <a id="dropdownSubMenu1" href="" data-toggle="dropdown"
+                                        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false"
                                             class="nav-link dropdown-toggle">Data Jurusan</a>
                                         <ul aria-labelledby="dropdownSubMenu1"
@@ -363,6 +297,9 @@
                                             <li><a href="/konsentrasi"
                                                     class="dropdown-item mb-1 {{ Request::is('konsentrasi*') ? 'text-success' : '' }}">Konsentrasi</a>
                                             </li>
+                                            <li><a href="/ruangan"
+                                                    class="dropdown-item mb-1 {{ Request::is('ruangan*') ? 'text-success' : '' }}">Ruangan</a>
+                                            </li>
                                         </ul>
                                     </li>
                                 @endif
@@ -370,7 +307,7 @@
                                         Auth::guard('web')->user()->role_id == 3 ||
                                         Auth::guard('web')->user()->role_id == 4)
                                     <li class="nav-item dropdown baru">
-                                        <a id="dropdownSubMenu1" href="" data-toggle="dropdown"
+                                        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false"
                                             class="nav-link  dropdown-toggle">Data Pengguna</a>
                                         <ul aria-labelledby="dropdownSubMenu1"
@@ -385,13 +322,13 @@
                                 @endif
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
+                                    <a id="dokumendropdown" href="#" aria-current="page" aria-haspopup="true"
+                                        aria-expanded="false"
+                                        class="nav-link dropdown-toggle {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
                                     <ul aria-labelledby="dokumendropdown"
                                         class="dropdown-menu border-0 shadow"style="border-radius:10px;">
                                         <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }}"
+                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
                                                 aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
                                         </li>
                                         <li class="nav-item">
@@ -403,81 +340,76 @@
                                             <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
                                                 aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/pengaturan*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="#">Pengaturan</a>
-                                        </li>
                                     </ul>
                                 </li>
                             @endif
                         </ul>
 
-                        <ul class="navbar-nav ml-auto">
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
-                                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                        {{ Auth::guard('dosen')->user()->nama }}
-                                    @elseif (Str::length(Auth::guard('web')->user()) > 0)
-                                        {{ Auth::guard('web')->user()->nama }}
-                                    @elseif (Str::length(Auth::guard('mahasiswa')->user()) > 0)
-                                        {{ Auth::guard('mahasiswa')->user()->nama }}
-                                    @endif
-                                </a>
-                                <div>
-                                    <ul class="dropdown-menu dropdown-menu-end"style="border-radius:10px;"
-                                        aria-labelledby="navbarDropdown">
-                                        {{-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-              @if (Auth::guard('dosen')->user())    
-              
-              <li class="pp"><a class="dropdown-item" href="/profil-dosen"><i class="bi bi-person-circle mr-2"></i>Profil</a></li>
-              @endif
-              @endif  --}}
+                        @if (Auth::guard('web')->check() || Auth::guard('dosen')->check() || Auth::guard('mahasiswa')->check())
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle " href="#" id="navbarDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                            @if (Auth::guard('dosen')->user())
-                                                <li>
-                                                    <a class="nav-link dropdown-item {{ Request::is('profil-dosen*') ? 'text-success' : '' }}"
-                                                        href="/profil-dosen/editpassworddsn/">
-                                                        <i class="bi bipw bi-key"></i> Ubah Password
-                                                    </a>
-                                                </li>
-                                            @endif
+                                            {{ Auth::guard('dosen')->user()->nama }}
+                                        @elseif (Str::length(Auth::guard('web')->user()) > 0)
+                                            {{ Auth::guard('web')->user()->nama }}
+                                        @elseif (Str::length(Auth::guard('mahasiswa')->user()) > 0)
+                                            {{ Auth::guard('mahasiswa')->user()->nama }}
                                         @endif
-
-                                        @if (Str::length(Auth::guard('mahasiswa')->user()) > 0)
-                                            @if (Auth::guard('mahasiswa')->user())
-                                                <li>
-                                                    <a class="nav-link dropdown-item {{ Request::is('profil-mhs*') ? 'text-success' : '' }}"
-                                                        href="/profil-mhs/editpasswordmhs/">
-                                                        <i class="bi bipw bi-key"></i> Ubah Password
-                                                    </a>
-                                                </li>
+                                    </a>
+                                    <div>
+                                        <ul class="dropdown-menu dropdown-menu-end"style="border-radius:10px;"
+                                            aria-labelledby="navbarDropdown">
+                                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                                                @if (Auth::guard('dosen')->user())
+                                                    <li>
+                                                        <a class="nav-link dropdown-item {{ Request::is('profil-dosen*') ? 'text-success' : '' }}"
+                                                            href="/profil-dosen/editpassworddsn/">
+                                                            <i class="bi bipw bi-key"></i> Ubah Password
+                                                        </a>
+                                                    </li>
+                                                @endif
                                             @endif
-                                        @endif
 
-                                        @if (Str::length(Auth::guard('web')->user()) > 0)
-                                            @if (Auth::guard('web')->user())
-                                                <li>
-                                                    <a class="nav-link dropdown-item {{ Request::is('profil-staff*') ? 'text-success' : '' }}"
-                                                        href="/profil-staff/editpasswordstaff/">
-                                                        <i class="bi bipw bi-key"></i> Ubah Password
-                                                    </a>
-                                                </li>
+                                            @if (Str::length(Auth::guard('mahasiswa')->user()) > 0)
+                                                @if (Auth::guard('mahasiswa')->user())
+                                                    <li>
+                                                        <a class="nav-link dropdown-item {{ Request::is('profil-mhs*') ? 'text-success' : '' }}"
+                                                            href="/profil-mhs/editpasswordmhs/">
+                                                            <i class="bi bipw bi-key"></i> Ubah Password
+                                                        </a>
+                                                    </li>
+                                                @endif
                                             @endif
-                                        @endif
 
-                                        <form action="/logout" method="POST">
-                                            @csrf
-                                            <li>
-                                                <button type="submit" class="dropdown-item">
-                                                    <i class="bi bi-box-arrow-right"></i> <span>Keluar</span>
-                                                </button>
-                                            </li>
-                                        </form>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
+                                            @if (Str::length(Auth::guard('web')->user()) > 0)
+                                                @if (Auth::guard('web')->user())
+                                                    <li>
+                                                        <a class="nav-link dropdown-item {{ Request::is('profil-staff*') ? 'text-success' : '' }}"
+                                                            href="/profil-staff/editpasswordstaff/">
+                                                            <i class="bi bipw bi-key"></i> Ubah Password
+                                                        </a>
+                                                    </li>
+                                                @endif
+                                            @endif
+
+                                            <form action="/logout" method="POST">
+                                                @csrf
+                                                <li>
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="bi bi-box-arrow-right"></i> <span>Keluar</span>
+                                                    </button>
+                                                </li>
+                                            </form>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        @else
+                            <a href="/"
+                                class="btn btn-success rounded-3 ml-auto px-4 fw-semibold text-uppercase">Login</a>
+                        @endif
                     </div>
                 </div>
             </nav>
@@ -491,8 +423,8 @@
                 <div class="container">
                     <div>
                         <div class="anak-judul">
-                            <h4>@yield('sub-title')</h4>
-                            <hr>
+                            <h4 class="sub-title">@yield('sub-title')</h4>
+                            {{-- <hr> --}}
                         </div><!-- /.col -->
                     </div><!-- /.row -->
                 </div><!-- /.container-fluid -->
@@ -503,7 +435,8 @@
             <div class="content">
                 <div class="container">
                     @yield('content')
-                </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.container-fluid -->
             </div>
             <!-- /.content -->
         </div>
@@ -512,11 +445,6 @@
         <!-- Main Footer -->
 
         @yield('footer')
-        <!-- <div class="footer bg-dark">
-        <div class="container">
-          <p class="developer">Dikembangkan oleh Prodi Teknik Informatika UNRI</p>
-        </div>
-      </div> -->
 
 
         <!-- ./wrapper -->
@@ -547,27 +475,10 @@
         <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
         <script src="https://cdn.datatables.net/rowgroup/1.4.0/js/dataTables.rowGroup.min.js"></script>
 
-
-        {{-- <script type="text/javascript">
-$(document).ready(function() {
-    var table = $('#datatables').DataTable( {
-        "lengthMenu": [ 50, 100, 150, 200, 250 ],
-        buttons: [ 'copy', 'excel','print', 'pdf' ],
-        dom:
-        "<'row'<'col-md-2'l><'col-md-5'B><'col-md-4'f>>" +
-        "<'row'<'col-md-12'tr>>" +
-        "<'row'<'col-md-5'i><'col-md-7'p>>"
-        
-    } );
- 
-    table.buttons().container()
-        .appendTo( '#datatables_wrapper .col-md-5:eq(0)' );
-} );
-</script> --}}
-
         <script type="text/javascript">
             $(document).ready(function() {
                 var table = $('#datatables').DataTable({
+                    "aaSorting": [],
                     "lengthMenu": [10, 25, 50, 100, 200],
                     "language": {
                         "sProcessing": "Sedang memproses...",
@@ -585,82 +496,7 @@ $(document).ready(function() {
                             "sNext": "Selanjutnya",
                             "sLast": "Terakhir"
                         }
-                    }
-                })
-            });
-        </script>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables3').DataTable({
-                    "lengthMenu": [10, 25, 50, 100, 200],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
-                    }
-                })
-            });
-        </script>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables4').DataTable({
-                    "lengthMenu": [10, 25, 50, 100, 200],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
-                    }
-                })
-            });
-        </script>
-
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables5').DataTable({
-                    "lengthMenu": [10, 25, 50, 100, 200],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
-                    }
+                    },
                 })
             });
         </script>
