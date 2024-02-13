@@ -65,6 +65,28 @@
                 </div>
             </div>
 
+            <div class="container">
+            <div class="row rounded shadow-sm">
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-start">
+                    <h5 class="text-bold">Laporan Skripsi</h5>
+                    <hr>
+                <p class="card-title text-secondary text-sm">Judul Skripsi</p>
+                    <p class="card-text text-start"><span>{{ $skripsi->judul_skripsi ?? '-' }}</span></p>
+                </div>
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">
+                    <h5 class="text-bold">Persetujuan Pengajuan Skripsi</h5>
+                    <hr>
+                    <p class="card-title text-secondary text-sm ">STI/TE-1 - Surat Permohonan Pengajuan Topik Skripsi</p>
+                        <p class="card-text  text-start"><button onclick="window.open('/surat-permohonan-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                        <p class="card-title text-secondary text-sm ">STI/TE-2 - Form Pengajuan Topik Skripsi</p>
+                        <p class="card-text text-start">
+                            <button onclick="window.open('/form-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                </div>
+            </div>
+        </div>
+
             @if ($skripsi->status_skripsi == 'SKRIPSI SELESAI' || $skripsi->status_skripsi == 'LULUS')
                 <div class="container">
                     <div class="row rounded shadow-sm">
@@ -75,11 +97,11 @@
                             <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->naskah) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <p class="card-title text-secondary text-sm ">STI-17/Bukti Penyerahan Buku Skripsi</p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-17/Bukti Penyerahan Buku Skripsi</p>
                             <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->sti_17) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <!-- <p class="card-title text-secondary text-sm " >STI-29/ Bukti Sudah Daftar Wisuda di Fakultas</p>
+                            <!-- <p class="card-title text-secondary text-sm " >STI/TE-29/ Bukti Sudah Daftar Wisuda di Fakultas</p>
             <p class="card-text text-start" ><span><a formtarget="_blank" target="_blank" href="{{ asset('storage/' . $skripsi->sti_29) }}" class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p> -->
                         </div>
                         <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">
@@ -325,11 +347,11 @@
                             <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->naskah) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <p class="card-title text-secondary text-sm ">STI-17/Bukti Penyerahan Buku Skripsi</p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-17/Bukti Penyerahan Buku Skripsi</p>
                             <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->sti_17) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <!-- <p class="card-title text-secondary text-sm " >STI-29/ Bukti Sudah Daftar Wisuda di Fakultas</p>
+                            <!-- <p class="card-title text-secondary text-sm " >STI/TE-29/ Bukti Sudah Daftar Wisuda di Fakultas</p>
             <p class="card-text text-start" ><span><a formtarget="_blank" target="_blank" href="{{ asset('storage/' . $skripsi->sti_29) }}" class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p> -->
                         </div>
                         <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">

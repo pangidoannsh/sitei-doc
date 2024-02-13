@@ -50,7 +50,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label float-start ">KPTI-11/Bukti Mengumpulkan Syarat
+                            <label for="formFile" class="form-label float-start ">KPTI/TE-11/Bukti Mengumpulkan Syarat
                                 Pendaftaran Seminar KP<span class="text-danger">*</span> <small class="text-secondary">(
                                     Format .pdf | Maks. 200 KB ) </small></label>
                             <input name="kpti_11" class="form-control @error('kpti_11') is-invalid @enderror"
@@ -63,7 +63,7 @@
                             @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="formFile" class="form-label float-start">STI-31/Surat Persetujuan Sertifikat
+                            <label for="formFile" class="form-label float-start">STI/TE-31/Surat Persetujuan Sertifikat
                                 Pendamping <small class="text-secondary">( Format .pdf | Maks. 200 KB ) </small></label>
                             <input name="sti_31" class="form-control @error('sti_31') is-invalid @enderror"
                                 value="{{ old('sti_31') }}" type="file" id="formFile">

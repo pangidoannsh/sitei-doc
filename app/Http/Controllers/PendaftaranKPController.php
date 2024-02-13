@@ -325,34 +325,34 @@ public function kapasitasbimbingan_store(Request $request, $id)
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-usulankp', [
-                'pendaftaran_kp' =>  PendaftaranKP::where('id', $id)->get(),
+                'pendaftaran_kp' =>  PendaftaranKP::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         } 
         //DOSEN
@@ -370,17 +370,17 @@ public function kapasitasbimbingan_store(Request $request, $id)
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-balasankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-balasankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-balasankp', [
-                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_kp' => PendaftaranKP::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('dosen_pembimbing_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
@@ -476,6 +476,39 @@ public function kapasitasbimbingan_store(Request $request, $id)
             ]);
         } 
 
+    }
+
+    public function suratpermohonankp($id){
+        $pendaftaran_kp = PendaftaranKP::findOrFail($id);
+
+        $kaprodi1 = Dosen::where('role_id', '6')->first();
+        $kaprodi2 = Dosen::where('role_id', '7')->first();
+        $kaprodi3 = Dosen::where('role_id', '8')->first();
+
+        $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/detail-surat-permohonan-kp').'/'. $pendaftaran_kp->id));
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        $pdf->loadView('pendaftaran.kerja-praktek.balasan-kp.surat-permohonan-kp',compact('pendaftaran_kp','kaprodi1','kaprodi2','kaprodi3','qrcode','pdf'));
+        
+        return $pdf->stream('KPTI-1 Surat Permohonan KP.pdf', array("Attachment" => false));
+    }
+
+    public function formpermohonankp($id){
+        $pendaftaran_kp = PendaftaranKP::findOrFail($id);
+        $pembimbing = PendaftaranKP::where('id', $id)->where('dosen_pembimbing_nip', auth()->user()->nip)->first();
+        $kaprodi1 = Dosen::where('role_id', '6')->first();
+        $kaprodi2 = Dosen::where('role_id', '7')->first();
+        $kaprodi3 = Dosen::where('role_id', '8')->first();
+        $koor1 = Dosen::where('role_id', '9')->first();
+        $koor2 = Dosen::where('role_id', '10')->first();
+        $koor3 = Dosen::where('role_id', '11')->first();
+
+        $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/detail-form-permohonan-kp').'/'. $pendaftaran_kp->id));
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        $pdf->loadView('pendaftaran.kerja-praktek.balasan-kp.form-permohonan-kp',compact('pendaftaran_kp','pembimbing','qrcode', 'pdf', 'kaprodi1', 'kaprodi2', 'kaprodi3', 'koor1', 'koor2', 'koor3'));
+        
+        return $pdf->stream('KPTI/TE-2 Form Permohonan Kerja Praktek.pdf', array("Attachment" => false));
     }
 
     public function detailpersetujuan_kpti10($id)

@@ -21,7 +21,7 @@
                 <a>
         </div>
     @endif
-
+@if ($skripsi == null)
     <form action="{{ url('/usuljudul/create') }}" class="mahasiswa-usulan" method="POST" enctype="multipart/form-data">
         @csrf
         <div>
@@ -122,7 +122,7 @@
             </div>
         </div>
     </form>
-
+@endif
 <br>
 <br>
 <br>

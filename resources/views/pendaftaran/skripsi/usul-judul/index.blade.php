@@ -288,7 +288,7 @@
                             <p class="mt-2"> PENYERAHAN BUKU SKRIPSI </p>
                         </li>
                     @endif
-                    @if ($pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG')
+                    @if ($pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' || $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK')
                         <li class="step active">
                             <div><i class="fas fa-check"></i>
                             </div>
@@ -603,7 +603,7 @@
                 @endif
 
                 @if (
-                    $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                    $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' || $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                         $pendaftaran_skripsi->status_skripsi == 'SEMPRO SELESAI')
                     <div class="row biru mb-4">
                         <div class="col">
@@ -847,7 +847,7 @@
     </div>
     @endif -->
 
-        @if ($pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG')
+        @if ($pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' || $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK')
             <div class="container">
                 <div class="alert alert-danger" role="alert">
                     <i class="fas fa-exclamation-triangle fw-bold"></i> <span
@@ -928,8 +928,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
-
                     <div></div>
                     @foreach ($skripsi as $skripsi)
                         <tr>
@@ -967,7 +965,8 @@
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG'
+                                    || $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK'||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
@@ -979,7 +978,8 @@
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG'
+                                    || $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
@@ -1025,7 +1025,8 @@
                                 $skripsi->status_skripsi == 'DAFTAR SEMPRO' ||
                                     $skripsi->status_skripsi == 'SEMPRO DIJADWALKAN' ||
                                     $skripsi->status_skripsi == 'SEMPRO SELESAI' ||
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' 
+                                    || $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO DISETUJUI')
                                 <td class="text-center">
                                     <a href="/daftar-sempro/detail/{{ $skripsi->id }}"
@@ -1067,7 +1068,7 @@
                                                                     <div class="col">
                                                                         <div class="mb-3">
                                                                             <label for="formFile"
-                                                                                class="form-label float-start">STI-22/Surat
+                                                                                class="form-label float-start">STI/TE-22/Surat
                                                                                 Pernyataan Perpanjangan Skripsi<span
                                                                                     class="text-danger">*</span> <small
                                                                                     class="text-secondary">( Format .pdf |
@@ -1146,7 +1147,7 @@
                                     @endif
 
 
-                                    @if ($skripsi->status_skripsi == 'DAFTAR SIDANG ULANG')
+                                    @if ($skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' || $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK')
                                         <a href="/seminar" class="badge btn btn-dark p-1 mb-1" data-bs-toggle="tooltip"
                                             title="Lihat Riwayat Seminar"><i class="fas fa-history"></i></a>
                                         <a href="/daftar-sidang/create/{{ $skripsi->id }}" class="badge p-1 mb-1"
@@ -1195,7 +1196,7 @@
                                                                     <div class="col">
                                                                         <div class="mb-3">
                                                                             <label for="formFile"
-                                                                                class="form-label float-start">STI-22/Surat
+                                                                                class="form-label float-start">STI/TE-22/Surat
                                                                                 Pernyataan Perpanjangan Skripsi<span
                                                                                     class="text-danger">*</span> <small
                                                                                     class="text-secondary">( Format .pdf |
@@ -1302,7 +1303,7 @@
                                                             <div class="col">
                                                                 <div class="mb-3">
                                                                     <label for="formFile"
-                                                                        class="form-label float-start">STI-22/Surat
+                                                                        class="form-label float-start">STI/TE-22/Surat
                                                                         Pernyataan Perpanjangan Skripsi<span
                                                                             class="text-danger">*</span> <small
                                                                             class="text-secondary">( Format .pdf | Maks.
@@ -1414,7 +1415,7 @@
                                                             <div class="col">
                                                                 <div class="mb-3">
                                                                     <label for="formFile"
-                                                                        class="form-label float-start">STI-22/Surat
+                                                                        class="form-label float-start">STI/TE-22/Surat
                                                                         Pernyataan Perpanjangan Skripsi<span
                                                                             class="text-danger">*</span> <small
                                                                             class="text-secondary">( Format .pdf | Maks.
@@ -1530,7 +1531,7 @@
                             @if ($skripsi->status_skripsi == 'SIDANG SELESAI')
                                 <a href="/seminar" class="badge btn btn-dark p-1 mb-1" data-bs-toggle="tooltip"
                                     title="Riwayat Seminar skripsi"><i class="fas fa-history"></i></a>
-                                <!-- <a href="/perpanjangan/revisi/create/{{ $skripsi->id }}" class=" mb-1"data-bs-toggle="tooltip" title="Unggah STI-23/SURAT PERNYATAAN PERPANJANGAN REVISI SKRIPSI"><img height="25" width="25" src="/assets/img/clockb.png"  alt="..." class=""></a> -->
+                                <!-- <a href="/perpanjangan/revisi/create/{{ $skripsi->id }}" class=" mb-1"data-bs-toggle="tooltip" title="Unggah STI/TE-23/SURAT PERNYATAAN PERPANJANGAN REVISI SKRIPSI"><img height="25" width="25" src="/assets/img/clockb.png"  alt="..." class=""></a> -->
 
                                 <a type="button" data-toggle="modal" title="Permohonan Perpanjangan 2 Waktu Skripsi"
                                     data-target="#GFG">
@@ -1557,7 +1558,7 @@
                                                             <div class="col">
                                                                 <div class="mb-3">
                                                                     <label for="formFile"
-                                                                        class="form-label float-start">STI-23/Surat
+                                                                        class="form-label float-start">STI/TE-23/Surat
                                                                         Perpanjangan Waktu Revisi Skripsi<span
                                                                             class="text-danger">*</span> <small
                                                                             class="text-secondary">( Format .pdf | Maks.
@@ -1625,7 +1626,7 @@
                                 </div>
 
                                 <a href="/penyerahan-buku-skripsi/create/{{ $skripsi->id }}" class="mb-1"
-                                    data-bs-toggle="tooltip" title="Unggah STI-17/Bukti Penyerahan Buku Skripsi"><img
+                                    data-bs-toggle="tooltip" title="Unggah STI/TE-17/Bukti Penyerahan Buku Skripsi"><img
                                         height="25" width="25" src="/assets/img/add.png" alt="..."
                                         class="zoom-image"></a>
                             @endif
@@ -1645,7 +1646,7 @@
 
                             @if ($skripsi->status_skripsi == 'PERPANJANGAN REVISI DISETUJUI')
                                 <a href="/penyerahan-buku-skripsi/create/{{ $skripsi->id }}" class="badge  mb-1"
-                                    data-bs-toggle="tooltip" title="Unggah STI-17/Bukti Penyerahan Buku Skripsi"><img
+                                    data-bs-toggle="tooltip" title="Unggah STI/TE-17/Bukti Penyerahan Buku Skripsi"><img
                                         height="25" width="25" src="/assets/img/add.png" alt="..."
                                         class="zoom-image"></a>
                             @endif
@@ -1676,7 +1677,7 @@
                                                             <div class="col">
                                                                 <div class="mb-3">
                                                                     <label for="formFile"
-                                                                        class="form-label float-start">STI-23/Surat
+                                                                        class="form-label float-start">STI/TE-23/Surat
                                                                         Perpanjangan Waktu Revisi Skripsi<span
                                                                             class="text-danger">*</span> <small
                                                                             class="text-secondary">( Format .pdf | Maks.
@@ -1744,7 +1745,7 @@
                                 </div>
 
                                 <a href="/penyerahan-buku-skripsi/create/{{ $skripsi->id }}" class=" mb-1"
-                                    data-bs-toggle="tooltip" title="Unggah STI-17/Bukti Penyerahan Buku Skripsi"><img
+                                    data-bs-toggle="tooltip" title="Unggah STI/TE-17/Bukti Penyerahan Buku Skripsi"><img
                                         height="25" width="25" src="/assets/img/add.png" alt="..."
                                         class="zoom-image"></a>
                             @endif
@@ -1772,7 +1773,7 @@
                                 title="Lihat Riwayat Seminar"><i class="fas fa-history"></i></a>
 
                             <a href="/penyerahan-buku-skripsi/create/{{ $skripsi->id }}" class="badge  mb-1"
-                                data-bs-toggle="tooltip" title="Unggah STI-17/Bukti Penyerahan Buku Skripsi"><img
+                                data-bs-toggle="tooltip" title="Unggah STI/TE-17/Bukti Penyerahan Buku Skripsi"><img
                                     height="25" width="25" src="/assets/img/add.png" alt="..."
                                     class="zoom-image"></a>
                         </td>

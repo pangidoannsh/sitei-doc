@@ -63,6 +63,7 @@
                         <th class="text-center" scope="col">Status</th>
                         {{-- <th class="text-center" scope="col">Tanggal Usulan</th> --}}
                         <th class="text-center" scope="col">Tanggal Penting</th>
+                        <th class="text-center" scope="col">Durasi</th>
                         <th class="text-center" scope="col">Keterangan</th>
                         <th class="text-center" scope="col">Aksi</th>
                     </tr>
@@ -152,6 +153,14 @@
                             @if ($kp->status_kp == 'USULAN KP DITERIMA')
                                 <td class="text-center px-1 py-2"> <small> Tanggal Diterima:
                                         <br></small>{{ Carbon::parse($kp->tgl_disetujui_usulankp_kaprodi)->translatedFormat(' d F Y') }}
+                                        <br>
+                                         @if(Carbon::parse($kp->tgl_disetujui_usulankp_kaprodi)->addMonths(1) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Unggah Surat Perusahaan: <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($kp->tgl_disetujui_usulankp_kaprodi)->addMonths(1)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Unggah Surat Perusahaan: <br></small>
+                                    {{ Carbon::parse($kp->tgl_disetujui_usulankp_kaprodi)->addMonths(1)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
 
@@ -164,6 +173,14 @@
                             @if ($kp->status_kp == 'KP DISETUJUI')
                                 <td class="text-center px-1 py-2"> <small>Tanggal Disetujui:
                                         <br></small>{{ Carbon::parse($kp->tgl_disetujui_balasan)->translatedFormat(' d F Y') }}
+                                        <br>
+                                         @if(Carbon::parse($kp->tgl_disetujui_balasan)->addMonths(3) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Daftar Seminar: <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($kp->tgl_disetujui_balasan)->addMonths(3)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Daftar Seminar: <br></small>
+                                    {{ Carbon::parse($kp->tgl_disetujui_balasan)->addMonths(3)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
 
@@ -188,6 +205,14 @@
                             @if ($kp->status_kp == 'SEMINAR KP SELESAI')
                                 <td class="text-center px-1 py-2"> <small>Tanggal Selesai:
                                         <br></small>{{ Carbon::parse($kp->tgl_selesai_semkp)->translatedFormat(' d F Y') }}
+                                        <br>
+                                         @if(Carbon::parse($kp->tgl_selesai_semkp)->addMonths(1) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Penyerahan Laporan: <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($kp->tgl_selesai_semkp)->addMonths(1)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Penyerahan Laporan: <br></small>
+                                    {{ Carbon::parse($kp->tgl_selesai_semkp)->addMonths(1)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
                             @if ($kp->status_kp == 'BUKTI PENYERAHAN LAPORAN' || $kp->status_kp == 'BUKTI PENYERAHAN LAPORAN DITOLAK')
@@ -195,11 +220,21 @@
                                     {{ Carbon::parse($kp->tgl_created_kpti10)->translatedFormat(' d F Y') }}
                                 </td>
                             @endif
-                            @if ($kp->status_kp == 'KP SELESAI')
-                                <td class="text-center px-1 py-2"> <small>Tanggal Selesai:
-                                        <br></small>{{ Carbon::parse($kp->tgl_selesai_semkp)->translatedFormat(' d F Y') }}
+
+                           <!-- DURASI -->
+                            @php
+                                $tanggalMulaiKP = Carbon::parse($kp->tgl_disetujui_balasan);
+
+                                $tanggalSelesai = Carbon::now();
+
+                                $durasiKP = $tanggalMulaiKP ? $tanggalMulaiKP->diffInMonths($tanggalSelesai) : null;
+                                $bulan = $durasiKP ? floor($durasiKP) : null;
+                                $hari = $tanggalMulaiKP ? $tanggalMulaiKP->addMonths($bulan)->diffInDays($tanggalSelesai) : null;
+                            @endphp
+
+                            <td class="text-center px-1 py-2">
+                                         {{ $bulan ?? 0}} <small>Bulan</small> {{ $hari }} <small>Hari</small>
                                 </td>
-                            @endif
 
                             @if (
                                 $kp->status_kp == 'SURAT PERUSAHAAN DITOLAK' ||

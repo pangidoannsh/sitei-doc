@@ -37,7 +37,8 @@ class StaffProfilController extends Controller
             if ($user->save()) {
                 // return redirect('/form')->with('message', 'Password Berhasil Diedit!');
                 Alert::success('Berhasil!', 'Password diperbarui!')->showConfirmButton('Ok', '#28a745');
-                return redirect('/persetujuan/admin/index');
+                // return redirect('/persetujuan/admin/index');
+                return  back();
             } else {
                 // return back()->with('message', 'Password Salah!');
                 Alert::error('Gagal!', 'Password Salah!')->showConfirmButton('Ok', '#dc3545');

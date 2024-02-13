@@ -54,6 +54,8 @@
             <li><a href="/pembimbing/skripsi" class="px-1">Bimbingan Skripsi (<span>{{ $jml_bimbinganskripsi }}</span>)</a></li>
             <span class="px-2">|</span>
             <li><a href="/pembimbing-penguji/riwayat-bimbingan" class="px-1">Riwayat (<span>{{ $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_sidang + $jml_riwayat_kp + $jml_riwayat_skripsi }}</span>)</a></li>
+            <span class="px-2">|</span>
+            <li><a href="/statistik" class="px-1">Statistik</a></li>
 
         </ol>
 

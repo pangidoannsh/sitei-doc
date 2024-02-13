@@ -71,6 +71,28 @@
             </div>
         </div>
 
+        <div class="container">
+            <div class="row rounded shadow-sm">
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-start">
+                    <h5 class="text-bold">Laporan Skripsi</h5>
+                    <hr>
+                <p class="card-title text-secondary text-sm">Judul Skripsi</p>
+                    <p class="card-text text-start"><span>{{ $skripsi->judul_skripsi ?? '-' }}</span></p>
+                </div>
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">
+                    <h5 class="text-bold">Persetujuan Pengajuan Skripsi</h5>
+                    <hr>
+                    <p class="card-title text-secondary text-sm ">STI/TE-1 - Surat Permohonan Pengajuan Topik Skripsi</p>
+                        <p class="card-text  text-start"><button onclick="window.open('/surat-permohonan-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                        <p class="card-title text-secondary text-sm ">STI/TE-2 - Form Pengajuan Topik Skripsi</p>
+                        <p class="card-text text-start">
+                            <button onclick="window.open('/form-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                </div>
+            </div>
+        </div>
+
 
 
         <div class="container">
@@ -98,11 +120,11 @@
                             <p class="card-text  text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->naskah) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <p class="card-title text-secondary text-sm ">STI-30</p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-30</p>
                             <p class="card-text  text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->sti_30) }}"
                                         class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            <p class="card-title text-secondary text-sm ">STI-31</p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-31</p>
                             @if($skripsi->sti_31 != null)
                             <p class="card-text  text-start"><span><a formtarget="_blank" target="_blank"
                                         href="{{ asset('storage/' . $skripsi->sti_31) }}"

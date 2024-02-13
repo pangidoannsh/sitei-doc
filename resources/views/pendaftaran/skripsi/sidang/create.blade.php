@@ -135,7 +135,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="formFile" class="form-label float-start">STI-9/Lembar Kontrol Perbaikan Proposal<span
+                        <label for="formFile" class="form-label float-start">STI/TE-9/Lembar Kontrol Perbaikan Proposal<span
                                 class="text-danger">*</span> <small class="text-secondary">(Format .pdf | Maks. 200 KB)
                             </small></label>
                         <input name="sti_9" class="form-control @error('sti_9') is-invalid @enderror"
@@ -148,7 +148,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="formFile" class="form-label float-start">STI-30/Bukti Mengumpulkan Syarat Daftar
+                        <label for="formFile" class="form-label float-start">STI/TE-30/Bukti Mengumpulkan Syarat Daftar
                             Sidang<span class="text-danger">*</span> <small class="text-secondary">(Format .pdf | Maks.
                                 200 KB) </small></label>
                         <input name="sti_30" class="form-control @error('sti_30') is-invalid @enderror"
@@ -166,7 +166,7 @@
                 </div>
                 <div class="col-lg-6 col-md-12">
                     <div class="mb-3">
-                        <label for="formFile" class="form-label float-start">STI-10/Surat Persetujuan Publikasi Skripsi
+                        <label for="formFile" class="form-label float-start">STI/TE-10/Surat Persetujuan Publikasi Skripsi
                             <small class="text-secondary">(Format .pdf | Maks. 200 KB) </small></label>
                         <input name="sti_10" class="form-control @error('sti_10') is-invalid @enderror"
                             value="{{ old('sti_10') }}" type="file" id="formFile">
@@ -201,7 +201,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="formFile" class="form-label float-start">STI-31/ Surat Persetujuan Sertifikat
+                        <label for="formFile" class="form-label float-start">STI/TE-31/ Surat Persetujuan Sertifikat
                             Pendamping Ijazah <small class="text-secondary">(Format .pdf | Maks. 200 KB) </small></label>
                         <input name="sti_31" class="form-control @error('sti_31') is-invalid @enderror"
                             value="{{ old('sti_31') }}" type="file" id="formFile">

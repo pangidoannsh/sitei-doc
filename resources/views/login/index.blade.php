@@ -19,20 +19,22 @@
 
     <link rel="stylesheet" href="{{ asset('/assets/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
+    <!--<link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />-->
 
 </head>
 <style>
 
     
-
-
     @media only screen and (max-width: 425px) {
 
 
         .green-background {
             display: none !important;
         }
+        .row{
+            margin-top: -60px;
+        }
+        
 
         .bungkus{
             justify-content: center;
@@ -41,13 +43,13 @@
 
         .vl {
             border-left: 2px solid green;
-            height: 70px;
+            height: 100px;
             margin-top: 20px;
             padding-left: 10px;
         }
 
         .caption h4 {
-            font-size: 20px;
+            font-size: 18px;
         }
           .gambar img{
         margin-top: -30px;
@@ -99,8 +101,6 @@
         .pengembang:hover {
             color: #28a745;
         }
-
-   
       
  
     }
@@ -133,10 +133,7 @@
         .pengembang:hover {
             color: #28a745;
         }
-
-   
-      
- 
+        
     }
 
     @media only screen and (min-width: 1024px) {
@@ -154,10 +151,6 @@
         .caption h4 {
             font-size: 20px;
         }
-
-        /* .container {
-            margin-top: 100px;
-        } */
 
         .footer {
             margin-bottom: 20px;
@@ -179,9 +172,6 @@
         justify-content: center;
         }
 
-        /* .carousel-column {
-            padding: 0;
-        } */
 
         .login-column {
             padding: 0 15px;
@@ -202,32 +192,6 @@
         /* Add more styles as needed for responsiveness at 1024px and below */
     }
 
-    /* .d-flex {
-        margin-left : 6px;
-    } */
-
-    
-
-    /* .green-background {
-        background-color: #28a745;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .carousel-column {
-        padding: 0;
-    }
-
-    .login-column {
-        padding: 0 15px;
-    }
-
-    .kotak-masuk {
-        border-radius: 10px;
-    } */
-
     .hr-line-dashed {
         border-top: 1px dashed #e7eaec;
         color: #ffffff;
@@ -235,15 +199,16 @@
         height: 1px;
         margin: 30px 0;
     }
+    
 
     
 </style>
 
-<body style="background: radial-gradient(circle at top left, #ffffff, #f1faee);">
+<body style="background: radial-gradient(circle at top left, #f1faee, #ffffff);">
 
-<div class="container bg-white shadow">
+<div class="container rounded rounded-sm bg-white shadow">
 
-    <div class="row border border-success rounded justify-content-center align-items-center">
+    <div class="row justify-content-center align-items-center" >
 
     <div class="col-xl-8 col-lg-7 col-md-12" >
 
@@ -268,18 +233,16 @@
     <span class="visually-hidden">Next</span>
   </button>
 </div>
-
     </div>
+    <div class="col-xl-4 col-lg-5 rounded col-md-12 bg-white" >
 
-    <div class="col-xl-4 col-lg-5 rounded col-md-12 bg-white">
-
-     <div class="px-5 pt-5">
+     <div class="px-5">
                     <main class="w-100">
                         
                         <form class="form-login" action="/" method="POST" class="text-center mt-5">
                             @csrf
                                
-                            <div class="d-flex bungkus ml-5">
+                            <div class="d-flex bungkus justify-content-center">
                                 <div class="gambar p-3 mt-3">
                                     <img src="assets/dist/img/unri.png" alt="logo_unri" width="65" height="65">
                                 </div>
@@ -290,7 +253,7 @@
                             </div>
                             
                              @if (session()->has('loginError'))
-                                <div class="text-center alert alert-danger p-2">
+                                <div class="text-center alert alert-danger p-1">
                             <span class="text-danger">Login Gagal!</span>
                                 </div>
                             
@@ -326,7 +289,6 @@
                                 @endif
                                 
                                
-
                             <div class="form-floating mt-3 position-relative">
                                 @if (session()->has('loginError'))
                                 <input type="password" class="form-control border border-danger rounded-1" name="password" id="password"
@@ -353,16 +315,16 @@
                             <button class="w-100 btn btn-lg btn-success btn-login mt-4 rounded-1"
                                 type="submit">Masuk</button>
                         </form>
-                        <small class="kecil d-block text-center mt-4">Belum memiliki akun? <br>Silahkan hubungi Admin
+                        <small class="kecil d-block text-center mt-3">Belum memiliki akun? <br>Silahkan hubungi Admin
                             Prodi<br></small>
 
-                        <div class="hr-line-dashed"></div>
+                        <div class="hr-line-dashed mt-2 mb-2"></div>
 
                         <div class="footer text-center">
-                            <small>Dikembangkan oleh</small>
+                            <small>Dikembangkan oleh</small> <br>
                             <a class="pengembang" href="/developer" target="_blank"> <small>Tim Prodi Teknik Informatika</small></a>
                             <div class="mt-2">
-                                <small class="text-center"style="color: #98A2B3;">2023 - {{ now()->year }}© SITEI
+                                <small class="text-center"style="color: #98A2B3;">2023 - {{ now()->year }} © SITEI
                                     Universitas Riau</small>
                             </div>
                         </div>
@@ -496,7 +458,6 @@
       @push('scripts')
       <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
       @endpush()
-        
         
         
       

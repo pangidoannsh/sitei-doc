@@ -75,12 +75,7 @@
                     <li><a href="/prodi/riwayat" class="breadcrumb-item active fw-bold text-success px-1">Riwayat
                             (<span>{{ $jml_riwayat_prodi_kp + $jml_riwayat_prodi_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_skripsi }}</span>)</a>
                     </li>
-                    @if (Auth::guard('web')->user()->role_id == 2 ||
-                            Auth::guard('web')->user()->role_id == 3 ||
-                            Auth::guard('web')->user()->role_id == 4)
-                        <span class="px-2">|</span>
-                        <li><a href="/kapasitas-bimbingan/index" class="px-1">Kuota Bimbingan </a></li>
-                    @endif
+
                 @endif
             @endif
 
@@ -351,7 +346,7 @@
                             @endif -->
 
                             <td class="text-center">
-                                <p>{{$skripsi->id}}</p>
+                                
                                 @if ($skripsi->pembimbingsatu == !null)
                                <a formtarget="_blank" target="_blank"
                                     href="/nilai-skripsi-pembimbing/{{ Crypt::encryptString($skripsi->id) }}/{{ $skripsi->pembimbingsatu->nip }}"
@@ -421,71 +416,78 @@
                         Auth::guard('dosen')->user()->role_id == 9 ||
                         Auth::guard('dosen')->user()->role_id == 10 ||
                         Auth::guard('dosen')->user()->role_id == 11)
-        <div class="container card p-4 mb-5">
+        <!--<div class="container card p-4 mb-5">-->
             
-            <div class="mb-4 rounded bg-light">
-                <div class="p-2 pt-3">
-                    <h5 class="">Riwayat Persetujuan</h5>
-                    <hr>
-                </div>
-            </div>
+        <!--    <div class="mb-4 rounded bg-light">-->
+        <!--        <div class="p-2 pt-3">-->
+        <!--            <h5 class="">Riwayat Persetujuan</h5>-->
+        <!--            <hr>-->
+        <!--        </div>-->
+        <!--    </div>-->
 
-            <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables4">
-            <thead class="table-dark">
-                <tr>
-                    <th class="text-center" scope="col">NIM</th>
-                    <th class="text-center" scope="col">Nama</th>
-                    <th class="text-center" scope="col">Seminar</th>
-                    <th class="text-center" scope="col">Prodi</th>
-                    <th class="text-center" scope="col">Tanggal</th>
-                    <th class="text-center" scope="col">Waktu</th>
-                    <th class="text-center" scope="col">Lokasi</th>
-                    <th class="text-center" scope="col">Pembimbing</th>
-                    <th class="text-center" scope="col">Penguji</th>
-                    <th class="text-center" scope="col">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
+        <!--    <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables4">-->
+        <!--    <thead class="table-dark">-->
+        <!--        <tr>-->
+        <!--            <th class="text-center" scope="col">NIM</th>-->
+        <!--            <th class="text-center" scope="col">Nama</th>-->
+        <!--            <th class="text-center" scope="col">Seminar</th>-->
+        <!--            <th class="text-center" scope="col">Prodi</th>-->
+        <!--            <th class="text-center" scope="col">Tanggal</th>-->
+        <!--            <th class="text-center" scope="col">Waktu</th>-->
+        <!--            <th class="text-center" scope="col">Lokasi</th>-->
+        <!--            <th class="text-center" scope="col">Pembimbing</th>-->
+        <!--            <th class="text-center" scope="col">Penguji</th>-->
+        <!--            <th class="text-center" scope="col">Aksi</th>-->
+        <!--        </tr>-->
+        <!--    </thead>-->
+        <!--    <tbody>-->
 
-                @foreach ($penjadwalan_skripsis as $skripsi)
-                    <tr>
-                        <td class="text-center">{{ $skripsi->mahasiswa->nim }}</td>
-                        <td class="text-left pl-3 pr-1 fw-bold">{{ $skripsi->mahasiswa->nama }}</td>
-                        <td class="bg-warning text-center">{{ $skripsi->jenis_seminar }}</td>
-                        <td class="text-center">{{ $skripsi->prodi->nama_prodi }}</td>
-                        <td class="text-center">{{ Carbon::parse($skripsi->tanggal)->translatedFormat('l, d F Y') }}</td>
-                        <td class="text-center">{{ $skripsi->waktu }}</td>
-                        <td class="text-center">{{ $skripsi->lokasi }}</td>
-                        <td class="text-center">
-                            @if ($skripsi->pembimbingdua == !null)
-                            <p>1. {{ $skripsi->pembimbingsatu->nama_singkat }}</p>
-                            @endif
-                            @if ($skripsi->pembimbingdua == !null)
-                                <p>2. {{ $skripsi->pembimbingdua->nama_singkat }}</p>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <p>1. {{ $skripsi->pengujisatu->nama_singkat }}</p>
-                            <p>2. {{ $skripsi->pengujidua->nama_singkat }}</p>
-                            @if ($skripsi->pengujitiga == !null)
-                                <p>3. {{ $skripsi->pengujitiga->nama_singkat }}</p>
-                            @endif
-                        </td>
-                        <td class="text-center">
-                            <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"
-                                class="badge bg-success p-2"style="border-radius:20px;">Berita Acara</a>
-                        </td>
-                    </tr>
-                @endforeach
+        <!--        @foreach ($penjadwalan_skripsis as $skripsi)-->
+        <!--            <tr>-->
+        <!--                <td class="text-center">{{ $skripsi->mahasiswa->nim }}</td>-->
+        <!--                <td class="text-left pl-3 pr-1 fw-bold">{{ $skripsi->mahasiswa->nama }}</td>-->
+        <!--                <td class="bg-warning text-center">{{ $skripsi->jenis_seminar }}</td>-->
+        <!--                <td class="text-center">{{ $skripsi->prodi->nama_prodi }}</td>-->
+        <!--                <td class="text-center">{{ Carbon::parse($skripsi->tanggal)->translatedFormat('l, d F Y') }}</td>-->
+        <!--                <td class="text-center">{{ $skripsi->waktu }}</td>-->
+        <!--                <td class="text-center">{{ $skripsi->lokasi }}</td>-->
+        <!--                <td class="text-center">-->
+        <!--                    @if ($skripsi->pembimbingdua == !null)-->
+        <!--                    <p>1. {{ $skripsi->pembimbingsatu->nama_singkat }}</p>-->
+        <!--                    @endif-->
+        <!--                    @if ($skripsi->pembimbingdua == !null)-->
+        <!--                        <p>2. {{ $skripsi->pembimbingdua->nama_singkat }}</p>-->
+        <!--                    @endif-->
+        <!--                </td>-->
+        <!--                <td class="text-center">-->
+        <!--                    <p>1. {{ $skripsi->pengujisatu->nama_singkat }}</p>-->
+        <!--                    <p>2. {{ $skripsi->pengujidua->nama_singkat }}</p>-->
+        <!--                    @if ($skripsi->pengujitiga == !null)-->
+        <!--                        <p>3. {{ $skripsi->pengujitiga->nama_singkat }}</p>-->
+        <!--                    @endif-->
+        <!--                </td>-->
+        <!--                <td class="text-center">-->
+        <!--                    <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"-->
+        <!--                        class="badge bg-success p-2"style="border-radius:20px;">Berita Acara</a>-->
+        <!--                </td>-->
+        <!--            </tr>-->
+        <!--        @endforeach-->
 
-            </tbody>
-        </table>
+        <!--    </tbody>-->
+        <!--</table>-->
 
 
+        <!--</div>-->
+        @endif
+        @endif
+
+        <div class="d-flex align-items-end flex-column fixed-bottom bd-highlight mb-5">
+        <div class="mt-auto p-2 bd-highlight ">
+            <span onclick="scrollToTop()" id="scrollToTopBtn" title="Kembali ke Atas" style="width: 40px; height: 40px; cursor: pointer;"><i class="fas fa-chevron-circle-up fa-lg fs-2"></i></span>
         </div>
-        @endif
-        @endif
+        </div>
 
+<br>
 <br>
 <br>
 <br>
@@ -534,4 +536,26 @@
                 }
             });
         </script>
+    @endpush()
+    
+    @push('scripts')
+        <script>
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            document.getElementById("scrollToTopBtn").style.display = "block";
+        } else {
+            document.getElementById("scrollToTopBtn").style.display = "none";
+        }
+    }
+    </script>
     @endpush()

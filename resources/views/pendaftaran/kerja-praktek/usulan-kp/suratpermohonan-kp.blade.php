@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>KPTI-1 Surat Permohonan KP</title>
+    <title>KPTI/TE-1 Surat Permohonan KP</title>
     @php
         use Carbon\Carbon;
         use SimpleSoftwareIO\QrCode\Facades\QrCode;

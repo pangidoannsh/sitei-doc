@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label float-start">STI-17/Bukti Penyerahan Buku Skripsi<span
+                            <label for="formFile" class="form-label float-start">STI/TE-17/Bukti Penyerahan Buku Skripsi<span
                                     class="text-danger">*</span> <small class="text-secondary">( Format .pdf | Maks. 200 KB
                                     ) </small></label>
                             <input name="sti_17" class="form-control @error('sti_17') is-invalid @enderror"
@@ -48,7 +48,7 @@
                             @enderror
                         </div>
                         <!-- <div class="mb-3">
-                                            <label for="formFile" class="form-label float-start">STI-29/ Bukti Sudah Daftar Wisuda di Fakultas<span class="text-danger">*</span> <small class="text-secondary">( Format .pdf | Maks. 200 KB ) </small></label>
+                                            <label for="formFile" class="form-label float-start">STI/TE-29/ Bukti Sudah Daftar Wisuda di Fakultas<span class="text-danger">*</span> <small class="text-secondary">( Format .pdf | Maks. 200 KB ) </small></label>
                                             <input name="sti_29" class="form-control @error('sti_29') is-invalid @enderror" value="{{ old('sti_29') }}" type="file" id="formFile"  >
 
                                             @error('sti_29')

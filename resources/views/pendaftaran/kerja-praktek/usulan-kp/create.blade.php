@@ -20,6 +20,7 @@
         </div>
     @endif
 
+@if ($kp == null)
 @if (Str::length(Auth::guard('mahasiswa')->user()) > 0)
         <div class="container-fluid ">
             <form action="{{ url('/usulankp/create') }}" class="mahasiswa-usulan" method="POST" enctype="multipart/form-data">
@@ -124,6 +125,7 @@
                 </div>
             </form>
         </div>
+    @endif
     @endif
 <br>
 <br>

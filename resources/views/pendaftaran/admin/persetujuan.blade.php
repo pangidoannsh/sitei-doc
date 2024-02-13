@@ -48,7 +48,7 @@
                     </li>
 
                     <span class="px-2">|</span>
-                    <li><a href="/kapasitas-bimbingan/index" class="px-1">Kuota Bimbingan</a></li>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
             @endif
         </ol>
@@ -64,7 +64,7 @@
                         <!-- <th class="text-center" scope="col">Jenis Usulan</th> -->
                         <th class="text-center" scope="col">Status </th>
                         <th class="text-center" scope="col">Tanggal Usulan</th>
-                        <th class="text-center" scope="col">Batas</th>
+                        <!-- <th class="text-center" scope="col">Batas</th> -->
                         <th class="text-center" scope="col">Keterangan</th>
                         <th class="text-center" scope="col" style="padding-left: 50px; ">Aksi</th>
                     </tr>
@@ -137,7 +137,7 @@
                                     {{ Carbon::parse($kp->tgl_created_semkp)->translatedFormat('l, d F Y') }}</td>
                             @endif
 
-                            @if ($kp->status_kp == 'USULAN KP')
+                            <!-- @if ($kp->status_kp == 'USULAN KP')
                                 <td class="text-center px-1 py-2">
                                     @if ($daysUsulanKPAdmin > 0)
                                         <span class="text-danger"> {{ $daysUsulanKPAdmin }} hari lagi</span>
@@ -164,7 +164,7 @@
                                         Batas Waktu persetujuan telah habis
                                     @endif
                                 </td>
-                            @endif
+                            @endif -->
 
                             <td class="text-center px-1 py-2">{{ $kp->keterangan }}</td>
 
@@ -326,7 +326,7 @@
                             @endif
 
                             <!-- BATAS PERSETUJUAN -->
-                            @if ($skripsi->status_skripsi == 'USULAN JUDUL')
+                            <!-- @if ($skripsi->status_skripsi == 'USULAN JUDUL')
                                 <td class="text-center px-1 py-2">
                                     @if ($daysUsulJudulAdmin >= 0)
                                         <span class="text-danger"> {{ $daysUsulJudulAdmin }} hari lagi</span>
@@ -334,10 +334,10 @@
                                         Batas Waktu Persetujuan telah habis
                                     @endif
                                 </td>
-                            @endif
+                            @endif -->
 
                             <!-- DAFTAR SEMPRO -->
-                            @if ($skripsi->status_skripsi == 'DAFTAR SEMPRO')
+                            <!-- @if ($skripsi->status_skripsi == 'DAFTAR SEMPRO')
                                 <td class="text-center px-1 py-2">
                                     @if ($daysDaftarSemproAdmin >= 0)
                                         <span class="text-danger"> {{ $daysDaftarSemproAdmin }} hari lagi</span>
@@ -345,10 +345,10 @@
                                         Batas Waktu Persetujuan telah habis
                                     @endif
                                 </td>
-                            @endif
+                            @endif -->
 
                             <!-- DAFTAR SIDANG -->
-                            @if ($skripsi->status_skripsi == 'DAFTAR SIDANG')
+                            <!-- @if ($skripsi->status_skripsi == 'DAFTAR SIDANG')
                                 <td class="text-center px-1 py-2">
                                     @if ($daysDaftarSidangAdmin >= 0)
                                         <span class="text-danger"> {{ $daysDaftarSidangAdmin }} hari lagi</span>
@@ -356,10 +356,10 @@
                                         Batas Waktu Persetujuan telah habis
                                     @endif
                                 </td>
-                            @endif
+                            @endif -->
 
                             <!-- DAFTAR MENUNGGU JADWAL SIDANG -->
-                            @if ($skripsi->status_skripsi == 'DAFTAR SIDANG DISETUJUI')
+                            <!-- @if ($skripsi->status_skripsi == 'DAFTAR SIDANG DISETUJUI')
                                 <td class="text-center px-1 py-2">
                                     @if ($daysMenungguSidangAdmin >= 0)
                                         <span class="text-danger"> {{ $daysMenungguSidangAdmin }} hari lagi</span>
@@ -367,7 +367,7 @@
                                         Batas Waktu Persetujuan telah habis
                                     @endif
                                 </td>
-                            @endif
+                            @endif -->
 
                             <td class="text-center px-1 py-2"> {{ $skripsi->keterangan }}</td>
 
@@ -431,19 +431,21 @@
 
                             <!-- DAFTAR SIDANG -->
                             @if ($skripsi->keterangan == 'Menunggu persetujuan Admin Prodi' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
+                                
+                                
                                 <td class="text-center px-1 py-2">
-                                    <div class="row py-2 py-md-0">
-                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                    <div class="row ml-0 ml-md-4">
+                                        <div class="col-lg-3 col-md-12 py-2 py-md-0">
                                             <button onclick="tolakSidangAdmin({{ $skripsi->id }})"
                                                 class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
                                                 title="Tolak"><i class="fas fa-times-circle"></i></button>
                                         </div>
-                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                        <div class="col-lg-3 col-md-12 py-2 py-md-0">
                                             <a href="/persetujuan/admin/detail/sidang/{{ $skripsi->id }}"
                                                 class="badge btn btn-info p-1" data-bs-toggle="tooltip"
                                                 title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
                                         </div>
-                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                        <div class="col-lg-3 col-md-12 py-2 py-md-0">
                                             <form action="/daftar-sidang/admin/approve/{{ $skripsi->id }}"
                                                 class="setujui-sidang-admin" data-bs-toggle="tooltip"
                                                 title="Setujui & Tandai Terjadwal" method="POST">
@@ -453,7 +455,7 @@
                                                         class="fas fa-check-circle"></i></button>
                                             </form>
                                         </div>
-                                        </div>
+                                    </div>
                                 </td>
                             @endif
                         </tr>

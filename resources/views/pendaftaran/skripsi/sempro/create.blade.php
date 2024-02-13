@@ -82,7 +82,7 @@
 
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label">STI-30/Bukti Mengumpulkan Syarat Pendaftaran Seminar
+                            <label for="formFile" class="form-label">STI/TE-30/Bukti Mengumpulkan Syarat Pendaftaran Seminar
                                 Proposal<span class="text-danger">*</span> <small class="text-secondary">( Format .pdf |
                                     Maks. 200 KB ) </small> </label>
                             <input name="sti_30" class="form-control @error('sti_30') is-invalid @enderror"
@@ -96,7 +96,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label">STI-31/Surat Persetujuan Sertifikat Pendamping <small
+                            <label for="formFile" class="form-label">STI/TE-31/Surat Persetujuan Sertifikat Pendamping <small
                                     class="text-secondary">( Format .pdf | Maks. 200 KB ) </small></label>
                             <input name="sti_31" class="form-control @error('sti_31') is-invalid @enderror"
                                 value="{{ old('sti_31') }}" type="file" id="formFile">

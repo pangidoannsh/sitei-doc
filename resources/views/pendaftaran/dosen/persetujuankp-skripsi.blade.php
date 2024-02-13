@@ -65,7 +65,7 @@
                         <th class="text-center" scope="col">Nama</th>
                         <th class="text-center" scope="col">Status</th>
                         <th class="text-center" scope="col">Tanggal Usulan</th>
-                        <th class="text-center" scope="col">Batas</th>
+                        <!-- <th class="text-center" scope="col">Batas</th> -->
                         <th class="text-center" scope="col">Keterangan</th>
                         <th class="text-center " scope="col" style="padding-left: 50px; padding-right:50px;">Aksi</th>
                     </tr>
@@ -188,8 +188,8 @@
                             @endif
 
                             <!-- MULAI -->
-                            @if ($kp->status_kp == 'USULAN KP')
-                                <!-- PEMBIMBING -->
+                            <!-- PEMBIMBING -->
+                            <!-- @if ($kp->status_kp == 'USULAN KP')
                                 @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
                                     @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'USULAN KP')
                                         <td class="text-center px-1 py-2">
@@ -200,11 +200,11 @@
                                             @endif
                                         </td>
                                     @endif
-                                @endif
+                                @endif -->
 
                                 <!-- KOORDINATOR -->
 
-                                @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                     @if (Auth::guard('dosen')->user()->role_id == 9 ||
                                             Auth::guard('dosen')->user()->role_id == 10 ||
                                             Auth::guard('dosen')->user()->role_id == 11)
@@ -219,11 +219,11 @@
                                             </td>
                                         @endif
                                     @endif
-                                @endif
+                                @endif -->
 
                                 <!-- KAPRODI -->
 
-                                @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                     @if (Auth::guard('dosen')->user()->role_id == 6 ||
                                             Auth::guard('dosen')->user()->role_id == 7 ||
                                             Auth::guard('dosen')->user()->role_id == 8)
@@ -238,14 +238,14 @@
                                         @endif
                                     @endif
                                 @endif
-                            @endif
+                            @endif -->
 
                             <!-- BATAS -->
 
 
                             <!-- BALASAN KP KOORDINATOR -->
 
-                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                 @if (Auth::guard('dosen')->user()->role_id == 9 ||
                                         Auth::guard('dosen')->user()->role_id == 10 ||
                                         Auth::guard('dosen')->user()->role_id == 11)
@@ -259,10 +259,10 @@
                                         </td>
                                     @endif
                                 @endif
-                            @endif
+                            @endif -->
 
-                            @if ($kp->status_kp == 'DAFTAR SEMINAR KP')
-                                <!-- PEMBIMBING -->
+                            <!-- PEMBIMBING -->
+                            <!-- @if ($kp->status_kp == 'DAFTAR SEMINAR KP')
                                 @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
                                     @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'DAFTAR SEMINAR KP')
                                         <td class="text-center px-1 py-2">
@@ -273,10 +273,10 @@
                                             @endif
                                         </td>
                                     @endif
-                                @endif
+                                @endif -->
 
                                 <!-- KOORDINATOR -->
-                                @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                     @if (Auth::guard('dosen')->user()->role_id == 9 ||
                                             Auth::guard('dosen')->user()->role_id == 10 ||
                                             Auth::guard('dosen')->user()->role_id == 11)
@@ -291,10 +291,10 @@
                                             </td>
                                         @endif
                                     @endif
-                                @endif
+                                @endif -->
 
                                 <!-- KAPRODI -->
-                                @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                     @if (Auth::guard('dosen')->user()->role_id == 6 ||
                                             Auth::guard('dosen')->user()->role_id == 7 ||
                                             Auth::guard('dosen')->user()->role_id == 8)
@@ -309,10 +309,10 @@
                                         @endif
                                     @endif
                                 @endif
-                            @endif
+                            @endif -->
 
                             <!-- PENYERAHAN LAPORAN KOORDINATOR -->
-                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                 @if (Auth::guard('dosen')->user()->role_id == 9 ||
                                         Auth::guard('dosen')->user()->role_id == 10 ||
                                         Auth::guard('dosen')->user()->role_id == 11)
@@ -326,7 +326,7 @@
                                         </td>
                                     @endif
                                 @endif
-                            @endif
+                            @endif -->
 
                             <td class="text-center px-1 py-2"> {{ $kp->keterangan }}</td>
 
@@ -709,7 +709,7 @@
             <!-- BATAS -->
             <!-- USULAN JUDUL KOORDINATOR -->
             @php
-                $countDownDateUsulJudulKoordinator = strtotime($skripsi->tgl_disetujui_usuljudul_pemb2) + 4 * 24 * 60 * 60;
+                $countDownDateUsulJudulKoordinator = strtotime($skripsi->pembimbing_2_nip != null ? $skripsi->tgl_disetujui_usuljudul_pemb2 : $skripsi->tgl_disetujui_usuljudul_pemb1) + 4 * 24 * 60 * 60;
                 $nowUsulJudulKoordinator = time();
                 $distanceUsulJudulKoordinator = $countDownDateUsulJudulKoordinator - $nowUsulJudulKoordinator;
                 $daysUsulJudulKoordinator = floor($distanceUsulJudulKoordinator / (60 * 60 * 24));
@@ -795,7 +795,7 @@
 
             <!-- DAFTAR SIDANG KOORDINATOR -->
             @php
-                $countDownDateDaftarSidangKoordinator = strtotime($skripsi->tgl_disetujui_sidang_pemb2) + 4 * 24 * 60 * 60;
+                $countDownDateDaftarSidangKoordinator = strtotime($skripsi->tgl_disetujui_sidang_admin) + 4 * 24 * 60 * 60;
                 $nowDaftarSidangKoordinator = time();
                 $distanceDaftarSidangKoordinator = $countDownDateDaftarSidangKoordinator - $nowDaftarSidangKoordinator;
                 $daysDaftarSidangKoordinator = floor($distanceDaftarSidangKoordinator / (60 * 60 * 24));
@@ -901,7 +901,7 @@
                 @endif
 
                 <!-- BATAS PERSETUJUAN -->
-                @if ($skripsi->status_skripsi == 'USULAN JUDUL')
+                <!-- @if ($skripsi->status_skripsi == 'USULAN JUDUL')
                     @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                         @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'USULAN JUDUL')
                             <td class="text-center px-1 py-2">
@@ -959,10 +959,10 @@
                             @endif
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <!-- DAFTAR SEMPRO -->
-                @if ($skripsi->status_skripsi == 'DAFTAR SEMPRO')
+                <!-- @if ($skripsi->status_skripsi == 'DAFTAR SEMPRO')
                     @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                         @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SEMPRO')
                             <td class="text-center px-1 py-2">
@@ -986,10 +986,10 @@
                             </td>
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <!-- PERPANJANGAN 1 -->
-                @if ($skripsi->status_skripsi == 'PERPANJANGAN 1')
+                <!-- @if ($skripsi->status_skripsi == 'PERPANJANGAN 1')
                     @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                         @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 1')
                             <td class="text-center px-1 py-2">
@@ -1019,10 +1019,10 @@
                             @endif
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <!-- PERPANJANGAN 2 -->
-                @if ($skripsi->status_skripsi == 'PERPANJANGAN 2')
+                <!-- @if ($skripsi->status_skripsi == 'PERPANJANGAN 2')
                     @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                         @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 2')
                             <td class="text-center px-1 py-2">
@@ -1052,11 +1052,11 @@
                             @endif
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <!-- DAFTAR SIDANG -->
 
-                @if ($skripsi->status_skripsi == 'DAFTAR SIDANG')
+                <!-- @if ($skripsi->status_skripsi == 'DAFTAR SIDANG')
                     @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                         @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
                             <td class="text-center px-1 py-2">
@@ -1115,11 +1115,11 @@
                             @endif
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <!-- PERPANJANGAN REVISI -->
 
-                @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+                <!-- @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
                     @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN REVISI')
                         <td class="text-center px-1 py-2">
                             @if ($daysRevisiPemb1 > 0)
@@ -1145,11 +1145,11 @@
                             @endif
                         </td>
                     @endif
-                @endif
+                @endif -->
 
                 <!-- PENYERAHAN BUKU SKRIPSI -->
 
-                @if (Str::length(Auth::guard('dosen')->user()) > 0)
+                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
                     @if (Auth::guard('dosen')->user()->role_id == 9 ||
                             Auth::guard('dosen')->user()->role_id == 10 ||
                             Auth::guard('dosen')->user()->role_id == 11)
@@ -1165,7 +1165,7 @@
                             </td>
                         @endif
                     @endif
-                @endif
+                @endif -->
 
                 <td class="text-center px-1 py-2"> {{ $skripsi->keterangan }}</td>
 
@@ -1794,7 +1794,7 @@
                         <!-- <td class="text-center px-1 py-2">{{ $skripsi->prodi->nama_prodi }}</td>           -->
                         <td class="text-center px-1 py-2">
                             {{ Carbon::parse($skripsi->tanggal)->translatedFormat(' d F Y') }}</td>
-                        <td class="text-center px-1 py-2">-</td>
+                        <!--<td class="text-center px-1 py-2">-</td>-->
                         @if (Str::length(Auth::guard('dosen')->user()) > 0)
                             @if (Auth::guard('dosen')->user()->role_id == 9 ||
                                     Auth::guard('dosen')->user()->role_id == 10 ||
@@ -2347,7 +2347,7 @@
 
             function tolakKPTI10Koordinator(id) {
                 Swal.fire({
-                    title: 'Tolak KPTI-10/Bukti Penyerahan Laporan KP',
+                    title: 'Tolak KPTI/TE-10/Bukti Penyerahan Laporan KP',
                     text: 'Apakah Anda Yakin?',
                     icon: 'question',
                     showCancelButton: true,
@@ -2357,7 +2357,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire({
-                            title: 'Tolak KPTI-10/Bukti Penyerahan Laporan KP',
+                            title: 'Tolak KPTI/TE-10/Bukti Penyerahan Laporan KP',
                             html: `
                         <form id="reasonForm" action="/kpti10/koordinator/tolak/${id}" method="POST">
                         @method('put')

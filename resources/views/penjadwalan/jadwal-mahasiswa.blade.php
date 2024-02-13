@@ -43,6 +43,7 @@
             <tbody>
 
                 @foreach ($penjadwalan_kps as $kp)
+                @if($kp->tanggal != null)
                     <tr>
                         <td class="text-center">{{ $kp->mahasiswa->nim }}</td>
                         <td class="text-left pl-3 pr-1 py-2 fw-bold">{{ $kp->mahasiswa->nama }}</td>
@@ -54,9 +55,11 @@
                         <td class="text-center">{{ $kp->pembimbing->nama_singkat }}</td>
                         <td class="text-center">{{ $kp->penguji->nama_singkat }}</td>
                     </tr>
+                    @endif
                 @endforeach
 
                 @foreach ($penjadwalan_sempros as $sempro)
+                @if($sempro->tanggal != null)
                     <tr>
                         <td class="text-center">{{ $sempro->mahasiswa->nim }}</td>
                         <td class="text-left pl-3 pr-1 py-2 fw-bold">{{ $sempro->mahasiswa->nama }}</td>
@@ -79,9 +82,11 @@
                             @endif
                         </td>
                     </tr>
+                    @endif
                 @endforeach
 
                 @foreach ($penjadwalan_skripsis as $skripsi)
+                @if($skripsi->tanggal != null)
                     <tr>
                         <td class="text-center">{{ $skripsi->mahasiswa->nim }}</td>
                         <td class="text-left pl-3 pr-1 py-2 fw-bold">{{ $skripsi->mahasiswa->nama }}</td>
@@ -104,6 +109,7 @@
                             @endif
                         </td>
                     </tr>
+                    @endif
                 @endforeach
 
             </tbody>

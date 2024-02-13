@@ -49,6 +49,8 @@
                     <li><a href="/prodi/riwayat" class="px-1">Riwayat
                             (<span>{{ $jml_riwayat_prodi_kp + $jml_riwayat_prodi_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_skripsi }}</span>)</a>
                     </li>
+                    <span class="px-2">|</span>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
             @endif
 
@@ -79,13 +81,18 @@
             <tbody>
 
                 @foreach ($penjadwalan_kps as $kp)
-                    @if ($kp->waktu == !null)
+                    
                         <tr>
                             <td class="text-center">{{ $kp->mahasiswa->nim }}</td>
                             <td class="text-left pl-3 pr-1 fw-bold">{{ $kp->mahasiswa->nama }}</td>
                             <td class="bg-primary text-center">{{ $kp->jenis_seminar }}</td>
                             <td class="text-center">{{ $kp->prodi->nama_prodi }}</td>
-                            <td class="text-center">{{ Carbon::parse($kp->tanggal)->translatedFormat('l, d F Y') }}</td>
+                            <td class="text-center">
+                                @if($kp->tanggal != null)
+                                {{ Carbon::parse($kp->tanggal)->translatedFormat('l, d F Y') }}
+                                @else
+                                @endif
+                                </td>
                             <td class="text-center">{{ $kp->waktu }}</td>
                             <td class="text-center">{{ $kp->lokasi }}</td>
                             <td class="text-center">
@@ -105,12 +112,12 @@
                                 @endif
                             @endif
                         </tr>
-                    @endif
+                   
                 @endforeach
 
 
                 @foreach ($penjadwalan_sempros as $sempro)
-                    @if ($sempro->pengujisatu == !null)
+                    
                         <tr>
                             <td class="text-center">{{ $sempro->mahasiswa->nim }}</td>
                             <td class="text-left pl-3 pr-1 fw-bold">{{ $sempro->mahasiswa->nama }}</td>
@@ -156,11 +163,11 @@
                                 @endif
                             @endif
                         </tr>
-                    @endif
+                  
                 @endforeach
 
                 @foreach ($penjadwalan_skripsis as $skripsi)
-                    @if ($skripsi->waktu == !null)
+                   
                         <tr>
                             <td class="text-center">{{ $skripsi->mahasiswa->nim }}</td>
                             <td class="text-left pl-3 pr-1 fw-bold">{{ $skripsi->mahasiswa->nama }}</td>
@@ -203,7 +210,7 @@
                                 @endif
                             @endif
                         </tr>
-                    @endif
+                
                 @endforeach
 
 

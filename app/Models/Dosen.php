@@ -4,14 +4,15 @@ namespace App\Models;
 
 use App\Models\Role;
 use App\Models\Prodi;
+use App\Models\Mahasiswa;
 use App\Models\PendaftaranKP;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\PendaftaranSkripsi;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Models\Mahasiswa;
 
 class Dosen extends Authenticatable
 {
@@ -44,7 +45,6 @@ class Dosen extends Authenticatable
 {
     return $this->hasMany(PendaftaranKP::class, 'dosen_pembimbing_nip', 'nip');
 }
-
 
     public function pendaftarankp()
 {
@@ -83,8 +83,6 @@ public function mahasiswa()
         return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_2_nip', 'nip');
     }
 
-
-
     public function pendaftaranSkripsiPembimbing1()
     {
         return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_1_nip', 'nip');
@@ -95,7 +93,6 @@ public function mahasiswa()
         return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_2_nip', 'nip');
     }
 
-
 public function pembimbingkp()
 {
     return $this->hasMany(PendaftaranKP::class, 'dosen_pembimbing_nip', 'nip')
@@ -103,6 +100,13 @@ public function pembimbingkp()
         ->where('status_kp', '<>', 'USULKAN KP ULANG')
         ->where('keterangan', '<>', 'Nilai KP Telah Keluar');
 }
+
+public function pembimbingkp_lulus()
+{
+    return $this->hasMany(PendaftaranKP::class, 'dosen_pembimbing_nip', 'nip')
+        ->where('status_kp','KP SELESAI');
+}
+
 public function pembimbing1skripsi()
 {
     return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_1_nip', 'nip')
@@ -118,6 +122,17 @@ public function pembimbing2skripsi()
        ->where('status_skripsi','<>', 'LULUS')
        ->where('status_skripsi','<>', 'USULKAN JUDUL ULANG')
        ->orderBy('status_skripsi', 'desc');
+}
+
+public function pembimbing1skripsi_lulus()
+{
+    return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_1_nip', 'nip')
+       ->where('status_skripsi','LULUS');
+}
+public function pembimbing2skripsi_lulus()
+{
+    return $this->hasMany(PendaftaranSkripsi::class, 'pembimbing_2_nip', 'nip')
+       ->where('status_skripsi','LULUS');
 }
 
     /**

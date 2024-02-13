@@ -19,6 +19,11 @@
         </div>
     @endif
 
+    <div class="container">
+                    <a href="/statistik/bimbingan-kp" class="btn btn-success py-1 px-2 mb-3"><i
+                            class="fas fa-arrow-left fa-xs"></i> Kembali <a>
+            </div>
+
     <div class="container card p-4">
 
         <ol class="breadcrumb col-lg-12">
@@ -37,6 +42,8 @@
                         <th class="text-center" scope="col">Nama</th>
                         <th class="text-center" scope="col">Program Studi</th>
                         <th class="text-center" scope="col">Konsentrasi</th>
+                        <th class="text-center" scope="col">Status</th>
+                        <th class="text-center" scope="col">Durasi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,13 +58,53 @@
                             <td class="text-center ">{{ $kp->mahasiswa->prodi->nama_prodi }}</td>
 
                             <td class="text-center">{{ $kp->mahasiswa->konsentrasi->nama_konsentrasi }}</td>
+                            @if (
+                                $kp->status_kp == 'USULAN KP' ||
+                                    $kp->status_kp == 'SURAT PERUSAHAAN' ||
+                                    $kp->status_kp == 'DAFTAR SEMINAR KP' ||
+                                    $kp->status_kp == 'BUKTI PENYERAHAN LAPORAN')
+                                <td class="text-center px-1 py-2 bg-secondary">{{ $kp->status_kp }}</td>
+                            @endif
+                            @if (
+                                $kp->status_kp == 'USULAN KP DITERIMA' ||
+                                    $kp->status_kp == 'KP DISETUJUI' ||
+                                    $kp->status_kp == 'DAFTAR SEMINAR KP DISETUJUI' ||
+                                    $kp->status_kp == 'SEMINAR KP SELESAI' ||
+                                    $kp->status_kp == 'KP SELESAI')
+                                <td class="text-center px-1 py-2 bg-info">{{ $kp->status_kp }}</td>
+                            @endif
+                            @if ($kp->status_kp == 'SEMINAR KP DIJADWALKAN')
+                                <td class="text-center px-1 py-2 bg-success">{{ $kp->status_kp }}</td>
+                            @endif
+                            @if (
+                                $kp->status_kp == 'SURAT PERUSAHAAN DITOLAK' ||
+                                    $kp->status_kp == 'DAFTAR SEMINAR KP DITOLAK' ||
+                                    $kp->status_kp == 'DAFTAR SEMINAR KP ULANG' ||
+                                    $kp->status_kp == 'BUKTI PENYERAHAN LAPORAN DITOLAK')
+                                <td class="text-center px-1 py-2 bg-danger">{{ $kp->status_kp }}</td>
+                            @endif
 
+                            <!-- DURASI -->
+                            @php
+                                $tanggalMulaiKP = Carbon::parse($kp->tgl_disetujui_balasan);
+
+                                $tanggalSelesai = Carbon::now();
+
+                                $durasiKP = $tanggalMulaiKP ? $tanggalMulaiKP->diffInMonths($tanggalSelesai) : null;
+                                $bulan = $durasiKP ? floor($durasiKP) : null;
+                                $hari = $tanggalMulaiKP ? $tanggalMulaiKP->addMonths($bulan)->diffInDays($tanggalSelesai) : null;
+                            @endphp
+
+                            <td class="text-center px-1 py-2">
+                                         {{ $bulan ?? 0}} <small>Bulan</small> {{ $hari }} <small>Hari</small>
+                                </td>
                         </tr>
                     @endforeach
                 </tbody>
 
 
             </table>
+            
         </div>
     </div>
     <br>

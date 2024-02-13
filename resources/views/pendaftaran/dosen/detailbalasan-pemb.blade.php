@@ -61,6 +61,41 @@
                 </div>
         </div>
 
+        @if ($kp->status_kp == 'KP DISETUJUI')
+         <div class="container">
+            <div class="row rounded shadow-sm">
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-start">
+                    <h5 class="text-bold">Laporan KP</h5>
+                    <hr>
+                <p class="card-title text-secondary text-sm">Judul Laporan</p>
+                    <p class="card-text text-start"><span>{{ $kp->judul_laporan ?? '-' }}</span></p>
+                
+                    <p class="card-title text-secondary text-sm">Nama Perusahaan/Instansi</p>
+                    <p class="card-text text-start"><span>
+                        @if($kp->nama_perusahaan != null)
+                        {{ $kp->nama_perusahaan}}
+                        @else
+                        -
+                        @endif
+                    </span></p>
+
+                </div>
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">
+                    <h5 class="text-bold">Surat Persetujuan Permohonan KP</h5>
+                    <hr>
+                
+                    <p class="card-title text-secondary text-sm">KPTI/TE-1 - Surat Permohonan KP</p>
+                        <p class="card-text  text-start"><button onclick="window.open('/surat-permohonan-kp/{{ $kp->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                        <p class="card-title text-secondary text-sm">KPTI/TE-2 - Form Permohonan KP</p>
+                        <p class="card-text text-start">
+                            <button onclick="window.open('/form-permohonan-kp/{{ $kp->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                            </p>
+                </div>
+            </div>
+        </div>
+         @endif
+
         <div class="container">
             <div class="row rounded shadow-sm">
                 <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-start">

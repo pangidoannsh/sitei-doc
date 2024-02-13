@@ -239,7 +239,7 @@
         $pendaftaran_skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
         $pendaftaran_skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
         $pendaftaran_skripsi->status_skripsi == 'BUKTI PENYERAHAN BUKU SKRIPSI DITOLAK' ||
-        $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG')
+        $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' || $pendaftaran_skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK')
     <a href="/usuljudul/index">
         <div class="card kpindex">
             <img src="/assets/img/il8.png" class="rounded mx-auto d-block card-img-top shadow-lg p-3 bg-body rounded"

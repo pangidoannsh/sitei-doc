@@ -182,7 +182,7 @@
                 @if ($kp->status_kp == 'SEMINAR KP SELESAI')
                     <div class="mt-2">
                         <a href="/kpti10-kp/create/{{ $kp->id }}" class="btn mahasiswa btn-success mb-3">Upload
-                            KPTI-10 / Bukti Penyerahan Laporan</a>
+                            KPTI/TE-10 / Bukti Penyerahan Laporan</a>
                     </div>
                 @endif
                 @if ($kp->status_kp == 'SEMINAR KP DIJADWALKAN')

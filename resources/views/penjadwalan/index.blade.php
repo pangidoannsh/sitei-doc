@@ -43,6 +43,8 @@
                     <li><a href="/prodi/riwayat" class="px-1">Riwayat
                             (<span>{{ $jml_riwayat_prodi_kp + $jml_riwayat_prodi_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_skripsi }}</span>)</a>
                     </li>
+                    <span class="px-2">|</span>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
 
                 @if (Auth::guard('web')->user()->role_id == 2 ||
@@ -57,14 +59,14 @@
                     <li><a href="/prodi/riwayat" class="px-1">Riwayat
                             (<span>{{ $jml_riwayatkp + $jml_riwayatskripsi + $jml_jadwal_kps + $jml_jadwal_sempros + $jml_jadwal_skripsis }}</span>)</a>
                     </li>
+                    <span class="px-2">|</span>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
 
-                @if (Auth::guard('web')->user()->role_id == 2 ||
-                        Auth::guard('web')->user()->role_id == 3 ||
-                        Auth::guard('web')->user()->role_id == 4)
+               <!-- @if (Auth::guard('web')->user()->role_id == 1)
                     <span class="px-2">|</span>
                     <li><a href="/kapasitas-bimbingan/index" class="px-1">Kuota Bimbingan</a></li>
-                @endif
+                @endif -->
             @endif
 
 
@@ -74,11 +76,11 @@
             @if (Auth::guard('web')->user()->role_id == 2 ||
                     Auth::guard('web')->user()->role_id == 3 ||
                     Auth::guard('web')->user()->role_id == 4)
-                <div>
-                    <a href="{{ url('/form-kp/create') }}" class="btn kp btn-success mb-4">+ KP</a>
-                    <a href="{{ url('/form-sempro/create') }}" class="btn sempro btn-success mb-4">+ Sempro</a>
-                    <a href="{{ url('/form-skripsi/create') }}" class="btn skripsi btn-success mb-4">+ Skripsi</a>
-                </div>
+                <!--<div>-->
+                <!--    <a href="{{ url('/form-kp/create') }}" class="btn kp btn-success mb-4">+ KP</a>-->
+                <!--    <a href="{{ url('/form-sempro/create') }}" class="btn sempro btn-success mb-4">+ Sempro</a>-->
+                <!--    <a href="{{ url('/form-skripsi/create') }}" class="btn skripsi btn-success mb-4">+ Skripsi</a>-->
+                <!--</div>-->
             @endif
             <thead class="table-dark">
                 <tr>

@@ -192,6 +192,7 @@ class PenilaianSkripsiController extends Controller
         $penjadwalan_sem = PenjadwalanSkripsi::where('mahasiswa_nim', $penjadwalan->mahasiswa_nim)->latest('created_at')->first();
         $mahasiswa_sem = PenjadwalanSempro::where('mahasiswa_nim', $penjadwalan_sem->mahasiswa_nim)->latest('created_at')->first();
         $penjadwalan_sempro = PenjadwalanSkripsi::where('mahasiswa_nim', $mahasiswa_sem->mahasiswa_nim)->latest('created_at')->first();
+        
         $penjadwalan_sempro_id = $mahasiswa_sem->id;
 
         $jurnal = PublikasiJurnal::where('mahasiswa_nim', $penjadwalan->mahasiswa_nim)->latest('created_at')->first();

@@ -118,6 +118,10 @@
 
 
         <div class="container">
+            @if (Str::length(Auth::guard('web')->user()) > 0)
+                    @if (Auth::guard('web')->user()->role_id == 2 ||
+                            Auth::guard('web')->user()->role_id == 3 ||
+                            Auth::guard('web')->user()->role_id == 4)
             @if ($skripsi->status_skripsi == 'USULAN JUDUL' && $skripsi->keterangan == 'Menunggu persetujuan Admin Prodi')
                 <div class="mb-5 mt-3 float-right">
                     <div class="row row-cols-2">
@@ -135,6 +139,8 @@
                         </div>
                     </div>
                 </div>
+            @endif
+            @endif
             @endif
         </div>
     @endforeach

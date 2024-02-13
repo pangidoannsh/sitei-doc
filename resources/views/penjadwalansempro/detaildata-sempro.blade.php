@@ -489,16 +489,7 @@
                             @else
                                 <strong>TIDAK LULUS</strong>
                             @endif
-                        @elseif ($nilaipembimbing2 == null)
-                            @if (
-                                $nilaipembimbing1->total_nilai_angka +
-                                    ($nilaipenguji1->total_nilai_angka + $nilaipenguji2->total_nilai_angka + $nilaipenguji3->total_nilai_angka) /
-                                        3 >=
-                                    60)
-                                <strong>LULUS</strong>
-                            @else
-                                <strong>TIDAK LULUS</strong>
-                            @endif
+                       
                         @elseif ($penjadwalan->pembimbingdua_nip == null)
                             @if (
                                 $nilaipembimbing1->total_nilai_angka +

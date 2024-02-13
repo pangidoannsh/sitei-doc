@@ -49,6 +49,7 @@ class PendaftaranKP extends Model
     {
         return $this->belongsTo(Dosen::class, 'dosen_pembimbing_nip', 'nip');
     }
+    
   
 
 

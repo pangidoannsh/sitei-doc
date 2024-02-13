@@ -47,6 +47,9 @@
                     <li><a href="/prodi/riwayat" class="px-1">Riwayat
                             (<span>{{ $jml_riwayat_prodi_kp + $jml_riwayat_prodi_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_skripsi }}</span>)</a>
                     </li>
+
+                    <span class="px-2">|</span>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
 
                 @if (Auth::guard('web')->user()->role_id == 2 ||
@@ -62,13 +65,9 @@
                     <li><a href="/prodi/riwayat" class="px-1">Riwayat
                             (<span>{{ $jml_riwayatkp + $jml_riwayatskripsi + $jml_jadwal_kps + $jml_jadwal_sempros + $jml_jadwal_skripsis }}</span>)</a>
                     </li>
-                @endif
-
-                @if (Auth::guard('web')->user()->role_id == 2 ||
-                        Auth::guard('web')->user()->role_id == 3 ||
-                        Auth::guard('web')->user()->role_id == 4)
+                    
                     <span class="px-2">|</span>
-                    <li><a href="/kapasitas-bimbingan/index" class="px-1">Kuota Bimbingan</a></li>
+                    <li><a href="/statistik" class="px-1">Statistik (All)</a></li>
                 @endif
             @endif
 
@@ -129,7 +128,9 @@
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SEMPRO DITOLAK' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' 
+                                    || $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
@@ -202,7 +203,7 @@
                             @if (
                                 $skripsi->status_skripsi == 'DAFTAR SIDANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG')
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' )
                                 <td class="text-center px-1 py-2"> <small> Tanggal Usulan:
                                         <br></small>{{ Carbon::parse($skripsi->tgl_created_sidang)->translatedFormat(' d F Y') }}
                                 </td>
@@ -250,7 +251,9 @@
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SEMPRO DITOLAK' ||
                                     $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||

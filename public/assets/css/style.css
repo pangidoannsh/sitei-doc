@@ -327,15 +327,6 @@ a:hover .custom-tooltip {
 .atas ul li a:hover {
     color: #36c482;
 }
-/* .atas ul li a:focus{
-    color: #36c482;
-}
-.nav-link::after{
-    color: #36c482;
-}
-.active{
-    color: #CE8854;
-} */
 
 @media screen and (max-width: 768px) {
     .cardskripsi {
@@ -425,7 +416,7 @@ span {
 
 .dropdown-item:hover {
     color: #0c8a4f;
-    background-color: white;
+    /* background-color: white; */
 }
 
 hr {

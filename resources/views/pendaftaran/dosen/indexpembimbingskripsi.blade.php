@@ -12,6 +12,7 @@
     Daftar Bimbingan Skripsi
 @endsection
 
+
 @section('content')
 
     <div class="container card p-4">
@@ -49,6 +50,7 @@
         <div class="container-fluid">
 
 
+
             <table class="table table-responsive-lg table-bordered table-striped" width="100%" id="datatables">
                 <thead class="table-dark">
                     <p class="alert-warning p-2"><i class="fas fa-exclamation-triangle px-2 fw-bold"></i> Mahasiswa yang
@@ -67,6 +69,7 @@
                         <th class="text-center" scope="col">Status</th>
                         {{-- <th class="text-center" scope="col">Tanggal Usulan</th> --}}
                         <th class="text-center" scope="col">Tanggal Penting</th>
+                        <th class="text-center" scope="col">Durasi</th>
                         <th class="text-center" scope="col">Keterangan</th>
                         <th class="text-center" scope="col">Aksi</th>
                     </tr>
@@ -112,7 +115,9 @@
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SEMPRO DITOLAK' ||
                                     $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
@@ -179,6 +184,14 @@
                             @if ($skripsi->status_skripsi == 'JUDUL DISETUJUI')
                                 <td class="text-center px-1 py-2"> <small> Tanggal Disetujui:
                                         <br></small>{{ Carbon::parse($skripsi->tgl_disetujui_usuljudul_kaprodi)->translatedFormat(' d F Y') }}
+                                        <br>
+                                         @if(Carbon::parse($skripsi->tgl_disetujui_usuljudul_kaprodi)->addMonths(6) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Daftar Sempro : <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($skripsi->tgl_disetujui_usuljudul_kaprodi)->addMonths(6)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Daftar Sempro: <br></small>
+                                    {{ Carbon::parse($skripsi->tgl_disetujui_usuljudul_kaprodi)->addMonths(6)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
 
@@ -210,7 +223,7 @@
                                         <br></small>{{ Carbon::parse($skripsi->tgl_semproselesai)->translatedFormat('d F Y') }}
                                     <br>
                                     @if(Carbon::parse($skripsi->tgl_semproselesai)->addMonths(6) < now())
-                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas: <br></small>
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Daftar Sidang: <br></small>
                                     <span class="text-danger">{{ Carbon::parse($skripsi->tgl_semproselesai)->addMonths(6)->translatedFormat('d F Y')}}</span>
                                     @else
                                     <small class="text-dark"> Batas Daftar Sidang: <br></small>
@@ -236,7 +249,7 @@
                                         <br></small>{{ Carbon::parse($skripsi->tgl_semproselesai)->translatedFormat('d F Y') }}
                                     <br>
                                 @if(Carbon::parse($skripsi->tgl_semproselesai)->addMonths(9) < now())
-                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas: <br></small>
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Daftar Sidang: <br></small>
                                     <span class="text-danger">{{ Carbon::parse($skripsi->tgl_semproselesai)->addMonths(9)->translatedFormat('d F Y')}}</span>
                                     @else
                                     <small class="text-dark"> Batas Daftar Sidang: <br></small>
@@ -263,7 +276,7 @@
                                 {{ Carbon::parse($skripsi->tgl_semproselesai)->translatedFormat('d F Y') }}
                                     <br>
                                 @if(Carbon::parse($skripsi->tgl_semproselesai)->addMonths(12) < now())
-                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas: <br></small>
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Daftar Didang: <br></small>
                                     <span class="text-danger">{{ Carbon::parse($skripsi->tgl_semproselesai)->addMonths(12)->translatedFormat('d F Y')}}</span>
                                     @else
                                     <small class="text-dark"> Batas Daftar Sidang: <br></small>
@@ -292,6 +305,14 @@
                             @if ($skripsi->status_skripsi == 'SIDANG SELESAI')
                                 <td class="text-center px-1 py-2"> <small> Tanggal Selesai:
                                         <br></small>{{ Carbon::parse($skripsi->tgl_selesai_sidang)->translatedFormat(' d F Y') }}
+                                        <br>
+                                    @if(Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(1) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Penyerahan Skripsi: <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(1)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Daftar Sidang: <br></small>
+                                    {{ Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(1)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
 
@@ -310,6 +331,14 @@
                             @if ($skripsi->status_skripsi == 'PERPANJANGAN REVISI DISETUJUI')
                                 <td class="text-center px-1 py-2"> <small> Tanggal Disetujui:
                                         <br></small>{{ Carbon::parse($skripsi->tgl_disetujui_revisi_kaprodi)->translatedFormat(' d F Y') }}
+                                        <br>
+                                    @if(Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(2) < now())
+                                    <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Lewat Batas Penyerahan Skripsi: <br></small>
+                                    <span class="text-danger">{{ Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(2)->translatedFormat('d F Y')}}</span>
+                                    @else
+                                    <small class="text-dark"> Batas Daftar Sidang: <br></small>
+                                    {{ Carbon::parse($skripsi->tgl_selesai_sidang)->addMonths(2)->translatedFormat('d F Y')}}
+                                    @endif
                                 </td>
                             @endif
 
@@ -321,14 +350,28 @@
                                 </td>
                             @endif
 
-                            
+                             <!-- DURASI -->
+                            @php
+                                $tanggalMulaiSkripsi = Carbon::parse($skripsi->tgl_disetujui_usuljudul_kaprodi);
+                                $tanggalSelesai= Carbon::now();
+
+                                $durasiSkripsi = $tanggalMulaiSkripsi ? $tanggalMulaiSkripsi->diffInMonths($tanggalSelesai) : null;
+                                $bulan = $durasiSkripsi ? floor($durasiSkripsi) : null;
+                                $hari = $tanggalMulaiSkripsi ? $tanggalMulaiSkripsi->addMonths($bulan)->diffInDays($tanggalSelesai) : null;
+                                        @endphp
+
+                            <td class="text-center px-1 py-2">
+                                      {{ $bulan ?? 0}} <small>Bulan</small> {{ $hari }} <small>Hari</small>
+                                </td>
 
 
                             @if (
                                 $skripsi->status_skripsi == 'USULAN JUDUL DITOLAK' ||
                                     $skripsi->status_skripsi == 'USULKAN JUDUL ULANG' ||
                                     $skripsi->status_skripsi == 'DAFTAR SEMPRO ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SEMPRO DITOLAK' ||
                                     $skripsi->status_skripsi == 'DAFTAR SIDANG ULANG' ||
+                                    $skripsi->status_skripsi == 'DAFTAR SIDANG DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 1 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN 2 DITOLAK' ||
                                     $skripsi->status_skripsi == 'PERPANJANGAN REVISI DITOLAK' ||
@@ -487,7 +530,7 @@
                                     <a href="/kp-skripsi/pembimbing/perpanjangan-2/{{ $skripsi->id }}"
                                         class="badge btn btn-info p-1 mb-1" data-bs-toggle="tooltip"
                                         title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
-                                 @if($skripsi->status_skripsi == 'PERPANJANGAN 2 DISETUJUI' && Carbon::parse($skripsi->tgl_semproselesai)->addMonths() < now())
+                                 @if($skripsi->status_skripsi == 'PERPANJANGAN 2 DISETUJUI' && Carbon::parse($skripsi->tgl_semproselesai)->addMonths(12) < now())
                                     <br>
                                     <a href="#ModalGagal" data-toggle="modal"
                                         class="badge btn btn-danger p-2 mt-2"><i class="fas fa-trash fa-lg"></i></a>

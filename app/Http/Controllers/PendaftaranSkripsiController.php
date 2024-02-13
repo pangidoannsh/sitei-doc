@@ -19,12 +19,14 @@ use App\Models\PendaftaranSkripsi;
 
 use App\Models\PenjadwalanSkripsi;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Auth;
-use App\Models\PenilaianSkripsiPenguji;
 
+use App\Models\PenilaianSkripsiPenguji;
 use Illuminate\Notifications\Notifiable;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Models\PenilaianSkripsiPembimbing;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Notifications\NotifPendaftaranSkripsi;
 
 
@@ -281,38 +283,37 @@ class PendaftaranSkripsiController extends Controller
     //DETAIL PERSETUJUAN DOSEN
     public function detailpersetujuan_usulanjudul($id)
     {
-        
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-usul-judul', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         //DOSEN
@@ -452,34 +453,34 @@ class PendaftaranSkripsiController extends Controller
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sempro', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         //DOSEN
@@ -602,34 +603,34 @@ class PendaftaranSkripsiController extends Controller
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-daftar-sidang', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         //DOSEN
@@ -754,34 +755,34 @@ class PendaftaranSkripsiController extends Controller
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-revisi', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         //DOSEN
@@ -818,7 +819,7 @@ class PendaftaranSkripsiController extends Controller
         //DOSEN ROLE
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -828,7 +829,7 @@ class PendaftaranSkripsiController extends Controller
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -838,7 +839,7 @@ class PendaftaranSkripsiController extends Controller
         }
         if (auth()->user()->role_id == 8) {     
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -849,7 +850,7 @@ class PendaftaranSkripsiController extends Controller
        
         if (auth()->user()->role_id == 9) {            
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -859,7 +860,7 @@ class PendaftaranSkripsiController extends Controller
         }
         if (auth()->user()->role_id == 10) {            
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -870,7 +871,7 @@ class PendaftaranSkripsiController extends Controller
         if (auth()->user()->role_id == 11) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-laporan-skripsi', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
                 'nilaipembimbing1' => $nilai_pembimbing1,
             'nilaipembimbing2' => $nilai_pembimbing2,
             'nilaipenguji1' => $nilai_penguji1, 
@@ -897,18 +898,18 @@ class PendaftaranSkripsiController extends Controller
     {
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-1', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-1', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-1', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         
@@ -923,18 +924,18 @@ class PendaftaranSkripsiController extends Controller
     {
         if (auth()->user()->role_id == 6) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-2', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '1')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 7) {            
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-2', [
-                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->get(),
+                'pendaftaran_skripsi' => PendaftaranSkripsi::where('id', $id)->where('prodi_id', '2')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         }
         if (auth()->user()->role_id == 8) {  
             
             return view('pendaftaran.dosen.detail-persetujuan-perpanjangan-2', [
-                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->get(),
+                'pendaftaran_skripsi' =>  PendaftaranSkripsi::where('id', $id)->where('prodi_id', '3')->orWhere('id', $id)->where('pembimbing_1_nip', Auth::user()->nip)->orWhere('id', $id)->where('pembimbing_2_nip', Auth::user()->nip)->get(),
             ]);
         } 
         
@@ -1149,21 +1150,40 @@ class PendaftaranSkripsiController extends Controller
         return redirect('/usuljudul/index');
     }
 
-    public function edit(PendaftaranSkripsi $pendaftaranSkripsi)
-    {
-        //
+    // Surat Permohonan Pengajuan Topik Skripsi
+
+    public function suratpermohonanpengajuantopikskripsi($id){
+        $pendaftaran_skripsi = PendaftaranSkripsi::findOrFail($id);
+
+        $kaprodi1 = Dosen::where('role_id', '6')->first();
+        $kaprodi2 = Dosen::where('role_id', '7')->first();
+        $kaprodi3 = Dosen::where('role_id', '8')->first();
+
+        $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/detail-surat-permohonan-pengajuan-topik-skripsi').'/'. $pendaftaran_skripsi->id));
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        $pdf->loadView('pendaftaran.skripsi.usul-judul.surat-permohonan-pengajuan-topik-skripsi',compact('pendaftaran_skripsi','kaprodi1','kaprodi2','kaprodi3','qrcode','pdf'));
+        
+        return $pdf->stream('KPTI-1 Surat Permohonan KP.pdf', array("Attachment" => false));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PendaftaranSkripsi  $pendaftaranSkripsi
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, PendaftaranSkripsi $pendaftaranSkripsi)
-    {
-        //
+    public function formpengajuantopikskripsi($id){
+        $pendaftaran_skripsi = PendaftaranSkripsi::findOrFail($id);
+        $pembimbing = PendaftaranSkripsi::where('id', $id)->where('pembimbing_1_nip', auth()->user()->nip)->
+        orWhere('id', $id)->where('pembimbing_2_nip', auth()->user()->nip)->first();
+        $kaprodi1 = Dosen::where('role_id', '6')->first();
+        $kaprodi2 = Dosen::where('role_id', '7')->first();
+        $kaprodi3 = Dosen::where('role_id', '8')->first();
+        $koor1 = Dosen::where('role_id', '9')->first();
+        $koor2 = Dosen::where('role_id', '10')->first();
+        $koor3 = Dosen::where('role_id', '11')->first();
+
+        $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/detail-form-pengajuan-topik-skripsi').'/'. $pendaftaran_skripsi->id));
+        $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true]);
+
+        $pdf->loadView('pendaftaran.skripsi.usul-judul.form-pengajuan-topik-skripsi',compact('pendaftaran_skripsi','pembimbing','qrcode', 'pdf', 'kaprodi1', 'kaprodi2', 'kaprodi3', 'koor1', 'koor2', 'koor3'));
+        
+        return $pdf->stream('STI/TE-2 Form Pengajuan Topik Skripsi.pdf', array("Attachment" => false));
     }
 
     /**
@@ -1886,7 +1906,7 @@ class PendaftaranSkripsiController extends Controller
          $skripsi = PendaftaranSkripsi::find($id);
  
          $skripsi->status_skripsi = 'PERPANJANGAN 2 DISETUJUI';
-         $skripsi->keterangan = 'Perpanjangan 1 Waktu Skripsi Disetujui';
+         $skripsi->keterangan = 'Perpanjangan 2 Waktu Skripsi Disetujui';
          $skripsi->tgl_disetujui_perpanjangan2_kaprodi = Carbon::now();
          $skripsi->update();
  

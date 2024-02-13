@@ -453,7 +453,37 @@
                             </div>
 
 
+                               @if ($semprop->keterangan == 'Menunggu Jadwal Seminar Proposal')
+                                <a href="#ModalApprove2" data-toggle="modal"
+                                    class="btn mt-4 btn-lg btn-success float-right">Jadwalkan</a>
+                                <div class="modal fade"id="ModalApprove2">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content shadow-sm">
+                                            <div class="modal-body">
+                                                <div class="container text-center px-5 pt-5 pb-2">
+                                                    <h3 class="text-center">Apakah Anda Yakin?</h3>
+                                                    <p class="text-center">Status Mahasiswa akan di Jadwalkan Seminar
+                                                        Proposal.</p>
+                                                    <div class="row text-center">
+
+                                                        <div class="col-6 text-end">
+                                                            <button type="button" class="btn p-2 px-3 btn-secondary"
+                                                                data-dismiss="modal">Tidak</button>
+                                                        </div>
+                                                        <div class="col-6 text-start">
+                                                            <button type="submit"
+                                                                class="btn p-2 px-3 btn-success ">Ya</button>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
                                 <button type="submit" class="btn btn-lg btn-success float-right mt-4">Perbarui</button>
+                            @endif
 
 
                         </div>

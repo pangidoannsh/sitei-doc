@@ -28,7 +28,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                            <label for="formFile" class="form-label">KPTI-10/Bukti Penyerahan Laporan KP<span
+                            <label for="formFile" class="form-label">KPTI/TE-10/Bukti Penyerahan Laporan KP<span
                                     class="text-danger">*</span> <small class="text-secondary">( Format .pdf | Maks. 200 KB
                                     ) </small></label>
                             <input name="kpti_10" class="form-control mb-2 @error('kpti_10') is-invalid @enderror"

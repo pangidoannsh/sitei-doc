@@ -27,8 +27,6 @@
     </div>
 
 
-
-
     @foreach ($pendaftaran_skripsi as $skripsi)
         <div class="container">
             <div class="row  shadow-sm">
@@ -96,12 +94,12 @@
                                 style="border-radius:20px;">{{ $skripsi->status_skripsi }}</span></p>
                     @endif
                     @if ($skripsi->status_skripsi == 'JUDUL DISETUJUI')
-                        <p class="card-title text-secondary text-sm ">Status KP</p>
+                        <p class="card-title text-secondary text-sm ">Status Skripsi</p>
                         <p class="card-text text-start"><span class="badge p-2 bg-info text-bold px-3"
                                 style="border-radius:20px;">{{ $skripsi->status_skripsi }}</span></p>
                     @endif
                     @if ($skripsi->status_skripsi == 'USULAN JUDUL DITOLAK')
-                        <p class="card-title text-secondary text-sm ">Status KP</p>
+                        <p class="card-title text-secondary text-sm ">Status Skripsi</p>
                         <p class="card-text text-start"><span class="badge p-2 bg-danger text-bold px-3"
                                 style="border-radius:20px;">{{ $skripsi->status_skripsi }}</span></p>
                     @endif

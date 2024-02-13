@@ -20,7 +20,7 @@
                     <div class="col">
 
                         <div class="mb-3">
-                            <label for="formFile" class="form-label">STI-22/Surat Pernyataan Perpanjangan Skripsi</label>
+                            <label for="formFile" class="form-label">STI/TE-22/Surat Pernyataan Perpanjangan Skripsi</label>
                             <input name="sti_22_p1" class="form-control @error('sti_22_p1') is-invalid @enderror"
                                 value="{{ old('sti_22_p1') }}" type="file" id="formFile" required autofocus>
 

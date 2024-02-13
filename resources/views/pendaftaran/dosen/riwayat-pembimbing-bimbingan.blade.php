@@ -123,10 +123,9 @@
                             <td class="text-center">{{ $kp->keterangan }}</td>
 
                             <td class="text-center">
-                                <a href="/kpti10-kp/detail/riwayat/{{ $kp->id }}" class="badge btn btn-info p-1"
-                                    data-bs-toggle="tooltip" title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
+                                <a href="/kpti10/detail/riwayat/pembimbingprodi/{{ $kp->id }}" class="badge btn btn-info p-1"
+                                    data-bs-toggle="tooltip" title="Lihat Detail"><i class="fas fa-info-circle"></i></a> <br>
                             </td>
-
                         </tr>
                     @endforeach
 
@@ -217,12 +216,16 @@
                             @endif -->
 
                             <td class="text-center">
+                                <a formtarget="_blank" target="_blank"
+                                    href="/undangan-kp/{{ Crypt::encryptString($kp->id) }}"
+                                    class="badge bg-secondary p-2 mb-1"style="border-radius:20px;">Undangan</a>
+                                    <br>
                                  @if ($kp->penguji_nip == auth()->user()->nip)
                                 <a formtarget="_blank" target="_blank"
                                     href="/perbaikan-kp/{{ Crypt::encryptString($kp->id) }}"
                                     class="badge bg-info p-2"style="border-radius:20px;">Perbaikan</a>
                                 <a formtarget="_blank" target="_blank" href="/nilai-kp/{{ Crypt::encryptString($kp->id) }}"
-                                    class="badge bg-success mt-2 p-2"style="border-radius:20px;">Form Nilai</a>
+                                    class="badge bg-success mt-1 mb-1 p-2"style="border-radius:20px;">Form Nilai</a>
                             @endif
                             @if ($kp->pembimbing_nip == auth()->user()->nip)
                                 <a formtarget="_blank" target="_blank"
@@ -230,7 +233,7 @@
                                     class="badge bg-info p-2"style="border-radius:20px;">Perbaikan Penguji</a>
                                 <a formtarget="_blank" target="_blank"
                                     href="/beritaacara-kp/{{ Crypt::encryptString($kp->id) }}"
-                                    class="badge bg-danger mt-2 p-2"style="border-radius:20px;">Berita Acara</a>
+                                    class="badge bg-danger mt-1 p-2"style="border-radius:20px;">Berita Acara</a>
                             @endif
                             </td>
                         </tr>
@@ -268,6 +271,10 @@
                             @endif -->
 
                             <td class="text-center">
+                                <a formtarget="_blank" target="_blank"
+                                    href="/undangan-sempro/{{ Crypt::encryptString($sempro->id) }}"
+                                    class="badge bg-secondary p-2 mb-1"style="border-radius:20px;">Undangan</a>
+                                    <br>
                                <a formtarget="_blank" target="_blank"
                                 href="/nilai-sempro/{{ Crypt::encryptString($sempro->id) }}" class="badge bg-success p-2"
                                 style="border-radius:20px;">Lihat Nilai</a> <br>
@@ -343,9 +350,13 @@
                             @endif -->
 
                             <td class="text-center">
+                                <a formtarget="_blank" target="_blank"
+                                    href="/undangan-sidang/{{ Crypt::encryptString($skripsi->id) }}"
+                                    class="badge bg-secondary p-2 mb-1"style="border-radius:20px;">Undangan</a>
+                                    <br>
                                <a formtarget="_blank" target="_blank"
                                 href="/nilai-skripsi/{{ Crypt::encryptString($skripsi->id) }}"
-                                class="badge bg-success p-2" style="border-radius:20px;">Lihat Nilai</a>
+                                class="badge bg-success p-2" style="border-radius:20px;">Lihat Nilai</a> <br>
                             @if (
                                 $skripsi->pengujisatu_nip == auth()->user()->nip ||
                                     $skripsi->pengujidua_nip == auth()->user()->nip ||
@@ -375,6 +386,7 @@
                                     href="/penilaian-skripsi/beritaacara-skripsi/{{ Crypt::encryptString($skripsi->id) }}"
                                     class="badge bg-warning p-2" style="border-radius:20px;">Berita Acara</a>
                             @endif
+                            
                             </td>
                         </tr>
                     @endforeach
@@ -384,6 +396,13 @@
             </table>
 
         </div>
+
+         <div class="d-flex align-items-end flex-column fixed-bottom bd-highlight mb-5">
+        <div class="mt-auto p-2 bd-highlight ">
+            <span onclick="scrollToTop()" id="scrollToTopBtn" title="Kembali ke Atas" style="width: 40px; height: 40px; cursor: pointer;"><i class="fas fa-chevron-circle-up fa-lg fs-2"></i></span>
+        </div>
+        </div>
+<br>
 <br>
 <br>
 <br>
@@ -431,4 +450,26 @@
                 }
             });
         </script>
+    @endpush()
+
+    @push('scripts')
+        <script>
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+    window.onscroll = function() {
+        scrollFunction();
+    };
+
+    function scrollFunction() {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            document.getElementById("scrollToTopBtn").style.display = "block";
+        } else {
+            document.getElementById("scrollToTopBtn").style.display = "none";
+        }
+    }
+    </script>
     @endpush()

@@ -58,86 +58,127 @@
                     </div>
                 </div>
             </div>
+            
+            <div class="container">
+            <div class="row rounded shadow-sm">
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-start">
+                    <h5 class="text-bold">Laporan Skripsi</h5>
+                    <hr>
+                <p class="card-title text-secondary text-sm">Judul Skripsi</p>
+                    <p class="card-text text-start"><span>{{ $skripsi->judul_skripsi ?? '-' }}</span></p>
+                </div>
+                <div class="col-lg-6 col-md-12 px-4 py-3 mb-2 bg-white rounded-end">
+                    <h5 class="text-bold">Persetujuan Pengajuan Skripsi</h5>
+                    <hr>
+                    <p class="card-title text-secondary text-sm ">STI/TE-1 - Surat Permohonan Pengajuan Topik Skripsi</p>
+                        <p class="card-text  text-start"><button onclick="window.open('/surat-permohonan-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                        <p class="card-title text-secondary text-sm ">STI/TE-2 - Form Pengajuan Topik Skripsi</p>
+                        <p class="card-text text-start">
+                            <button onclick="window.open('/form-pengajuan-topik-skripsi/{{ $skripsi->id }}', '_blank')" class="badge bg-dark px-2 py-1">Buka</button>
+                        </p>
+                </div>
+            </div>
+        </div>
 
             <div class="container">
-                <div class="row shadow-sm">
-                    <div class="col px-4 py-3 mb-2 bg-white rounded">
-                        <h5 class="text-bold">Data Usulan</h5>
-                        <hr>
-                        <div class="row">
-                            <div class="col-lg-3 col-md-12">
-                                <p class="card-title text-secondary text-sm">Skor Turnitin</p>
-                                <p class="card-text text-start">{{ $skripsi->skor_turnitin }}</p>
-                                <p class="card-title text-secondary text-sm "> Resume Turnitin</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->resume_turnitin) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm ">STI-9</p>
-                                <p class="card-text text-start"> <span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->sti_9) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <!-- <p class="card-title text-secondary text-sm " >STI-11</p>
-            <p class="card-text text-start" ><span><a formtarget="_blank" target="_blank" href="{{ asset('storage/' . $skripsi->sti_11) }}" class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p> -->
-                                <p class="card-title text-secondary text-sm ">Naskah Skripsi</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->naskah) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+            <div class="row shadow-sm">
+                <div class="col px-4 py-3 mb-2 bg-white rounded">
+                    <h5 class="text-bold">Data Usulan</h5>
+                    <hr>
+                    <div class="row">
+                        <div class="col-lg-3 col-md-12">
+                            <p class="card-title text-secondary text-sm">Skor Turnitin</p>
+                            <p class="card-text text-start">{{ $skripsi->skor_turnitin }}</p>
+                            <p class="card-title text-secondary text-sm "> Resume Turnitin</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->resume_turnitin) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-9</p>
+                            <p class="card-text text-start"> <span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->sti_9) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm ">Naskah Skripsi</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->naskah) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
 
-                            </div>
-                            <div class="col-lg-3 col-md-12">
-                                <p class="card-title text-secondary text-sm ">Lembar Konsultasi Dosen P.A.</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->konsultasi_pa) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm ">Transkip nilai</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->transkip_nilai) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm">Kartu Hasil Studi (KHS)</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->khs) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm ">Sertifikat Toefl</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->toefl) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                        </div>
+                        <div class="col-lg-3 col-md-12">
+                            <p class="card-title text-secondary text-sm ">Lembar Konsultasi Dosen P.A.</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->konsultasi_pa) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm ">Transkip nilai</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->transkip_nilai) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm">Kartu Hasil Studi (KHS)</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->khs) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm ">Sertifikat Toefl</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->toefl) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
 
-                            </div>
-                            <div class="col-lg-3 col-md-12">
-                                <p class="card-title text-secondary text-sm ">Logbook Mimimal 8 Kali Bimbingan</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->logbook) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm ">Bukti Pasang Desain Poster</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->pasang_poster) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                        </div>
+                        <div class="col-lg-3 col-md-12">
+                            <p class="card-title text-secondary text-sm ">Logbook Mimimal 8 Kali Bimbingan</p>
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->logbook) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm ">STI/TE-30</p>
+                            @if($skripsi->sti_30 != null)
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->sti_30) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            @else
+                            <p class="card-text text-start"><span>-</span></p>
+                            @endif
 
-                                <p class="card-title text-secondary text-sm">URL Poster Skripsi</p>
+                            <p class="card-title text-secondary text-sm ">Bukti Pasang Desain Poster</p>
+                            @if($skripsi->pasang_poster != null)
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->pasang_poster) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            @else
+                            <p class="card-text text-start"><span>-</span></p>
+                            @endif
 
-                                <p class="card-text text-start text-primary"><a formtarget="_blank" target="_blank"
-                                        href="https://{{ $skripsi->url_poster }}">{{ $skripsi->url_poster }}</a> </p>
-                                <p class="card-title text-secondary text-sm ">STI-30</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->sti_30_skripsi) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            <p class="card-title text-secondary text-sm">URL Poster Skripsi</p>
+                            @if($skripsi->url_poster != null)
+                            <p class="card-text text-start text-dark"><a class="text-dark" formtarget="_blank" target="_blank"
+                                    href="https://{{ $skripsi->url_poster ?? '' }}">{{ $skripsi->url_poster }} <i class="fas fa-external-link-alt"></i></a> </p>
+                            @else
+                            <p class="card-text text-start"><span>-</span></p>
+                            @endif
+                            
 
-                            </div>
-                            <div class="col-lg-3 col-md-12">
+                        </div>
+                        <div class="col-lg-3 col-md-12">
 
-                                <p class="card-title text-secondary text-sm ">STI-10</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->sti_10) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                                <p class="card-title text-secondary text-sm ">STI-31</p>
-                                <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
-                                            href="{{ asset('storage/' . $skripsi->sti_31_skripsi) }}"
-                                            class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
-                            </div>
+                            <p class="card-title text-secondary text-sm ">STI/TE-10</p>
+                             @if($skripsi->sti_10 != null)
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->sti_10) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            @else
+                            <p class="card-text text-start"><span>-</span></p>
+                            @endif
+                            <p class="card-title text-secondary text-sm ">STI/TE-31</p>
+                            @if($skripsi->sti_31 != null)
+                            <p class="card-text text-start"><span><a formtarget="_blank" target="_blank"
+                                        href="{{ asset('storage/' . $skripsi->sti_31) }}"
+                                        class="badge bg-dark pr-3 p-2 pl-3">Buka</a></span></p>
+                            @else
+                            <p class="card-text text-start"><span>-</span></p>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
             <div class="container">
                 <div class="row shadow-sm rounded">

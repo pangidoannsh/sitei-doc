@@ -623,7 +623,7 @@
                             <div class="col">
                                 <span class="mt-3  "> Tanggal disetujui <br></span>
                                 <span
-                                    class="mt-3  text-bold">{{ Carbon::parse($pendaftaran_kp->tgl_disetujui_kpti_10_kaprodi)->translatedFormat('l, d F Y') }}</span>
+                                    class="mt-3  text-bold">{{ Carbon::parse($pendaftaran_kp->tgl_disetujui_kpti_10_koordinator)->translatedFormat('l, d F Y') }}</span>
                             </div>
                         </div>
                     @endif
@@ -673,7 +673,7 @@
                 @if ($pendaftaran_kp->status_kp == 'BUKTI PENYERAHAN LAPORAN DITOLAK')
                     <div class="alert alert-danger" role="alert">
                         <i class="fas fa-exclamation-triangle pr-2"></i><span
-                            class="fw-bold">{{ $pendaftaran_kp->alasan }}</span>, Silahkan Unggah Ulang KPTI-10/Bukti
+                            class="fw-bold">{{ $pendaftaran_kp->alasan }}</span>, Silahkan Unggah Ulang KPTI/TE-10/Bukti
                         Penyerahan Laporan KP!
 
                     </div>
@@ -750,7 +750,7 @@
                                 $kp->status_kp == 'USULAN KP DITOLAK' ||
                                     $kp->status_kp == 'USULKAN KP ULANG' ||
                                     $kp->keterangan == 'Unggah Ulang Surat Balasan Perusahaan' ||
-                                    $kp->keterangan == 'Unggah Ulang KPTI-10/Bukti Penyerahan Laporan KP' ||
+                                    $kp->keterangan == 'Unggah Ulang KPTI/TE-10/Bukti Penyerahan Laporan KP' ||
                                     $kp->status_kp == 'DAFTAR SEMINAR KP DITOLAK')
                                 <td class="text-center text-danger">{{ $kp->keterangan }}</td>
                             @else
