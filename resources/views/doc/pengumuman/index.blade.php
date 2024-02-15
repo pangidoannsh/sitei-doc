@@ -94,22 +94,6 @@
                     Arsip
                 </a>
             </li>
-            @if (optional(Auth::guard('web')->user())->role_id == 1 || optional(Auth::guard('dosen')->user())->role_id == 5)
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.jurusan') }}" class="px-1">
-                        Arsip Jurusan
-                    </a>
-                </li>
-            @elseif (in_array(optional(Auth::guard('web')->user())->role_id, [2, 3, 4]) ||
-                    in_array(optional(Auth::guard('dosen')->user())->role_id, [6, 7, 8]))
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.prodi') }}" class="px-1">
-                        Arsip Prodi
-                    </a>
-                </li>
-            @endif
         </ul>
 
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">

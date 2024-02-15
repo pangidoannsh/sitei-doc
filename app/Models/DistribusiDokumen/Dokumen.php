@@ -36,6 +36,11 @@ class Dokumen extends Model
         return $this->belongsTo(User::class, "user_created", "username");
     }
 
+    public static function getLatestDokumen()
+    {
+        return self::whereDate("created_at", ">=", Carbon::today()->subDays(5))->get();
+    }
+
     public static function getLatestByUser($userId)
     {
         return self::where('user_created', $userId)

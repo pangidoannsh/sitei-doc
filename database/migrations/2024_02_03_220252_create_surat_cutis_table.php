@@ -24,6 +24,8 @@ class CreateSuratCutisTable extends Migration
             $table->date("selesai_cuti");
             $table->string('alamat_cuti');
             $table->string('alasan_cuti');
+            $table->string('url_lampiran')->nullable();
+            $table->string('url_lampiran_lokal')->nullable();
             $table->timestamps();
         });
     }

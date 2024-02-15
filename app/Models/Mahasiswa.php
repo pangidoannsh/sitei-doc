@@ -51,17 +51,6 @@ class Mahasiswa extends Authenticatable
         return $this->belongsTo(PendaftaranKP::class);
     }
 
-    public static function getMahasiswaByAngkatan()
-    {
-        return self::select("nim", "nama", "prodi_id", "angkatan")
-            ->orderBy("angkatan", "desc")
-            ->get()
-            ->groupBy('prodi_id')
-            ->map(function ($groupedAngkatan) {
-                return $groupedAngkatan->groupBy('angkatan')->take(7);
-            });
-    }
-
     /**
      * The attributes that should be hidden for serialization.
      *

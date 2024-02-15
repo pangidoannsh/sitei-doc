@@ -17,11 +17,14 @@ class CreateSertifikatsTable extends Migration
             $table->id();
             $table->string("user_created");
             $table->enum("jenis_user", ['dosen', 'admin']);
+            $table->string("sign_by");
+            $table->string("rejected_by")->nullable();
             $table->string("nama");
             $table->string("jenis");
             $table->string("isi")->nullable();
+            $table->string("alasan_ditolak")->nullable();
             $table->date("tanggal");
-            $table->boolean("is_done")->default(false);
+            $table->string("status")->default("staf_jurusan");
             $table->timestamps();
         });
     }

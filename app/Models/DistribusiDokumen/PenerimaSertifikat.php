@@ -24,7 +24,7 @@ class PenerimaSertifikat extends Model
     public static function getMahasiswaSertifikat($nim)
     {
         return self::where("user_penerima", $nim)->whereHas("sertifikat", function ($query) {
-            $query->where("is_done", true);
+            $query->where("status", "selesai");
         })->get();
     }
 }

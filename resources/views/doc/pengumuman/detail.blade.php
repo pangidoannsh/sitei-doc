@@ -14,6 +14,9 @@
 
 @section('content')
     <section class="row">
+        {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-success mt-4 py-1 fw-semibold"><i
+                    class="fa-solid fa-arrow-left"></i>
+                Kembali</a> --}}
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
@@ -34,15 +37,23 @@
                 </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Lampiran</div>
+                    @if (!$data->url_dokumen && !$data->url_dokumen_lokal)
+                        (Tidak ada dokumen dilampirkan)
+                    @endif
+                    @php
+                        $i = 1;
+                    @endphp
                     @if ($data->url_dokumen)
-                        <a href="@if ($data->is_local_file) {{ asset('storage/' . $data->url_dokumen) }}
-                        @else
-                            {{ $data->url_dokumen }} @endif"
-                            target="_blank" class="btn btn-outline-success px-5 rounded-3" style="width:max-content">
-                            Lihat Lampiran
+                        <a href="{{ $data->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-3"
+                            style="width:max-content">
+                            Lihat Dokumen {{ $data->url_dokumen_lokal ? $i++ : '' }}
                         </a>
-                    @else
-                        <div class="value">(Tidak ada file terlampir)</div>
+                    @endif
+                    @if ($data->url_dokumen_lokal)
+                        <a href="{{ asset('storage/' . $data->url_dokumen_lokal) }}" target="_blank"
+                            class="btn btn-success px-5 rounded-3" style="width:max-content">
+                            Lihat Dokumen {{ $i }}
+                        </a>
                     @endif
                 </div>
                 @if ($data->user_created == $userId)
@@ -63,9 +74,69 @@
                     </div>
                 @endif
             </div>
-            {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-success mt-4 py-1 fw-semibold"><i
-                    class="fa-solid fa-arrow-left"></i>
-                Kembali</a> --}}
+            <div class="dokumen-card" style="margin-top: 16px">
+                <div>
+                    <h2>Penerima Pengumuman</h2>
+                    <div class="divider-green"></div>
+                </div>
+                @if ($data->for_all_dosen && $data->for_all_staf && $data->for_all_mahasiswa)
+                    <div class="fw-medium" style="font-size: 16px; color: #424242">Seluruh Jurusan Teknik Elektro</div>
+                @else
+                    @if (count($data->mentions) > 0 || $data->for_all_dosen || $data->for_all_staf || $data->for_all_mahasiswa)
+                        <ul class="row row-cols-2" style="margin-bottom: 0">
+                            @if ($data->for_all_dosen)
+                                <li class="col" style="margin-bottom: 4px">Seluruh Dosen</li>
+                            @endif
+                            @if ($data->for_all_staf)
+                                <li class="col" style="margin-bottom: 4px">Seluruh Staf</li>
+                            @endif
+                            @if ($data->for_all_mahasiswa)
+                                <li class="col" style="margin-bottom: 4px">Seluruh Mahasiswa</li>
+                            @endif
+                            @foreach ($data->mentions as $mention)
+                                <li class="col" style="margin-bottom: 4px">
+                                    @if ($mention->jenis_user == 'angkatan')
+                                        @switch($mention->user_mentioned)
+                                            @case('s1ti_all')
+                                                Seluruh Mahasiswa Teknik Informatika S1
+                                            @break
+
+                                            @case('s1te_all')
+                                                Seluruh Mahasiswa Teknik Elektro S1
+                                            @break
+
+                                            @case('d3te_all')
+                                                Seluruh Mahasiswa Teknik Elektro D3
+                                            @break
+
+                                            @default
+                                                @php
+                                                    [$prodi, $angkatan] = explode('_', $mention->user_mentioned);
+                                                @endphp
+                                                Mahasiswa
+                                                {{ $prodi == 'd3te' ? 'Teknik Elektro D3' : ($prodi == 's1te' ? 'Teknik Elektro S1' : 'Teknik Informatika S1') }}
+                                                {{ $angkatan }}
+                                        @endswitch
+                                    @else
+                                        {{ data_get($mention, $mention->jenis_user . '.nama') }}
+                                        @switch($mention->jenis_user)
+                                            @case('dosen')
+                                                <span class="fw-semibold">({{ $mention->dosen->nama_singkat }})</span>
+                                            @break
+
+                                            @case('mahasiswa')
+                                                <span class="fw-semibold">({{ $mention->mahasiswa->nim }})</span>
+                                            @break
+
+                                            @default
+                                        @endswitch
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                @endif
+            </div>
         </div>
         <div class="col-lg-4">
             <div class="dokumen-card">
@@ -85,63 +156,7 @@
                     </div>
                 @endif
             </div>
-            <div class="dokumen-card" style="margin-top: 16px">
-                <div>
-                    <h2>Penerima Pengumuman</h2>
-                    <div class="divider-green"></div>
-                </div>
-                @if ($data->for_all_dosen && $data->for_all_staf && $data->for_all_mahasiswa)
-                    <div class="fw-medium" style="font-size: 16px; color: #424242">Seluruh Jurusan Teknik Elektro</div>
-                @else
-                    @if (count($data->mentions) > 0 || $data->for_all_dosen || $data->for_all_staf || $data->for_all_mahasiswa)
-                        <ul style="margin-bottom: 0">
-                            @if ($data->for_all_dosen)
-                                <li style="margin-bottom: 4px">Seluruh Dosen</li>
-                            @endif
-                            @if ($data->for_all_staf)
-                                <li style="margin-bottom: 4px">Seluruh Staf</li>
-                            @endif
-                            @if ($data->for_all_mahasiswa)
-                                <li style="margin-bottom: 4px">Seluruh Mahasiswa</li>
-                            @endif
-                            @foreach ($data->mentions as $mention)
-                                <li style="margin-bottom: 4px">
-                                    @if (!$mention->dosen && !$mention->admin && !$mention->mahasiswa)
-                                        @switch($mention->user_mentioned)
-                                            @case('s1ti_all')
-                                                Seluruh Mahasiswa Teknik Informatika S1
-                                            @break
 
-                                            @case('s1te_all')
-                                                Seluruh Mahasiswa Teknik Elektro S1
-                                            @break
-
-                                            @case('d3te_all')
-                                                Seluruh Mahasiswa Teknik Elektro D3
-                                            @break
-
-                                            @default
-                                        @endswitch
-                                    @else
-                                        {{ data_get($mention, $mention->jenis_user . '.nama') }}
-                                        @switch($mention->jenis_user)
-                                            @case('dosen')
-                                                <span class="fw-semibold">({{ $mention->dosen->nama_singkat }})</span>
-                                            @break
-
-                                            @case('mahasiswa')
-                                                <span class="fw-semibold">({{ $mention->mahasiswa->angkatan }})</span>
-                                            @break
-
-                                            @default
-                                        @endswitch
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-                    @endif
-                @endif
-            </div>
         </div>
     </section>
 @endsection

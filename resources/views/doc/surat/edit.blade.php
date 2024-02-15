@@ -21,6 +21,23 @@
             @method('put')
             @csrf
             <div>
+                <label for="kepada" class="fw-semibold">Tujuan Surat<span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <select name="tujuan_surat" id="kepada"
+                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}" class="text-capitalize"
+                                {{ $surat->role_tujuan == $role->id ? 'selected' : '' }}>
+                                {{ $role->nama_dosen ?? $role->nama_admin }} ({{ $role->akses }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('tujuan_surat')
+                        <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
+                    @enderror
+                </div>
+            </div>
+            <div>
                 <label for="nama" class="fw-semibold">Nama Surat</label>
                 <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4" name="nama"
                     placeholder="Contoh: Surat Pengantar..." id="nama" value="{{ $surat->nama }}">
@@ -36,12 +53,18 @@
             <div id="current-dokumen">
                 <label class="fw-semibold">Lampiran</label>
                 <div class="d-flex gap-2 align-items-center">
-                    @if ($surat->url_lampiran != null)
-                        <a href="@if ($surat->is_local_file) {{ asset('storage/' . $surat->url_lampiran) }}
-                            @else {{ $surat->url_lampiran }} @endif"
-                            target="_blank" class="btn btn-outline-primary">
-                            Dokumen saat ini
-                        </a>
+                    @if ($surat->url_lampiran || $surat->url_lampiran_lokal)
+                        @if ($surat->url_lampiran)
+                            <a href="{{ $surat->url_lampiran }}" target="_blank" class="btn btn-success">
+                                Lampiran saat ini
+                            </a>
+                        @endif
+                        @if ($surat->url_lampiran_lokal)
+                            <a href="{{ asset('storage/' . $surat->url_lampiran_lokal) }}" target="_blank"
+                                class="btn btn-success">
+                                Lampiran saat ini
+                            </a>
+                        @endif
                     @else
                         <div class="text-secondary">
                             (belum ada dokumen dilampirkan)

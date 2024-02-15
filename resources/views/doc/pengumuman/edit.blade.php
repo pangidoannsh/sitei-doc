@@ -28,6 +28,23 @@
                 @enderror
             </div>
             <div>
+                <label for="semester" class="fw-semibold">Semester<span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <select name="semester" id="semester"
+                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('semester') border border-danger @enderror">
+                        @foreach ($semesters as $semester)
+                            <option value="{{ $semester->nama }}" class="text-capitalize"
+                                {{ $data->semester == $semester->nama ? 'selected' : '' }}>
+                                {{ $semester->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('semester')
+                        <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
+                    @enderror
+                </div>
+            </div>
+            <div>
                 <label for="kategori" class="fw-semibold">Kategori<span class="text-danger">*</span></label>
                 <div class="input-group">
                     <select name="kategori" id="kategori"
@@ -51,13 +68,18 @@
             <div id="current-dokumen">
                 <label class="fw-semibold">Lampiran</label>
                 <div class="d-flex gap-2 align-items-center">
-                    @if ($data->url_dokumen != null)
-                        <a href="@if ($data->is_local_file) {{ asset('storage/' . $data->url_dokumen) }}
-                        @else
-                        {{ $data->url_dokumen }} @endif"
-                            target="_blank" class="btn btn-outline-primary">
-                            Lampiran saat ini
-                        </a>
+                    @if ($data->url_dokumen || $data->url_dokumen_lokal)
+                        @if ($data->url_dokumen_lokal)
+                            <a href="{{ asset('storage/' . $data->url_dokumen_lokal) }}" target="_blank"
+                                class="btn btn-success">
+                                Lampiran saat ini
+                            </a>
+                        @endif
+                        @if ($data->url_dokumen)
+                            <a href="{{ $data->url_dokumen }}" target="_blank" class="btn btn-success">
+                                Lampiran saat ini
+                            </a>
+                        @endif
                     @else
                         <div class="text-secondary">
                             (belum ada dokumen dilampirkan)
@@ -85,7 +107,7 @@
                 <div class="w-100">
                     <label for="url_dokumen" class="fw-semibold">Tempel URL Lampiran</label>
                     <input type="url" class="form-control rounded-3"
-                        value="@if (!$data->is_local_file) {{ $data->url_dokumen }} @endif" name="url_dokumen"
+                        value="{{ old('url_dokumen') ?? $data->url_dokumen }}" name="url_dokumen"
                         placeholder="https://drive.google.com/..." id="url_dokumen">
                 </div>
             </div>
@@ -98,6 +120,7 @@
                     <div class="invalid-feedback">{{ $message }} </div>
                 @enderror
             </div>
+            {{-- Diumumkan Kepada --}}
             <div class="d-flex flex-lg-row flex-column gap-3 mt-2">
                 <div style="width: fit-content">
                     <div class="fw-semibold" style="translate: 0 4px">
@@ -106,7 +129,8 @@
                 </div>
                 <div class="w-100" style="padding-bottom: 200px">
                     <div class="form-check mb-3" style="padding: 0 24px">
-                        <input class="form-check-input" type="checkbox" value="all" id="all" name="select_all">
+                        <input class="form-check-input" type="checkbox" value="all" id="all"
+                            name="select_all">
                         <label class="form-check-label" for="all">
                             Kirim Ke Semua
                         </label>
@@ -230,36 +254,55 @@
                                 </label>
                             </div>
                             <hr>
+                            {{-- Tab --}}
                             @if (isset($mahasiswas['1']))
-                                <div id="d3TECheckList" class="row row-cols-4">
+                                {{-- Tab --}}
+                                <div class="breadcrumb col-lg-12 mb-4 d-flex position-relative" style="padding:12px 0;">
+                                    <div id="borderActiveMahasiswaD3TE" class="border-active" style="width: 100px"></div>
+                                    @php
+                                        $isActive = true;
+                                    @endphp
                                     @foreach ($mahasiswas['1']->sortKeys() as $angkatan => $angkatans)
-                                        <div class="col">
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input angkatan-selector" type="checkbox"
-                                                    value="{{ $angkatan }}" id="1_{{ $angkatan }}"
-                                                    name="d3te_angkatan[]">
-                                                <label class="form-check-label" for="1_{{ $angkatan }}">
-                                                    {{ $angkatan }}
-                                                </label>
-                                            </div>
-                                            <hr>
-                                            <div id="check_1_{{ $angkatan }}">
-                                                @foreach ($angkatans->sortKeys() as $mahasiswa)
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input mahasiswa-selector d3te-selector "
-                                                            type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                            id="1-{{ $angkatan }}-{{ $mahasiswa->nim }}"
-                                                            name="d3te[]"
-                                                            {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
-                                                        {{-- name="d3te[{{ $angkatan }}][]"> --}}
-                                                        <label class="form-check-label"
-                                                            for="1-{{ $angkatan }}-{{ $mahasiswa->nim }}">
-                                                            {{ $mahasiswa->nama }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                        <div id="1_{{ $angkatan }}" style="min-width: 100px;cursor: pointer;"
+                                            class="d3te-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
+                                            <input class="form-check-input angkatan-selector d3te-selector"
+                                                type="checkbox" value="{{ $angkatan }}"
+                                                id="selector_1_{{ $angkatan }}" name="d3te_angkatan[]"
+                                                {{ in_array("d3te_$angkatan", $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
+                                            {{ $angkatan }}
                                         </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
+                                    @endforeach
+                                </div>
+                                <div id="d3teCheckList">
+                                    @php
+                                        $isActive = true;
+                                    @endphp
+                                    @foreach ($mahasiswas['1']->sortKeys() as $angkatan => $angkatans)
+                                        <div id="check_1_{{ $angkatan }}"
+                                            class="{{ !$isActive ? 'd-none' : '' }} row row-cols-2">
+                                            @foreach ($angkatans->sortBy('nama') as $mahasiswa)
+                                                <div class="col form-check mb-2">
+                                                    <input class="form-check-input mahasiswa-selector d3te-selector"
+                                                        type="checkbox" value="{{ $mahasiswa->nim }}"
+                                                        id="1_{{ $angkatan }}_{{ $mahasiswa->nim }}"
+                                                        name="d3te[{{ $angkatan }}][]"
+                                                        {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ||
+                                                        in_array("d3te_$angkatan", $data->mentions->pluck('user_mentioned')->toArray())
+                                                            ? 'checked'
+                                                            : '' }}>
+                                                    <label class="form-check-label text-capitalize"
+                                                        for="1_{{ $angkatan }}_{{ $mahasiswa->nim }}">
+                                                        {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
                                     @endforeach
                                 </div>
                             @else
@@ -277,35 +320,52 @@
                             </div>
                             <hr>
                             @if (isset($mahasiswas['2']))
-                                <div id="s1TECheckList" class="row row-cols-4">
+                                <div class="breadcrumb col-lg-12 mb-4 d-flex position-relative" style="padding:12px 0;">
+                                    <div id="borderActiveMahasiswaS1TE" class="border-active" style="width: 100px"></div>
+                                    @php
+                                        $isActive = true;
+                                    @endphp
                                     @foreach ($mahasiswas['2']->sortKeys() as $angkatan => $angkatans)
-                                        <div class="col">
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input angkatan-selector" type="checkbox"
-                                                    value="{{ $angkatan }}" id="2_{{ $angkatan }}"
-                                                    name="s1te_angkatan[]">
-                                                <label class="form-check-label" for="2_{{ $angkatan }}">
-                                                    {{ $angkatan }}
-                                                </label>
-                                            </div>
-                                            <hr>
-                                            <div id="check_2_{{ $angkatan }}">
-                                                @foreach ($angkatans->sortBy('nama') as $mahasiswa)
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input mahasiswa-selector s1te-selector"
-                                                            type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                            id="2-{{ $angkatan }}-{{ $mahasiswa->nim }}"
-                                                            name="s1te[]"
-                                                            {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
-                                                        {{-- name="s1te[{{ $angkatan }}][]"> --}}
-                                                        <label class="form-check-label"
-                                                            for="2-{{ $angkatan }}-{{ $mahasiswa->nim }}">
-                                                            {{ $mahasiswa->nama }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                        <div id="2_{{ $angkatan }}" style="min-width: 100px;cursor: pointer;"
+                                            class="s1te-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
+                                            <input class="form-check-input angkatan-selector s1te-selector"
+                                                type="checkbox" value="{{ $angkatan }}"
+                                                id="selector_2_{{ $angkatan }}" name="s1te_angkatan[]"
+                                                {{ in_array("s1te_$angkatan", $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
+                                            {{ $angkatan }}
                                         </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
+                                    @endforeach
+                                </div>
+                                <div id="s1teCheckList">
+                                    @php
+                                        $isActive = true;
+                                    @endphp
+                                    @foreach ($mahasiswas['2']->sortKeys() as $angkatan => $angkatans)
+                                        <div id="check_2_{{ $angkatan }}"
+                                            class="{{ !$isActive ? 'd-none' : '' }} row row-cols-2">
+                                            @foreach ($angkatans->sortBy('nama') as $mahasiswa)
+                                                <div class="col form-check mb-2">
+                                                    <input class="form-check-input mahasiswa-selector s1te-selector"
+                                                        type="checkbox" value="{{ $mahasiswa->nim }}"
+                                                        id="2_{{ $angkatan }}_{{ $mahasiswa->nim }}"
+                                                        name="s1te[{{ $angkatan }}][]"
+                                                        {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ||
+                                                        in_array("s1te_$angkatan", $data->mentions->pluck('user_mentioned')->toArray())
+                                                            ? 'checked'
+                                                            : '' }}>
+                                                    <label class="form-check-label text-capitalize"
+                                                        for="2_{{ $angkatan }}_{{ $mahasiswa->nim }}">
+                                                        {{ Str::ucfirst($mahasiswa->nama) }} ({{ $mahasiswa->nim }})
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
                                     @endforeach
                                 </div>
                             @else
@@ -323,35 +383,52 @@
                             </div>
                             <hr>
                             @if (isset($mahasiswas['3']))
-                                <div id="s1TICheckList" class="row row-cols-4">
+                                <div class="breadcrumb col-lg-12 mb-4 d-flex position-relative" style="padding:12px 0;">
+                                    <div id="borderActiveMahasiswaS1TI" class="border-active" style="width: 100px"></div>
+                                    @php
+                                        $isActive = true;
+                                    @endphp
+                                    {{-- Tab --}}
                                     @foreach ($mahasiswas['3']->sortKeys() as $angkatan => $angkatans)
-                                        <div class="col">
-                                            <div class="form-check mb-3">
-                                                <input class="form-check-input angkatan-selector" type="checkbox"
-                                                    value="{{ $angkatan }}" id="3_{{ $angkatan }}"
-                                                    name="s1ti_angkatan[]">
-                                                <label class="form-check-label" for="3_{{ $angkatan }}">
-                                                    {{ $angkatan }}
-                                                </label>
-                                            </div>
-                                            <hr>
-                                            <div id="check_3_{{ $angkatan }}">
-                                                @foreach ($angkatans->sortKeys() as $mahasiswa)
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input mahasiswa-selector s1ti-selector "
-                                                            type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                            id="3-{{ $angkatan }}-{{ $mahasiswa->nim }}"
-                                                            name="s1ti[]"
-                                                            {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
-                                                        {{-- name="s1ti[{{ $angkatan }}][]"> --}}
-                                                        <label class="form-check-label"
-                                                            for="3-{{ $angkatan }}-{{ $mahasiswa->nim }}">
-                                                            {{ $mahasiswa->nama }}
-                                                        </label>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                        <div id="3_{{ $angkatan }}" style="min-width: 100px;cursor: pointer;"
+                                            class="s1ti-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
+                                            <input class="form-check-input angkatan-selector s1ti-selector"
+                                                type="checkbox" value="{{ $angkatan }}"
+                                                id="selector_3_{{ $angkatan }}" name="s1ti_angkatan[]"
+                                                {{ in_array("s1ti_$angkatan", $data->mentions->pluck('user_mentioned')->toArray()) ? 'checked' : '' }}>
+                                            {{ $angkatan }}
                                         </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
+                                    @endforeach
+                                </div>
+                                <div id="s1tiCheckList">
+                                    @php
+                                        $isActive = true;
+                                    @endphp
+                                    @foreach ($mahasiswas['3']->sortKeys() as $angkatan => $angkatans)
+                                        <div id="check_3_{{ $angkatan }}"
+                                            class="{{ !$isActive ? 'd-none' : '' }} row row-cols-2">
+                                            @foreach ($angkatans->sortBy('nama') as $mahasiswa)
+                                                <div class="col form-check mb-2">
+                                                    <input class="form-check-input mahasiswa-selector s1ti-selector"
+                                                        type="checkbox" value="{{ $mahasiswa->nim }}"
+                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="s1ti[{{ $angkatan }}][]"
+                                                        {{ in_array($mahasiswa->nim, $data->mentions->pluck('user_mentioned')->toArray()) ||
+                                                        in_array("s1ti_$angkatan", $data->mentions->pluck('user_mentioned')->toArray())
+                                                            ? 'checked'
+                                                            : '' }}>
+                                                    <label class="form-check-label text-capitalize"
+                                                        for="3_{{ $angkatan }}_{{ $mahasiswa->nim }}">
+                                                        {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @php
+                                            $isActive = false;
+                                        @endphp
                                     @endforeach
                                 </div>
                             @else
@@ -383,7 +460,6 @@
 @endsection
 
 @push('scripts')
-    {{-- Handle Dokumen --}}
     <script>
         const currentDokumen = "{{ $data->url_dokumen }}"
 
@@ -399,11 +475,9 @@
             $("#url_dokumen").val(currentDokumen)
         })
     </script>
-
-    {{-- Handle Tab Dosen/Staf --}}
+    {{-- Tab Handle Dosen/Staf --}}
     <script>
         const borderActive = $("#borderActive")
-
         const btnShowDosen = $("#btn-dosen")
         const btnShowStaf = $("#btn-staf")
         const btnShowMahasiswa = $("#btn-mahasiswa")
@@ -470,8 +544,7 @@
             setActiveMahasiswaDisplay()
         })
     </script>
-
-    {{-- Handle Checkbox Dosen/Staf --}}
+    {{-- CheckBox Handle Dosen/Staf --}}
     <script>
         const selectAll = $("#all")
         const selectAllDosen = $("#all_dosen")
@@ -486,14 +559,15 @@
             selectAllMhs.prop('checked', isChecked)
             $(".dosen-selector").prop('checked', isChecked)
             $(".staf-selector").prop('checked', isChecked)
-            $(".mentions-item-dosen").remove()
-            $(".mentions-item-staf").remove()
+            $(".mahasiswa-selector").prop('checked', isChecked)
+            $(".angkatan-selector").prop('checked', isChecked)
+            $(".prodi-selector").prop('checked', isChecked)
         })
-
         //ketika user klik pilih semua dosen
         selectAllDosen.on('change', e => {
             const isChecked = e.target.checked
             $(".dosen-selector").prop('checked', isChecked)
+            $(".mentions-item-dosen").remove()
             if (!isChecked) {
                 selectAll.prop("checked", false)
             }
@@ -503,18 +577,12 @@
         selectAllStaf.on('change', e => {
             const isChecked = e.target.checked
             $(".staf-selector").prop('checked', isChecked)
+            $(".mentions-item-staf").remove()
             if (!isChecked) {
                 selectAll.prop("checked", false)
             }
         })
 
-        selectAllMhs.on('change', e => {
-            const isChecked = e.target.checked
-            $(".mahasiswa-selector").prop('checked', isChecked)
-            if (!isChecked) {
-                selectAll.prop("checked", false)
-            }
-        })
         //ketika user klik daftar dosen
         $(".dosen-selector").on('change', e => {
             const isChecked = e.target.checked
@@ -534,7 +602,7 @@
         })
     </script>
 
-    {{-- Handle Tab Mahasiswa --}}
+    {{-- Tab Mahasiswa --}}
     <script>
         const borderActiveMahasiswa = $("#borderActiveMahasiswa")
         const btnD3TEShow = $("#btnD3TE")
@@ -603,7 +671,64 @@
             setActiveS1TIDisplay()
         })
     </script>
+    {{-- Tab Angkatan --}}
+    <script>
+        const borderTabD3TE = $("#borderActiveMahasiswaD3TE")
+        const borderTabS1TE = $("#borderActiveMahasiswaS1TE")
+        const borderTabS1TI = $("#borderActiveMahasiswaS1TI")
 
+        function setDefaultAngkatanDisplay(id) {
+            $(`#${id}`).removeClass("active fw-bold text-success");
+            $(`#check_${id}`).addClass("d-none")
+        }
+
+        function setActiveAngkatanDisplay(id) {
+            $(`#${id}`).addClass("active fw-bold text-success");
+            $(`#check_${id}`).removeClass("d-none")
+        }
+
+        // S1 Teknik Elektro
+        const d3teTabAngkatan = $(".d3te-tab-angkatan")
+        d3teTabAngkatan.on("click", e => {
+            const id = e.target.id.replace("selector_", "")
+            for (let i = 0; i < d3teTabAngkatan.length; i++) {
+                if (d3teTabAngkatan[i].id === id) {
+                    setActiveAngkatanDisplay(d3teTabAngkatan[i].id)
+                    borderTabD3TE.css({
+                        "translate": `${i*100}% 0`
+                    })
+                } else setDefaultAngkatanDisplay(d3teTabAngkatan[i].id)
+            }
+        })
+
+        // S1 Teknik Elektro
+        const s1teTabAngkatan = $(".s1te-tab-angkatan")
+        s1teTabAngkatan.on("click", e => {
+            const id = e.target.id.replace("selector_", "")
+            for (let i = 0; i < s1teTabAngkatan.length; i++) {
+                if (s1teTabAngkatan[i].id === id) {
+                    setActiveAngkatanDisplay(s1teTabAngkatan[i].id)
+                    borderTabS1TE.css({
+                        "translate": `${i*100}% 0`
+                    })
+                } else setDefaultAngkatanDisplay(s1teTabAngkatan[i].id)
+            }
+        })
+
+        // S1 Teknik Informatika
+        const s1tiTabAngkatan = $(".s1ti-tab-angkatan")
+        s1tiTabAngkatan.on("click", e => {
+            const id = e.target.id.replace("selector_", "")
+            for (let i = 0; i < s1tiTabAngkatan.length; i++) {
+                if (s1tiTabAngkatan[i].id === id) {
+                    setActiveAngkatanDisplay(s1tiTabAngkatan[i].id)
+                    borderTabS1TI.css({
+                        "translate": `${i*100}% 0`
+                    })
+                } else setDefaultAngkatanDisplay(s1tiTabAngkatan[i].id)
+            }
+        })
+    </script>
     {{-- Handle Checkbox mahasiswa --}}
     <script>
         const selectAllD3TE = $(`#all_1`)
@@ -613,16 +738,16 @@
         // Select All Prodi TE D3
         selectAllD3TE.on("change", e => {
             const isChecked = e.target.checked
-            $("#d3TECheckList .angkatan-selector").prop("checked", isChecked)
-            $("#d3TECheckList .mahasiswa-selector").prop("checked", isChecked)
+            $(".d3te-selector").prop("checked", isChecked)
             if (!isChecked) {
                 selectAllMhs.prop("checked", false)
+                selectAll.prop("checked", false)
             }
         })
         // Untuk handle onChange tahun angkatan
-        $("#d3TECheckList .angkatan-selector").on("change", e => {
+        $("#d3TE .angkatan-selector").on("change", e => {
             const isChecked = e.target.checked
-            const id = e.target.id
+            const id = e.target.id.replace("selector_", "")
             $(`#check_${id} .mahasiswa-selector`).prop("checked", isChecked)
             if (!isChecked) {
                 selectAllD3TE.prop("checked", false)
@@ -635,17 +760,17 @@
         // Select All Prodi TE S1
         selectAllS1TE.on("change", e => {
             const isChecked = e.target.checked
-            $("#s1TECheckList .angkatan-selector").prop("checked", isChecked)
-            $("#s1TECheckList .mahasiswa-selector").prop("checked", isChecked)
+            $(".s1te-selector").prop("checked", isChecked)
             if (!isChecked) {
                 selectAllMhs.prop("checked", false)
                 selectAll.prop("checked", false)
             }
         })
+
         // Untuk handle onChange tahun angkatan
-        $("#s1TECheckList .angkatan-selector").on("change", e => {
+        $("#s1TE .angkatan-selector").on("change", e => {
             const isChecked = e.target.checked
-            const id = e.target.id
+            const id = e.target.id.replace("selector_", "")
             $(`#check_${id} .mahasiswa-selector`).prop("checked", isChecked)
             if (!isChecked) {
                 selectAllS1TE.prop("checked", false)
@@ -658,17 +783,16 @@
         // Select All Prodi TI S1
         selectAllS1TI.on("change", e => {
             const isChecked = e.target.checked
-            $("#s1TICheckList .angkatan-selector").prop("checked", isChecked)
-            $("#s1TICheckList .mahasiswa-selector").prop("checked", isChecked)
+            $(".s1ti-selector").prop("checked", isChecked)
             if (!isChecked) {
                 selectAllMhs.prop("checked", false)
                 selectAll.prop("checked", false)
             }
         })
         // Untuk handle onChange tahun angkatan
-        $("#s1TICheckList .angkatan-selector").on("change", e => {
+        $("#s1TI .angkatan-selector").on("change", e => {
             const isChecked = e.target.checked
-            const id = e.target.id
+            const id = e.target.id.replace("selector_", "")
             $(`#check_${id} .mahasiswa-selector`).prop("checked", isChecked)
             if (!isChecked) {
                 selectAllS1TI.prop("checked", false)
@@ -691,9 +815,9 @@
             const isChecked = e.target.checked
             const idElement = e.target.id
             if (!isChecked) {
-                const [prodiID, angkatan, nim] = idElement.split("-")
+                const [prodiID, angkatan, nim] = idElement.split("_")
                 $(`#all_${prodiID}`).prop("checked", false)
-                $(`#${prodiID}_${angkatan}`).prop("checked", false)
+                $(`#selector_${prodiID}_${angkatan}`).prop("checked", false)
                 selectAllMhs.prop("checked", false)
                 selectAll.prop("checked", false)
             }
@@ -722,21 +846,17 @@
         @if ($isSelectAll == 3)
             selectAll.prop("checked", true)
         @endif
-        @if (in_array('s1te_all', $data->mentions->pluck('user_mentioned')->toArray()))
+        @if (in_array('d3te_all', $data->mentions->pluck('user_mentioned')->toArray()))
             selectAllD3TE.prop('checked', true)
-            $("#d3TECheckList .angkatan-selector").prop('checked', true)
-            $("#d3TECheckList .mahasiswa-selector").prop('checked', true)
+            $(".d3te-selector").prop('checked', true)
         @endif
         @if (in_array('s1te_all', $data->mentions->pluck('user_mentioned')->toArray()))
             selectAllS1TE.prop('checked', true)
-            $("#s1TECheckList .angkatan-selector").prop('checked', true)
-            $("#s1TECheckList .mahasiswa-selector").prop('checked', true)
+            $(".s1te-selector").prop('checked', true)
         @endif
         @if (in_array('s1ti_all', $data->mentions->pluck('user_mentioned')->toArray()))
-            console.log("test");
             selectAllS1TI.prop('checked', true)
-            $("#s1TICheckList .angkatan-selector").prop('checked', true)
-            $("#s1TICheckList .mahasiswa-selector").prop('checked', true)
+            $(".s1ti-selector").prop('checked', true)
         @endif
     </script>
 @endpush

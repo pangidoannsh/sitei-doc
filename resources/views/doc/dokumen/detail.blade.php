@@ -38,6 +38,12 @@
                     <div class="value text-capitalize">{{ $dokumen->semester }}</div>
                 </div>
                 <div class="d-flex flex-column gap-1">
+                    <div class="label">Tanggal Dokumen</div>
+                    <div class="value">
+                        {{ Carbon::parse($dokumen->tgl_dokumen)->translatedFormat('l, d F Y') }}
+                    </div>
+                </div>
+                <div class="d-flex flex-column gap-1">
                     <div class="label">Tanggal Usulan</div>
                     <div class="value">
                         {{ Carbon::parse($dokumen->created_at)->translatedFormat('l, d F Y') }}
@@ -51,7 +57,7 @@
                 @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Dokumen</div>
-                    @if (!$dokumen->url_dokumen && !$dokumen->url_dokumen_loka)
+                    @if (!$dokumen->url_dokumen && !$dokumen->url_dokumen_lokal)
                         (Tidak ada dokumen dilampirkan)
                     @endif
                     @php
@@ -64,7 +70,7 @@
                         </a>
                     @endif
                     @if ($dokumen->url_dokumen_lokal)
-                        <a href="{{ asset('dokumen/' . $dokumen->url_dokumen_lokal) }}" target="_blank"
+                        <a href="{{ asset('storage/' . $dokumen->url_dokumen_lokal) }}" target="_blank"
                             class="btn btn-success px-5 rounded-3" style="width:max-content">
                             Lihat Dokumen {{ $i }}
                         </a>

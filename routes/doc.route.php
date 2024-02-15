@@ -9,6 +9,7 @@ use App\Http\Controllers\DistribusiDokumen\DokumenController;
 use App\Http\Controllers\DistribusiDokumen\DokumenMentionController;
 use App\Http\Controllers\DistribusiDokumen\SertifikatController;
 use App\Http\Controllers\DistribusiDokumen\PenerimaSertifikatController;
+use App\Http\Controllers\DistribusiDokumen\PengelolaController;
 use App\Http\Controllers\DistribusiDokumen\SuratCutiController;
 use App\Http\Controllers\DistribusiDokumen\SuratController;
 
@@ -16,8 +17,6 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
     // DiISTRIBUSI
     Route::get('/distribusi-dokumen', [DistribusiDokumenController::class, 'index'])->name('doc.index');
     Route::get('/distribusi-dokumen/arsip', [DistribusiDokumenController::class, 'arsip'])->name('doc.arsip');
-    Route::get('/distribusi-dokumen/arsip/jurusan', [DistribusiDokumenController::class, 'arsipJurusan'])->name('arsip.jurusan');
-    Route::get('/distribusi-dokumen/arsip/prodi', [DistribusiDokumenController::class, 'arsipProdi'])->name('arsip.prodi');
 
     //PENGUMUMAN
     Route::get('/distribusi-dokumen/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
@@ -56,7 +55,19 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
     Route::get('/distribusi-dokumen/surat/{id}/edit', [SuratController::class, 'edit'])->name('surat.edit');
     Route::post('/distribusi-dokumen/surat', [SuratController::class, 'store'])->name('surat.store');
     Route::delete('/distribusi-dokumen/surat/{id}', [SuratController::class, 'destroy'])->name('surat.delete');
+    // Persetujuan Staf Admin Prodi
+    Route::get('/distribusi-dokumen/surat/{id}/acc/stafprodi', [SuratController::class, 'accStafProdi'])->name('surat.acc.stafprodi');
+    // Persetujuan Koordinator Prodi
+    Route::get('/distribusi-dokumen/surat/{id}/acc/kaprodi', [SuratController::class, 'accKaprodi'])->name('surat.acc.kaprodi');
+    // Persetujuan Staf Admin Jurusan
+    Route::get('/distribusi-dokumen/surat/{id}/acc/stafJurusan', [SuratController::class, 'accStafJurusan'])->name('surat.acc.stafjurusan');
+    // Persetujuan Dari Pihak Yang Dituju
+    Route::get('/distribusi-dokumen/surat/{id}/acc', [SuratController::class, 'accept'])->name('surat.accept');
+    // Perubahan Tujuan Surat
+    Route::post('/distribusi-dokumen/surat/{id}/ubah-tujuan', [SuratController::class, 'ubahTujuan'])->name('surat.edit.tujuan');
+    // Penyelesaian Surat
     Route::post('/distribusi-dokumen/surat/{id}/done', [SuratController::class, 'done'])->name('surat.done');
+    // Penolakan Surat
     Route::post('/distribusi-dokumen/surat/{id}/reject', [SuratController::class, 'reject'])->name('surat.reject');
 
     //SERTIFIKAT
@@ -66,8 +77,25 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
     Route::get('/distribusi-dokumen/sertifikat/{id}/edit', [SertifikatController::class, 'edit'])->name('sertif.edit');
     Route::put('/distribusi-dokumen/sertifikat/{id}', [SertifikatController::class, 'update'])->name('sertif.update');
     Route::delete('/distribusi-dokumen/sertifikat/{id}', [SertifikatController::class, 'delete'])->name('sertif.delete');
+
+    // Penolakan Pembuatam Sertifikat
+    Route::post('/distribusi-dokumen/sertifikat/{id}/reject', [SertifikatController::class, 'reject'])->name('sertif.reject');
+    // Persetujuan Admin
+    Route::get('/distribusi-dokumen/sertifikat/{id}/acc/admin', [SertifikatController::class, 'accAdmin'])->name('sertif.acc.admin');
+    // Persetujuan Kajur
+    Route::get('/distribusi-dokumen/sertifikat/{id}/acc/kajur', [SertifikatController::class, 'accKajur'])->name('sertif.acc.kajur');
+    // Persetujuan Sign User
+    Route::get('/distribusi-dokumen/sertifikat/{id}/acc/sign', [SertifikatController::class, 'sign'])->name('sertif.acc.sign');
+    // Pelengakapan Sertifikat
     Route::get('/distribusi-dokumen/sertifikat/{id}/completion', [SertifikatController::class, 'make'])->name('sertif.make');
     Route::post('/distribusi-dokumen/sertifikat/{id}/completion', [SertifikatController::class, 'completion'])->name('sertif.completion');
+
+    Route::middleware(["auth:dosen"])->group(function () {
+        // PENGELOLA
+        Route::get('/distribusi-dokumen/pengelola', [PengelolaController::class, 'index'])->name('pengelola');
+        Route::get('/distribusi-dokumen/pengelola/pengumuman', [PengelolaController::class, 'pengumuman'])->name('pengelola.pengumuman');
+        Route::get('/distribusi-dokumen/pengelola/arsip', [PengelolaController::class, 'arsip'])->name('pengelola.arsip');
+    });
 });
 
 // PENERIMA SERTIFIKAT

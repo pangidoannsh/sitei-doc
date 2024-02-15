@@ -42,7 +42,7 @@
             <div>
                 <label for="isi" class="fw-semibold">Isi Sertifikat</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Isi Sertifikat" name="isi" id="isi" cols="3"
-                    required>{{ old('isi') }}</textarea>
+                    required>{{ old('isi') ?? $data->isi }}</textarea>
             </div>
             <div class="row row-cols-2" style="row-gap: 8px">
                 @foreach ($data->penerimas as $penerima)

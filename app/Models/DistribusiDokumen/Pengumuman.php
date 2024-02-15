@@ -53,6 +53,10 @@ class Pengumuman extends Model
                 return "";
         }
     }
+    public static function getLatestPengumuman()
+    {
+        return self::whereDate('tgl_batas_pengumuman', '>=', Carbon::today())->get();
+    }
     public static function getForUser($jenisUser, $userId)
     {
         $for = self::getTargetByUserType($jenisUser);

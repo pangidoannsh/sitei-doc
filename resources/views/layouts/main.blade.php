@@ -218,13 +218,32 @@
                                         </div>
                                     </li>
                                 </ul>
-
-
                                 <li class="nav-item">
                                     <a class="nav-link {{ Request::is('inventaris*') ? 'text-success' : '' }} "
                                         aria-current="page" href="/inventaris/peminjaman-dosen">INVENTARIS</a>
                                 </li>
-
+                                {{-- DistribusiDokumen --}}
+                                <li class="nav-item dropdown baru">
+                                    <a id="dokumendropdown" href="" aria-current="page" aria-expanded="false"
+                                        role="button" data-bs-toggle="dropdown"
+                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
+                                    <ul aria-labelledby="dokumendropdown"
+                                        class="dropdown-menu border-0 shadow"style="border-radius:10px;">
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
+                                                aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
+                                                aria-current="page"
+                                                href="{{ route('pengumuman.index') }}">Pengumuman</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
+                                                aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
+                                        </li>
+                                    </ul>
+                                </li>
                             @endif
 
                             {{-- Menu PLP --}}
@@ -283,9 +302,9 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">Dokumen</a>
+                                    <a id="dokumendropdown" href="" aria-current="page" aria-haspopup="true"
+                                        aria-expanded="false"
+                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
                                     <ul aria-labelledby="dokumendropdown"
                                         class="dropdown-menu border-0 shadow"style="border-radius:10px;">
                                         <li class="nav-item">
@@ -359,6 +378,28 @@
                                         <a class="nav-link {{ Request::is('inventaris*') ? 'text-success' : '' }}"
                                             aria-current="page" href="/inventaris/peminjamanadm">INVENTARIS</a>
                                     </li>
+                                    {{-- DistribusiDokumen --}}
+                                    <li class="nav-item dropdown baru">
+                                        <a id="dokumendropdown" href="" aria-current="page"
+                                            aria-haspopup="true" aria-expanded="false"
+                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
+                                        <ul aria-labelledby="dokumendropdown"
+                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
+                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
+                                                    aria-current="page"
+                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
+                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
+                                            </li>
+                                        </ul>
+                                    </li>
                                 @endif
 
                                 @if (Auth::guard('web')->user()->role_id == 1)
@@ -407,7 +448,32 @@
                                         <a class="nav-link {{ Request::is('inventaris*') ? 'text-success' : '' }}"
                                             aria-current="page" href="/inventaris/peminjamanadm">INVENTARIS</a>
                                     </li>
-
+                                    {{-- DistribusiDokumen --}}
+                                    <li class="nav-item dropdown baru">
+                                        <a id="dokumendropdown" href="" aria-current="page"
+                                            aria-haspopup="true" aria-expanded="false"
+                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
+                                        <ul aria-labelledby="dokumendropdown"
+                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }}"
+                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
+                                                    aria-current="page"
+                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
+                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('doc/pengaturan*') ? 'text-success' : '' }} "
+                                                    aria-current="page" href="#">Pengaturan</a>
+                                            </li>
+                                        </ul>
+                                    </li>
 
                                     <ul class="navbar-nav">
                                         <li class="nav-item dropdown">
@@ -453,9 +519,6 @@
                                         </li>
                                     </ul>
                                 @endif
-
-
-
                             @endif
 
                             @if (Str::length(Auth::guard('dosen')->user()) > 0)

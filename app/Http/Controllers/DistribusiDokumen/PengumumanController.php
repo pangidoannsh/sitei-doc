@@ -5,15 +5,14 @@ namespace App\Http\Controllers\DistribusiDokumen;
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\Pengumuman;
 use App\Models\DistribusiDokumen\PengumumanMention;
-use App\Models\Dosen;
-use App\Models\Mahasiswa;
+use App\Models\DistribusiSurat\Semester;
 use App\Models\Prodi;
 use App\Models\User;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\MahasiswaService;
+use App\Services\DosenService;
+use App\Services\PengumumanService;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class PengumumanController extends Controller
@@ -29,35 +28,8 @@ class PengumumanController extends Controller
         $pengumumans = Pengumuman::getForUser($jenis_user, $userId);
 
         // get data pengumuman dari mentions
-        $pengumumanMentioned = PengumumanMention::whereHas('dokumen', function ($query) {
-            $query->whereDate('tgl_batas_pengumuman', '>=', Carbon::today());
-        });
-
-        if ($jenis_user == "mahasiswa") {
-            $prodiId = Auth::guard("mahasiswa")->user()->prodi_id;
-            switch ($prodiId) {
-                case 1:
-                    $userMentionId = "d3te_all";
-                    break;
-                case 2:
-                    $userMentionId = "s1te_all";
-                    break;
-                case 3:
-                    $userMentionId = "s1ti_all";
-                    break;
-
-                default:
-                    $userMentionId = "";
-                    break;
-            }
-            $pengumumanMentioned->where(function ($query) use ($userId, $userMentionId) {
-                $query->where('user_mentioned', $userId)->orWhere("user_mentioned", $userMentionId);
-            });
-        } else {
-            $pengumumanMentioned->where('user_mentioned', $userId);
-        }
-
-        foreach ($pengumumanMentioned->get() as $mention) {
+        $pengumumanMentioned = PengumumanService::getFromMentions($userId, $jenis_user);
+        foreach ($pengumumanMentioned as $mention) {
             $pengumumans = $pengumumans->merge([$mention->dokumen]);
         }
 
@@ -71,27 +43,27 @@ class PengumumanController extends Controller
         $user_id = $request->user_id;
         $role = Auth::guard($jenis_user == "admin" ? "web" : $jenis_user)->user()->role_id;
         $prodis = Prodi::select("id", "nama_prodi as nama")->get();
-        $mahasiswas = Mahasiswa::getMahasiswaByAngkatan();
-
+        $mahasiswas = MahasiswaService::groupByProdiAngkatan();
+        $semesters = Semester::select("nama")->get();
         // Dosen dan Staff dengan Jabatan
         if ($role) {
-            $queryDosen = Dosen::select("nip", "nama");
+            $dosens = DosenService::getWithOriginalName();
             if ($jenis_user == "dosen") {
-                $queryDosen->where("nip", "!=", $user_id);
+                $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                    return $dosen->nip != $user_id;
+                });
             }
-            $dosens = $queryDosen->orderBy("nama")->get();
-
             $queryStaff = User::select("username", "nama");
             if ($jenis_user == "admin") {
                 $queryStaff->where("username", "!=", $user_id);
             }
             $staffs = $queryStaff->orderBy("nama")->get();
 
-            return view("doc.pengumuman.create", compact('dosens', 'staffs', 'kategoris', 'prodis', 'mahasiswas'));
+            return view("doc.pengumuman.create", compact('dosens', 'staffs', 'kategoris', 'prodis', 'mahasiswas', 'semesters'));
         }
         // Untuk Dosen Tanpa Jabatan
         else {
-            return view("doc.pengumuman.create-no-role", compact('kategoris', 'prodis', 'mahasiswas'));
+            return view("doc.pengumuman.create-no-role", compact('kategoris', 'prodis', 'mahasiswas', 'semesters'));
         }
     }
 
@@ -146,90 +118,9 @@ class PengumumanController extends Controller
             ]);
         }
 
-        if (!$request->has("select_all_dosen")) {
-            $dosenMentions = $request->input("dosen");
-            // Create Data Mention
-            if (is_array($dosenMentions)) {
-                foreach ($dosenMentions as $mention) {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => $mention,
-                        'jenis_user' => 'dosen'
-                    ]);
-                }
-            }
-        }
+        // Untuk Menyimpan Data Orang Yang Dikirim Pengumuman
+        PengumumanService::saveMentions($request, $pengumuman->id);
 
-        if (!$request->has("select_all_staf")) {
-            $stafMentions = $request->input("staf");
-            // Create Data Mention
-            if (is_array($stafMentions)) {
-                foreach ($stafMentions as $mention) {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => $mention,
-                        'jenis_user' => 'admin'
-                    ]);
-                }
-            }
-        }
-
-        if (!$request->has("select_all_mahasiswa")) {
-            // D3 Teknik Elektro
-            if ($request->has("d3te")) {
-                if (!$request->has("select_all_d3te")) {
-                    foreach ($request->d3te as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "d3te_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-            // S1 Teknik Elektro
-            if ($request->has("s1te")) {
-                if (!$request->has("select_all_s1te")) {
-                    foreach ($request->s1te as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "s1te_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-            // S1 Teknik Informatika
-            if ($request->has("s1ti")) {
-                if (!$request->has("select_all_s1ti")) {
-                    foreach ($request->s1ti as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "s1ti_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-        }
         Alert::success('Berhasil!', 'Berhasil membuat pengumuman baru')->showConfirmButton('Ok', '#28a745');
         return redirect()->route('pengumuman.index');
     }
@@ -247,14 +138,17 @@ class PengumumanController extends Controller
         $user_id = $request->user_id;
         $role = Auth::guard($jenis_user == "admin" ? "web" : $jenis_user)->user()->role_id;
         $data = Pengumuman::findOrFail($id);
-        $mahasiswas = Mahasiswa::getMahasiswaByAngkatan();
+        $mahasiswas = MahasiswaService::groupByProdiAngkatan();
+        $semesters = Semester::select("nama")->get();
+
         // Dosen dan Staff dengan Jabatan
         if ($role) {
-            $queryDosen = Dosen::select("nip", "nama");
+            $dosens = DosenService::getWithOriginalName();
             if ($jenis_user == "dosen") {
-                $queryDosen->where("nip", "!=", $user_id);
+                $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                    return $dosen->nip != $user_id;
+                });
             }
-            $dosens = $queryDosen->orderBy("nama")->get();
 
             $queryStaff = User::select("username", "nama");
             if ($jenis_user == "admin") {
@@ -262,11 +156,11 @@ class PengumumanController extends Controller
             }
             $staffs = $queryStaff->orderBy("nama")->get();
 
-            return view("doc.pengumuman.edit", compact('data', 'dosens', 'staffs', 'kategoris', 'mahasiswas'));
+            return view("doc.pengumuman.edit", compact('data', 'dosens', 'staffs', 'kategoris', 'mahasiswas', 'semesters'));
         }
         // Untuk Dosen Tanpa Jabatan
         else {
-            return view("doc.pengumuman.edit-no-role", compact('data', 'kategoris', 'mahasiswas'));
+            return view("doc.pengumuman.edit-no-role", compact('data', 'kategoris', 'mahasiswas', 'semesters'));
         }
     }
 
@@ -304,93 +198,9 @@ class PengumumanController extends Controller
 
         //clear data mention
         PengumumanMention::where("pengumuman_id", $id)->delete();
+        // Untuk Menyimpan Data Orang Yang Dikirim Pengumuman
+        PengumumanService::saveMentions($request, $pengumuman->id);
 
-        // Add mention untuk dosen
-        if (!$request->has("select_all_dosen")) {
-            $dosenMentions = $request->input("dosen");
-            // Create Data Mention
-            if (is_array($dosenMentions)) {
-                foreach ($dosenMentions as $mention) {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $id,
-                        'user_mentioned' => $mention,
-                        'jenis_user' => 'dosen'
-                    ]);
-                }
-            }
-        }
-
-        // Add mention untuk staf
-        if (!$request->has("select_all_staf")) {
-            $stafMentions = $request->input("staf");
-            // Create Data Mention
-            if (is_array($stafMentions)) {
-                foreach ($stafMentions as $mention) {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => $mention,
-                        'jenis_user' => 'admin'
-                    ]);
-                }
-            }
-        }
-
-        if (!$request->has("select_all_mahasiswa")) {
-            // D3 Teknik Elektro
-            if ($request->has("d3te")) {
-                if (!$request->has("select_all_d3te")) {
-                    foreach ($request->d3te as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "d3te_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-            // S1 Teknik Elektro
-            if ($request->has("s1te")) {
-                if (!$request->has("select_all_s1te")) {
-                    foreach ($request->s1te as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "s1te_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-            // S1 Teknik Informatika
-            if ($request->has("s1ti")) {
-                if (!$request->has("select_all_s1ti")) {
-                    foreach ($request->s1ti as $nim) {
-                        PengumumanMention::create([
-                            'pengumuman_id' => $pengumuman->id,
-                            'user_mentioned' => $nim,
-                            'jenis_user' => 'mahasiswa'
-                        ]);
-                    }
-                } else {
-                    PengumumanMention::create([
-                        'pengumuman_id' => $pengumuman->id,
-                        'user_mentioned' => "s1ti_all",
-                        'jenis_user' => 'mahasiswa'
-                    ]);
-                }
-            }
-        }
         Alert::success('Berhasil!', 'Berhasil membuat mengubah pengumuman')->showConfirmButton('Ok', '#28a745');
         return redirect()->route("pengumuman.index");
     }

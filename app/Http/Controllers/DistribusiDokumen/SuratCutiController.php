@@ -22,7 +22,7 @@ class SuratCutiController extends Controller
         $jenis_cuti = ['tahunan', 'besar', 'sakit', 'melahirkan', 'kepentingan'];
         $jenis_user = $request->jenis_user;
 
-        $jabatan = $request->jenis_user;
+        $jabatan = null;
         $role = Role::where('id', Auth::guard($request->jenis_user == 'admin' ? 'web' : $request->jenis_user)->user()->role_id)->first();
         if ($role) {
             $jabatan = $role->role_akses;
@@ -39,6 +39,7 @@ class SuratCutiController extends Controller
             "mulai_cuti" => "required|date",
             "selesai_cuti" => "required|date|after:mulai_cuti",
             "alamat_cuti" => "required",
+            "lampiran" => "file|max:5120"
         ], [
             'jenis_cuti.required' => 'Jenis cuti harus diisi.',
             'alasan_cuti.required' => 'Alasan cuti harus diisi.',
@@ -46,20 +47,39 @@ class SuratCutiController extends Controller
             'selesai_cuti.required' => 'Tanggal selesai cuti harus diisi.',
             'selesai_cuti.after' => 'Tanggal selesai cuti harus melebihi tanggal mulai cuti',
             'alamat_cuti.required' => 'Alamat selama cuti harus diisi.',
+            'lampiran.max' => 'Lampiran tidak dapat lebih dari 5MB'
         ]);
+
         $mulai_cuti = Carbon::parse($request->mulai_cuti);
         $selesai_cuti = Carbon::parse($request->selesai_cuti);
 
-        SuratCuti::create([
-            'jenis_user' => $request->jenis_user,
-            'user_created' => $request->user_id,
-            "jenis_cuti" => $request->jenis_cuti,
-            "alasan_cuti" => $request->alasan_cuti,
-            "mulai_cuti" => $mulai_cuti,
-            "selesai_cuti" => $selesai_cuti,
-            "alamat_cuti" => $request->alamat_cuti,
-            "lama_cuti" => $mulai_cuti->diffInDays($selesai_cuti)
-        ]);
+        $lampiran = $request->file("lampiran");
+        if ($lampiran) {
+            SuratCuti::create([
+                'jenis_user' => $request->jenis_user,
+                'user_created' => $request->user_id,
+                "jenis_cuti" => $request->jenis_cuti,
+                "alasan_cuti" => $request->alasan_cuti,
+                "mulai_cuti" => $mulai_cuti,
+                "selesai_cuti" => $selesai_cuti,
+                "alamat_cuti" => $request->alamat_cuti,
+                "lama_cuti" => $mulai_cuti->diffInDays($selesai_cuti),
+                "url_lampiran" => $request->url_lampiran,
+                "url_lampiran_lokal" => str_replace('public/', '', $lampiran->store('public/suratcuti')),
+            ]);
+        } else {
+            SuratCuti::create([
+                'jenis_user' => $request->jenis_user,
+                'user_created' => $request->user_id,
+                "jenis_cuti" => $request->jenis_cuti,
+                "alasan_cuti" => $request->alasan_cuti,
+                "mulai_cuti" => $mulai_cuti,
+                "selesai_cuti" => $selesai_cuti,
+                "alamat_cuti" => $request->alamat_cuti,
+                "lama_cuti" => $mulai_cuti->diffInDays($selesai_cuti),
+                "url_lampiran" => $request->url_lampiran
+            ]);
+        }
         Alert::success('Berhasil!', 'Berhasil mengajukan Surat Cuti')->showConfirmButton('Ok', '#28a745');
         return redirect()->route("doc.index");
     }
@@ -102,6 +122,7 @@ class SuratCutiController extends Controller
             "mulai_cuti" => "required|date",
             "selesai_cuti" => "required|date|after:mulai_cuti",
             "alamat_cuti" => "required",
+            "lampiran" => "file|max:5120"
         ], [
             'jenis_cuti.required' => 'Jenis cuti harus diisi.',
             'alasan_cuti.required' => 'Alasan cuti harus diisi.',
@@ -109,6 +130,7 @@ class SuratCutiController extends Controller
             'selesai_cuti.required' => 'Tanggal selesai cuti harus diisi.',
             'selesai_cuti.after' => 'Tanggal selesai cuti harus melebihi tanggal mulai cuti',
             'alamat_cuti.required' => 'Alamat selama cuti harus diisi.',
+            'lampiran.max' => 'Lampiran tidak dapat lebih dari 5MB'
         ]);
         $mulai_cuti = Carbon::parse($request->mulai_cuti);
         $selesai_cuti = Carbon::parse($request->selesai_cuti);
@@ -119,7 +141,12 @@ class SuratCutiController extends Controller
         $suratCuti->mulai_cuti = $mulai_cuti;
         $suratCuti->selesai_cuti = $selesai_cuti;
         $suratCuti->alamat_cuti = $request->alamat_cuti;
+        $suratCuti->url_lampiran = $request->url_lampiran;
         $suratCuti->lama_cuti = $mulai_cuti->diffInDays($selesai_cuti);
+        $lampiran = $request->file("lampiran");
+        if ($lampiran) {
+            $suratCuti->url_lampiran_lokal = str_replace('public/', '', $lampiran->store('public/suratcuti'));
+        }
         $suratCuti->update();
 
         return redirect()->route('doc.index');

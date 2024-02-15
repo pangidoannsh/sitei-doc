@@ -77,22 +77,6 @@
                     Arsip(<span>{{ count($dokumens) }}</span>)
                 </a>
             </li>
-            @if (optional(Auth::guard('web')->user())->role_id == 1 || optional(Auth::guard('dosen')->user())->role_id == 5)
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.jurusan') }}" class="px-1">
-                        Arsip Jurusan
-                    </a>
-                </li>
-            @elseif (in_array(optional(Auth::guard('web')->user())->role_id, [2, 3, 4]) ||
-                    in_array(optional(Auth::guard('dosen')->user())->role_id, [6, 7, 8]))
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.prodi') }}" class="px-1">
-                        Arsip Prodi
-                    </a>
-                </li>
-            @endif
         </ul>
 
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
@@ -105,7 +89,7 @@
                     <th class="text-center" scope="col">Tanggal Usulan</th>
                     <th class="text-center" scope="col">Jenis/Kategori</th>
                     <th class="text-center" scope="col">Keterangan</th>
-                    {{-- <th class="text-center" scope="col">Semester</th> --}}
+                    <th class="text-center" scope="col">Semester</th>
                     <th class="text-center" scope="col">Aksi</th>
                 </tr>
             </thead>
@@ -116,7 +100,7 @@
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis">
                                 @if ($dokumen->jenisDokumen == 'surat_cuti')
-                                    Cuti Pengajuan Cuti {{ $dokumen->jenis_cuti }}
+                                    Pengajuan Cuti {{ $dokumen->jenis_cuti }}
                                 @else
                                     {{ $dokumen->nama }}
                                 @endif
@@ -298,11 +282,9 @@
                             </div>
                         </td>
                         {{-- Semester --}}
-                        {{-- <td class="text-center text-capitalize">
-                            @if ($dokumen->jenisDokumen == 'dokumen')
-                                {{ $dokumen->semester }}
-                            @endif
-                        </td> --}}
+                        <td class="text-center text-capitalize">
+                            {{ $dokumen->semester ?? '' }}
+                        </td>
                         {{-- Aksi --}}
                         <td class="text-center" style="width: max-content">
                             <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">

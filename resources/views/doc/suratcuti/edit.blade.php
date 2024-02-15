@@ -13,7 +13,7 @@
         <h2 class="text-center fw-semibold ">Formulir Surat Cuti</h2>
 
         <form action="{{ route('suratcuti.update', ['id' => $suratCuti->id]) }}" method="POST"
-            class="d-flex flex-column gap-3">
+            class="d-flex flex-column gap-3" enctype="multipart/form-data">
             @method('put')
             @csrf
             <div>
@@ -79,6 +79,50 @@
                     @enderror
                 </div>
             </div>
+            <div id="current-dokumen">
+                <label class="fw-semibold">Lampiran</label>
+                <div class="d-flex gap-2 align-items-center">
+                    @if ($suratCuti->url_lampiran || $suratCuti->url_lampiran_lokal)
+                        @if ($suratCuti->url_lampiran_lokal)
+                            <a href="{{ asset('storage/' . $suratCuti->url_lampiran_lokal) }}" target="_blank"
+                                class="btn btn-success px-3 rounded-3" style="width:max-content">
+                                Lampiran Saat ini
+                            </a>
+                        @endif
+                        @if ($suratCuti->url_lampiran)
+                            <a href="{{ $suratCuti->url_lampiran }}" target="_blank" class="btn btn-success px-3 rounded-3"
+                                style="width:max-content">
+                                Lampiran Saat ini
+                            </a>
+                        @endif
+                    @else
+                        (Belum ada file terlampir)
+                    @endif
+                    <button class="btn text-warning" type="button" id="btn-edit-dokumen" title="ubah dokumen">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="gap-4 align-items-center d-none bg-white p-4 pt-5 rounded-3 position-relative" id="input-dokumen">
+                <button type="button" id="close-button-input" class="btn text-secondary position-absolute"
+                    title="batal ubah link dokumen" style="right: 4px;top:0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="w-100">
+                    <label for="lampiran" class="fw-semibold">Lampiran</label>
+                    <input type="file" class="form-control rounded-3 @error('lampiran') is-invalid @enderror"
+                        name="lampiran" id="lampiran">
+                    @error('lampiran')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="or-divider">atau</div>
+                <div class="w-100">
+                    <label for="url_lampiran" class="fw-semibold">Tempel URL Lampiran</label>
+                    <input type="url" class="form-control rounded-3" value="{{ $suratCuti->url_lampiran }}"
+                        name="url_lampiran" placeholder="https://drive.google.com/..." id="url_lampiran">
+                </div>
+            </div>
             <div style="margin-bottom: 120px">
                 <label for="alamat_cuti" class="fw-semibold">Alamat Selama Cuti</label>
                 <textarea class="form-control rounded-3 py-4 @error('alamat_cuti') is-invalid @enderror"
@@ -107,3 +151,18 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script>
+        const btnEditDokumen = $("#btn-edit-dokumen")
+        btnEditDokumen.on("click", () => {
+            $("#input-dokumen").removeClass("d-none")
+            $("#input-dokumen").addClass("d-flex")
+        })
+
+        $("#close-button-input").on('click', () => {
+            $("#input-dokumen").removeClass("d-flex")
+            $("#input-dokumen").addClass("d-none")
+        })
+    </script>
+@endpush

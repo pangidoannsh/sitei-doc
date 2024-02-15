@@ -1,5 +1,9 @@
 @extends('doc.main-layout')
 
+@php
+    use Carbon\Carbon;
+@endphp
+
 @section('title')
     SITEI | Distribusi Surat & Dokumen
 @endsection
@@ -244,7 +248,7 @@
                                                     <input class="form-check-input mahasiswa-selector d3te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="1_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="mahasiswa[]">
+                                                        name="d3te[{{ $angkatan }}][]">
                                                     <label class="form-check-label text-capitalize"
                                                         for="1_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
@@ -302,7 +306,7 @@
                                                     <input class="form-check-input mahasiswa-selector s1te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="2_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="mahasiswa[]">
+                                                        name="s1te[{{ $angkatan }}][]">
                                                     <label class="form-check-label text-capitalize"
                                                         for="2_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ Str::ucfirst($mahasiswa->nama) }} ({{ $mahasiswa->nim }})
@@ -360,7 +364,7 @@
                                                 <div class="col form-check mb-2">
                                                     <input class="form-check-input mahasiswa-selector s1ti-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="mahasiswa[]">
+                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="s1ti[{{ $angkatan }}][]">
                                                     <label class="form-check-label text-capitalize"
                                                         for="3_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})

@@ -67,11 +67,30 @@
                         <span class="text-success"> ({{ $data->lama_cuti }} Hari)</span>
                     </div>
                 </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Lampiran</div>
+                    @if ($data->url_lampiran || $data->url_lampiran_lokal)
+                        @if ($data->url_lampiran_lokal)
+                            <a href="{{ asset('storage/' . $data->url_lampiran_lokal) }}" target="_blank"
+                                class="btn btn-success px-5 rounded-3" style="width:max-content">
+                                Lampiran
+                            </a>
+                        @endif
+                        @if ($data->url_lampiran)
+                            <a href="{{ $data->url_lampiran }}" target="_blank" class="btn btn-success px-5 rounded-3"
+                                style="width:max-content">
+                                Lampiran
+                            </a>
+                        @endif
+                    @else
+                        <div class="value">(Tidak ada file terlampir)</div>
+                    @endif
+                </div>
                 <hr>
                 @if ($data->user_created == $userId)
                     <div class="d-flex flex-column gap-1">
                         <a href="{{ route('suratcuti.edit', $data->id) }}"
-                            class="btn btn-outline-success py-2 fw-semibold rounded-3">
+                            class="btn btn-success py-2 fw-semibold rounded-3">
                             Ubah Pengajuan
                         </a>
                         @if ($data->status == 'ditolak')

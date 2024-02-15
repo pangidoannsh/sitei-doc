@@ -16,7 +16,8 @@
     <div class="">
         <h2 class="text-center fw-semibold ">Formulir Surat Cuti</h2>
 
-        <form action="{{ route('suratcuti.store') }}" method="POST" class="d-flex flex-column gap-3">
+        <form action="{{ route('suratcuti.store') }}" method="POST" class="d-flex flex-column gap-3"
+            enctype="multipart/form-data">
             @method('post')
             @csrf
             <div>
@@ -32,11 +33,13 @@
                         value="{{ Auth::guard('dosen')->user()->nip }}" id="nip" disabled>
                 </div>
             @endif
-            <div>
-                <label for="jabatan" class="fw-semibold">Jabatan</label>
-                <input type="text" class="form-control rounded-3 py-4 text-capitalize" name="jabatan"
-                    value="{{ $jabatan }}" id="jabatan" disabled>
-            </div>
+            @if ($jabatan)
+                <div>
+                    <label for="jabatan" class="fw-semibold">Jabatan</label>
+                    <input type="text" class="form-control rounded-3 py-4 text-capitalize" name="jabatan"
+                        value="{{ $jabatan }}" id="jabatan" disabled>
+                </div>
+            @endif
             <div>
                 <label for="jenis_cuti" class="fw-semibold">Jenis Cuti<span class="text-danger">*</span></label>
                 <div class="input-group">
@@ -81,6 +84,22 @@
                     @error('selesai_cuti')
                         <div class="error-input-right text-danger">{{ $message }} </div>
                     @enderror
+                </div>
+            </div>
+            <div class="d-flex gap-4 align-items-center">
+                <div class="w-100">
+                    <label for="lampiran" class="fw-semibold">Lampiran</label>
+                    <input type="file" class="form-control rounded-3 @error('lampiran') is-invalid @enderror"
+                        name="lampiran" id="lampiran">
+                    @error('lampiran')
+                        <div class="invalid-feedback">{{ $message }} </div>
+                    @enderror
+                </div>
+                <div class="or-divider">atau</div>
+                <div class="w-100">
+                    <label for="url_lampiran" class="fw-semibold">Tempel URL Lampiran</label>
+                    <input type="url" class="form-control rounded-3" value="{{ old('url_lampiran') }}"
+                        name="url_lampiran" placeholder="Contoh: https://drive.google.com/..." id="url_lampiran">
                 </div>
             </div>
             <div style="margin-bottom: 120px">

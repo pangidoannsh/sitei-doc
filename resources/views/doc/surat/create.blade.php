@@ -20,6 +20,24 @@
             @method('post')
             @csrf
             <div>
+                <label for="kepada" class="fw-semibold">Tujuan Surat<span class="text-danger">*</span></label>
+                <div class="input-group">
+                    <select name="tujuan_surat" id="kepada"
+                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
+                        <option value="" class="text-capitalize" selected disabled>Pilih Tujuan Surat</option>
+                        @foreach ($roles as $role)
+                            <option value="{{ $role->id }}" class="text-capitalize"
+                                {{ old('tujuan_surat') == $role->id ? 'selected' : '' }}>
+                                {{ $role->nama_dosen ?? $role->nama_admin }} ({{ $role->akses }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('tujuan_surat')
+                        <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
+                    @enderror
+                </div>
+            </div>
+            <div>
                 <label for="nama" class="fw-semibold">Nama Surat<span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4" name="nama"
                     placeholder="Contoh: Surat Pengantar..." id="nama" value="{{ old('nama') }}">

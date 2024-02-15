@@ -8,6 +8,9 @@ use App\Models\DistribusiDokumen\DokumenMention;
 use App\Models\DistribusiSurat\Semester;
 use App\Models\Dosen;
 use App\Models\User;
+use App\Services\DokumenService;
+use App\Services\DosenService;
+use App\Services\MahasiswaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -20,21 +23,22 @@ class DokumenController extends Controller
     {
         $jenis_user = $request->jenis_user;
         $user_id = $request->user_id;
-        $queryDosen = Dosen::select("nip", "nama")->orderBy("nama");
+        $dosens = DosenService::getWithOriginalName();
         if ($jenis_user == "dosen") {
-            $queryDosen->where("nip", "!=", Auth::guard('dosen')->user()->nip);
+            $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                return $dosen->nip != $user_id;
+            });
         }
-        $dosens = $queryDosen->get();
 
         $queryStaf = User::select("username", "nama")->orderBy("nama");
         if ($jenis_user == "admin") {
             $queryStaf->where("username", "!=", $user_id);
         }
         $staffs = $queryStaf->get();
-
+        $mahasiswas = MahasiswaService::groupByProdiAngkatan();
         $kategoris = $this->kategoris;
         $semesters = Semester::all();
-        return view("doc.dokumen.create", compact('dosens', 'kategoris', 'staffs', 'semesters'));
+        return view("doc.dokumen.create", compact('dosens', 'kategoris', 'staffs', 'semesters', 'mahasiswas'));
     }
 
     public function store(Request $request)
@@ -82,17 +86,8 @@ class DokumenController extends Controller
             ]);
         }
 
-        $dosenMentions = $request->input("dosen");
-        // Create Data Mention
-        if (is_array($dosenMentions)) {
-            foreach ($dosenMentions as $mention) {
-                DokumenMention::create([
-                    'dokumen_id' => $dokumen->id,
-                    'user_mentioned' => $mention,
-                    'jenis_user' => 'dosen'
-                ]);
-            }
-        }
+        // Simpan Mention
+        DokumenService::saveMentions($request, $dokumen->id);
 
         Alert::success('Berhasil!', 'Berhasil membuat usulan baru')->showConfirmButton('Ok', '#28a745');
         return redirect()->route('doc.index');
@@ -110,17 +105,27 @@ class DokumenController extends Controller
     public function edit(Request $request, $id)
     {
         $jenis_user = $request->jenis_user;
-        $queryDosen = Dosen::select("nip", "nama");
-        if ($jenis_user == "dosen") {
-            $queryDosen->where("nip", "!=", Auth::guard('dosen')->user()->nip);
-        }
-        $dosens = $queryDosen->orderBy("nama")->get();
+        $user_id = $request->user_id;
         $dokumen = Dokumen::findOrFail($id);
         if ($dokumen->user_created != $request->user_id) {
             abort(403);
         }
+        $dosens = DosenService::getWithOriginalName();
+        if ($jenis_user == "dosen") {
+            $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                return $dosen->nip != $user_id;
+            });
+        }
+
+        $queryStaf = User::select("username", "nama")->orderBy("nama");
+        if ($jenis_user == "admin") {
+            $queryStaf->where("username", "!=", $user_id);
+        }
+        $staffs = $queryStaf->get();
+        $mahasiswas = MahasiswaService::groupByProdiAngkatan();
         $kategoris = $this->kategoris;
-        return view('doc.dokumen.edit', compact('dosens', 'dokumen', 'kategoris'));
+        $semesters = Semester::all();
+        return view('doc.dokumen.edit', compact('dosens', 'dokumen', 'kategoris', 'staffs', 'mahasiswas', 'semesters'));
     }
 
     public function update(Request $request, $id)
@@ -130,12 +135,14 @@ class DokumenController extends Controller
             "nama" => "required",
             'dokumen' => 'file|max:10240',
             'kategori' => 'required',
-            'tgl_dokumen' => "required"
+            'tgl_dokumen' => "required",
+            'semester' => "required"
         ], [
             'nama.required' => 'Nama dokumen harus diisi.',
             'tgl_dokumen.required' => 'Tanggal dokumen harus diisi.',
             'kategori' => 'Pilih kategori dokumen terlebih dahulu',
-            'dokumen.max' => 'Ukuran dokumen melebihi 10MB'
+            'dokumen.max' => 'Ukuran dokumen melebihi 10MB',
+            'semester.required' => "Semester harus diisi"
         ]);
 
         $dokumenUpload = $request->file('dokumen');
@@ -144,6 +151,7 @@ class DokumenController extends Controller
         $dokumen->keterangan = $request->keterangan;
         $dokumen->kategori = $request->kategori;
         $dokumen->semester = $request->semester;
+        $dokumen->tgl_dokumen = $request->tgl_dokumen;
 
         if ($dokumenUpload) {
             $dokumen->url_dokumen_lokal = str_replace('public/', '', $dokumenUpload->store('public/dokumen'));
@@ -151,20 +159,11 @@ class DokumenController extends Controller
         $dokumen->url_dokumen = $request->url_dokumen;
         $dokumen->update();
 
-        // Store data user yang ter-mentions
-        $userMentioned =  explode("--", $request->user_mentioned);
         //clear data mention
         DokumenMention::where("dokumen_id", $id)->delete();
-        //create new data mention
-        foreach ($userMentioned as $userIdMention) {
-            if ($userIdMention) {
-                DokumenMention::create([
-                    'dokumen_id' => $id,
-                    'user_mentioned' => $userIdMention,
-                    'jenis_user' => 'dosen'
-                ]);
-            }
-        }
+
+        // Simpan Mention
+        DokumenService::saveMentions($request, $dokumen->id);
 
         Alert::success('Berhasil!', 'Berhasil membuat mengubah usulan')->showConfirmButton('Ok', '#28a745');
         return redirect()->route("doc.index");

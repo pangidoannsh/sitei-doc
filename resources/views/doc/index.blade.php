@@ -2,6 +2,24 @@
 
 @php
     use Carbon\Carbon;
+    function displayKeteranganSertifikat($status)
+    {
+        switch ($status) {
+            case 'staf_jurusan':
+                return 'Menunggu Persetujuan Staf Administrasi';
+                break;
+            case 'kajur':
+                return 'Menunggu Persetujuan Ketua Jurusan';
+                break;
+            case 'meminta_persetujuan':
+                return 'Menunggu Persetujuan Penandatangan Sertifikat';
+                break;
+            case 'disetujui':
+                return 'Dalam Proses Pelengkapan Sertifikat';
+                break;
+        }
+    }
+    $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
     function getKeteranganCuti($status)
     {
         switch ($status) {
@@ -53,6 +71,8 @@
                             break;
 
                         default:
+                            [$prodi, $angkatan] = explode('_', $mention->user_mentioned);
+                            array_push($penerima, 'Mahasiswa ' . ($prodi == 'd3te' ? 'Teknik Elektro D3' : ($prodi == 's1te' ? 'Teknik Elektro S1' : 'Teknik Informatika S1')) . ' ' . $angkatan);
                             break;
                     }
                 } else {
@@ -95,23 +115,37 @@
                     Arsip
                 </a>
             </li>
-            @if (optional(Auth::guard('web')->user())->role_id == 1 || optional(Auth::guard('dosen')->user())->role_id == 5)
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.jurusan') }}" class="px-1">
-                        Arsip Jurusan
-                    </a>
-                </li>
-            @elseif (in_array(optional(Auth::guard('web')->user())->role_id, [2, 3, 4]) ||
-                    in_array(optional(Auth::guard('dosen')->user())->role_id, [6, 7, 8]))
-                <span class="px-2">|</span>
-                <li>
-                    <a href="{{ route('arsip.prodi') }}" class="px-1">
-                        Arsip Prodi
-                    </a>
-                </li>
-            @endif
         </ul>
+        <div class="d-flex justify-content-center gap-3 filter">
+            <div class="input-group" style="width: max-content">
+                <label for="statusFilter">Status</label>
+                <select id="statusFilter" class="rounded-3 py-1" text-capitalize>
+                    <option value="" selected>Semua</option>
+                    <option value="pengumuman">Pengumuman</option>
+                    <option value="dokumen">Dokumen</option>
+                    <option value="surat">Surat</option>
+                    <option value="sertifikat">Sertifikat</option>
+                </select>
+            </div>
+            <div class="input-group" style="width: max-content">
+                <label for="kategoriFilter">Jenis/Kategori</label>
+                <select id="kategoriFilter" class="rounded-3 py-1 text-capitalize">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="input-group" style="width: max-content">
+                <label for="semesterFilter">Semester</label>
+                <select id="semesterFilter" class="rounded-3 py-1 text-capitalize">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
@@ -235,7 +269,7 @@
                                 @break
 
                                 @case('surat')
-                                    Staf Administrasi
+                                    {{ $dokumen->penerima->role_akses }}
                                 @break
 
                                 @default
@@ -306,7 +340,7 @@
                                     @break
 
                                     @case('sertifikat')
-                                        Dalam Proses Pembuatan Oleh Staf Admin
+                                        {{ displayKeteranganSertifikat($dokumen->status) }}
                                     @break
 
                                     @default
@@ -315,9 +349,7 @@
                         </td>
                         {{-- Semester --}}
                         <td class="text-center text-capitalize">
-                            @if ($dokumen->jenisDokumen == 'dokumen')
-                                {{ $dokumen->semester }}
-                            @endif
+                            {{ $dokumen->semester ?? '' }}
                         </td>
                         {{-- Aksi --}}
                         <td class="text-center" style="width: max-content">
@@ -387,16 +419,18 @@
                                                     <i class="fas fa-check-circle" aria-hidden="true"></i>
                                                 </a>
                                             </div>
-                                            {{-- Button Tolak Kiriman Dokumen --}}
-                                            <form method="POST" class="show-reject-dokumen"
-                                                action="{{ route('dokumen.mention.delete', ['dokumen_id' => $dokumen->id, 'user_mentioned' => $user_id]) }}">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                    style="cursor:pointer;" title="Tolak Kiriman">
-                                                    <i class="fas fa-times-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </form>
+                                            @if (!data_get($dokumen, $dokumen->jenis_user . '.role_id'))
+                                                {{-- Button Tolak Kiriman Dokumen --}}
+                                                <form method="POST" class="show-reject-dokumen"
+                                                    action="{{ route('dokumen.mention.delete', ['dokumen_id' => $dokumen->id, 'user_mentioned' => $user_id]) }}">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
+                                                        style="cursor:pointer;" title="Tolak Kiriman">
+                                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         @endif
                                     @break
 
@@ -471,6 +505,15 @@
                                                 </a>
                                             </div>
                                         @endif
+                                        {{-- @if ($jenis_user == 'admin' && $dokumen->role_handler == Auth::guard('web')->user()->role_id && $dokumen->status == 'staf_prodi')
+                                            <div>
+                                                <a title="Setujui Pengajuan"
+                                                    href="{{ route('surat.acc.stafprodi', $dokumen->id) }}"
+                                                    class="badge btn btn-success p-1 rounded-lg" style="cursor:pointer;">
+                                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
+                                        @endif --}}
                                     @break
 
                                     @case('sertifikat')
@@ -621,4 +664,4 @@
             })
         })
     </script>
-@endpush()
+@endpush
