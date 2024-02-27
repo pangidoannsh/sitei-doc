@@ -39,9 +39,21 @@ class SuratCuti extends Model
         }
         return $query->get();
     }
+    public static function countInProgresStatus($userId, $roleId)
+    {
+        $query = self::where("status", "proses");
+        if ($roleId != 5) {
+            $query->where("user_created", $userId);
+        }
+        return $query->count();
+    }
 
     public static function getArchive($userId)
     {
         return self::where("user_created", $userId)->where("status", "!=", "proses")->get();
+    }
+    public static function countArchive($userId)
+    {
+        return self::where("user_created", $userId)->where("status", "!=", "proses")->count();
     }
 }

@@ -30,6 +30,12 @@ class Dosen extends Authenticatable
     // ];
     protected $table = 'dosen';
     protected $guarded = [];
+    protected $appends = ['jenisUser'];
+
+    public function getJenisUserAttribute()
+    {
+        return "dosen";
+    }
 
     public function prodi()
     {

@@ -41,9 +41,9 @@ class NotifPendaftaranSkripsi extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-        ->subject('Kerja Praktek Disetujui')
-        ->line('Permintaan kerja praktek Anda telah disetujui.')
-        ->action('Lihat Detail', url('/'));
+            ->subject('Kerja Praktek Disetujui')
+            ->line('Permintaan kerja praktek Anda telah disetujui.')
+            ->action('Lihat Detail', url('/'));
     }
 
     /**

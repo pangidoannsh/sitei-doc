@@ -8,10 +8,6 @@
     SITEI | Distribusi Surat & Dokumen
 @endsection
 
-{{-- @section('sub-title')
-    Buat Usulan
-@endsection --}}
-
 @section('content')
     <div class="">
         <h2 class="text-center fw-semibold ">Surat Baru</h2>
@@ -23,12 +19,12 @@
                 <label for="kepada" class="fw-semibold">Tujuan Surat<span class="text-danger">*</span></label>
                 <div class="input-group">
                     <select name="tujuan_surat" id="kepada"
-                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
+                        class="text-secondary form-select text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
                         <option value="" class="text-capitalize" selected disabled>Pilih Tujuan Surat</option>
-                        @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" class="text-capitalize"
-                                {{ old('tujuan_surat') == $role->id ? 'selected' : '' }}>
-                                {{ $role->nama_dosen ?? $role->nama_admin }} ({{ $role->akses }})
+                        @foreach ($dosens as $dosen)
+                            <option value="{{ $dosen->role_id }}" class="text-capitalize"
+                                {{ old('tujuan_surat') == $dosen->role_id ? 'selected' : '' }}>
+                                {{ $dosen->nama }} ({{ $dosen->role->role_akses }})
                             </option>
                         @endforeach
                     </select>
@@ -45,6 +41,13 @@
                     <div class="invalid-feedback">{{ $message }} </div>
                 @enderror
             </div>
+            <div>
+                <label for="semester" class="fw-semibold">Semester</label>
+                <input type="text" class="form-control rounded-3 py-4 text-capitalize" disabled id="semester"
+                    value="{{ $semester->nama }}">
+                <input type="hidden" name="semester" value="{{ $semester->nama }}">
+            </div>
+
             <div>
                 <label for="keterangan" class="fw-semibold">Keterangan</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Keterangan" name="keterangan" id="keterangan" cols="3">{{ old('keterangan') }}</textarea>

@@ -20,7 +20,6 @@ class CreateSertifikatsTable extends Migration
             $table->string("sign_by");
             $table->string("rejected_by")->nullable();
             $table->string("nama");
-            $table->string("jenis");
             $table->string("isi")->nullable();
             $table->string("alasan_ditolak")->nullable();
             $table->date("tanggal");

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\PenerimaSertifikat;
 use App\Models\DistribusiDokumen\Sertifikat;
 use App\Models\Dosen;
+use App\Models\User;
+use App\Services\DosenService;
 use App\Services\MahasiswaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,11 +15,27 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class SertifikatController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        $dosens = Dosen::all();
+        $jenis_user  = $request->jenis_user;
+        $user_id  = $request->user_id;
+        // GET DOSEN
+        $dosens = DosenService::getWithOriginalName();
+        if ($jenis_user == "dosen") {
+            $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                return $dosen->nip != $user_id;
+            });
+        }
+        // GET STAF
+        $queryStaf = User::select("username", "nama")->orderBy("nama");
+        if ($jenis_user == "admin") {
+            $queryStaf->where("username", "!=", $user_id);
+        }
+        $staffs = $queryStaf->get();
+
         $mahasiswas = MahasiswaService::groupByProdiAngkatan();
-        return view("doc.sertifikat.create", compact('mahasiswas', 'dosens'));
+
+        return view("doc.sertifikat.create", compact('mahasiswas', 'dosens', 'staffs'));
     }
 
 
@@ -26,13 +44,11 @@ class SertifikatController extends Controller
         // Validasi Request
         $request->validate([
             "nama" => "required",
-            'jenis' => 'required',
             'tanggal' => "required",
             'sign_by' => "required",
         ], [
             'nama.required' => 'Nama dokumen harus diisi.',
-            'tanggal.required' => 'Tanggal dokumen harus diisi.',
-            'jenis.required' => 'Pilih jenis sertifikat terlebih dahulu',
+            'tanggal.required' => 'Tanggal sertifikat harus diisi.',
             'sign_by.required' => "Pilih penandatangan sertifikat",
         ]);
 
@@ -40,23 +56,48 @@ class SertifikatController extends Controller
 
         $sertif = Sertifikat::create([
             "nama" => $request->nama,
-            "jenis" => $request->jenis,
             "tanggal" => $request->tanggal,
             "user_created" => $userId,
             "sign_by" => $request->sign_by,
             "isi" => $request->isi,
         ]);
 
+        // DOSEN
+        if ($request->has("dosen")) {
+            $dosens = $request->dosen;
+            foreach ($dosens as  $penerima) {
+                PenerimaSertifikat::create([
+                    "user_penerima" => $penerima,
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "dosen"
+                ]);
+            }
+        }
+
+        // STAF
+        if ($request->has("staf")) {
+            $stafs = $request->staf;
+            foreach ($stafs as  $penerima) {
+                PenerimaSertifikat::create([
+                    "user_penerima" => $penerima,
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "staf"
+                ]);
+            }
+        }
+
+        // MAHASISWA
         if ($request->has("mahasiswa")) {
             $mahasiswas = $request->mahasiswa;
             foreach ($mahasiswas as  $penerima) {
                 PenerimaSertifikat::create([
                     "user_penerima" => $penerima,
-                    "sertifikat_id" => $sertif->id
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "mahasiswa"
                 ]);
             }
         }
-
+        // DILUAR PENGGUNA SITEI
         if ($request->has("penerima")) {
             $penerimas = $request->penerima;
             foreach ($penerimas as $penerima) {
@@ -82,14 +123,32 @@ class SertifikatController extends Controller
     }
 
 
-    public function edit($id)
+    public function edit($id, Request $request)
     {
         $data = Sertifikat::findOrFail($id);
-        if ($data->status == 'selesai') abort(404);
+        if ($data->status == 'selesai' || $data->status != "staf_jurusan") abort(404);
+
+        $jenis_user  = $request->jenis_user;
+        $user_id  = $request->user_id;
+        // GET DOSEN
+        $dosens = DosenService::getWithOriginalName();
+        if ($jenis_user == "dosen") {
+            $dosens = $dosens->filter(function ($dosen) use ($user_id) {
+                return $dosen->nip != $user_id;
+            });
+        }
+        // GET STAF
+        $queryStaf = User::select("username", "nama")->orderBy("nama");
+        if ($jenis_user == "admin") {
+            $queryStaf->where("username", "!=", $user_id);
+        }
+        $staffs = $queryStaf->get();
+
         return view("doc.sertifikat.edit", [
             "data" => $data,
             "mahasiswas" => MahasiswaService::groupByProdiAngkatan(),
-            "dosens" => Dosen::all()
+            "dosens" => $dosens,
+            "staffs" => $staffs,
         ]);
     }
 
@@ -98,35 +157,58 @@ class SertifikatController extends Controller
         // Validasi Request
         $request->validate([
             "nama" => "required",
-            'jenis' => 'required',
             'tanggal' => "required",
             'sign_by' => 'required'
         ], [
             'nama.required' => 'Nama dokumen harus diisi.',
             'tanggal.required' => 'Tanggal dokumen harus diisi.',
-            'jenis.required' => 'Pilih jenis sertifikat terlebih dahulu',
             'sign_by.required' => 'Pilih Penandatangan Sertifikat'
         ]);
 
         $sertif = Sertifikat::find($id);
         $sertif->nama = $request->nama;
-        $sertif->jenis = $request->jenis;
         $sertif->isi = $request->isi;
         $sertif->tanggal = $request->tanggal;
         $sertif->sign_by = $request->sign_by;
 
         PenerimaSertifikat::where("sertifikat_id", $id)->delete();
 
+        // DOSEN
+        if ($request->has("dosen")) {
+            $dosens = $request->dosen;
+            foreach ($dosens as  $penerima) {
+                PenerimaSertifikat::create([
+                    "user_penerima" => $penerima,
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "dosen"
+                ]);
+            }
+        }
+
+        // STAF
+        if ($request->has("staf")) {
+            $stafs = $request->staf;
+            foreach ($stafs as  $penerima) {
+                PenerimaSertifikat::create([
+                    "user_penerima" => $penerima,
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "staf"
+                ]);
+            }
+        }
+
+        // MAHASISWA
         if ($request->has("mahasiswa")) {
             $mahasiswas = $request->mahasiswa;
             foreach ($mahasiswas as  $penerima) {
                 PenerimaSertifikat::create([
                     "user_penerima" => $penerima,
-                    "sertifikat_id" => $sertif->id
+                    "sertifikat_id" => $sertif->id,
+                    "jenis_penerima" => "mahasiswa"
                 ]);
             }
         }
-
+        // DILUAR PENGGUNA SITEI
         if ($request->has("penerima")) {
             $penerimas = $request->penerima;
             foreach ($penerimas as $penerima) {
@@ -231,7 +313,7 @@ class SertifikatController extends Controller
         }
         $sertif = Sertifikat::find($id);
         $sertif->status = "selesai";
-        $sertif->status = $request->isi;
+        $sertif->isi = $request->isi;
         $sertif->update();
 
         Alert::success('Berhasil!', 'Berhasil membuat sertifikat')->showConfirmButton('Ok', '#28a745');

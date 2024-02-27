@@ -78,4 +78,25 @@ class Pengumuman extends Model
             }
         })->whereDate('tgl_batas_pengumuman', '<', Carbon::today())->get();
     }
+
+    public static function getCountLatest($jenisUser, $userId)
+    {
+        $for = self::getTargetByUserType($jenisUser);
+        return self::where(function ($query) use ($userId, $for) {
+            $query->where('user_created', $userId);
+            if (!empty($for)) {
+                $query->orWhere($for, true);
+            }
+        })->whereDate('tgl_batas_pengumuman', '>=', now())->count();
+    }
+    public static function getCountArchive($jenisUser, $userId)
+    {
+        $for = self::getTargetByUserType($jenisUser);
+        return self::where(function ($query) use ($userId, $for) {
+            $query->where('user_created', $userId);
+            if (!empty($for)) {
+                $query->orWhere($for, true);
+            }
+        })->whereDate('tgl_batas_pengumuman', '<', now())->count();
+    }
 }

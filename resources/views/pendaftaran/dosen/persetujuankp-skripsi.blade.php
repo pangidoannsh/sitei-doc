@@ -26,14 +26,14 @@
             <li>
                 <a href="/persetujuan-kp-skripsi" class="breadcrumb-item active fw-bold text-success px-1">Persetujuan
                     @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                        Auth::guard('dosen')->user()->role_id == 7 ||
-                        Auth::guard('dosen')->user()->role_id == 8 ||
-                        Auth::guard('dosen')->user()->role_id == 9 ||
-                        Auth::guard('dosen')->user()->role_id == 10 ||
-                        Auth::guard('dosen')->user()->role_id == 11 )
-                       (<span>  {{ $jml_persetujuan_kp + $jml_persetujuan_skripsi + $jml_persetujuan_seminar }} </span>)
-                      @endif
-                    @if(Auth::guard('dosen')->user()->role_id == 5 || Auth::guard('dosen')->user()->role_id == null)
+                            Auth::guard('dosen')->user()->role_id == 7 ||
+                            Auth::guard('dosen')->user()->role_id == 8 ||
+                            Auth::guard('dosen')->user()->role_id == 9 ||
+                            Auth::guard('dosen')->user()->role_id == 10 ||
+                            Auth::guard('dosen')->user()->role_id == 11)
+                        (<span> {{ $jml_persetujuan_kp + $jml_persetujuan_skripsi + $jml_persetujuan_seminar }} </span>)
+                    @endif
+                    @if (Auth::guard('dosen')->user()->role_id == 5 || Auth::guard('dosen')->user()->role_id == null)
                         (<span> {{ $jml_persetujuan_kp + $jml_persetujuan_skripsi }} </span>)
                     @endif
                 </a>
@@ -41,16 +41,19 @@
 
             <span class="px-2">|</span>
             <li>
-                <a href="/kp-skripsi/seminar-pembimbing-penguji" class="px-1">Seminar (<span>{{ $jml_seminar_kp + $jml_sempro + $jml_sidang }}</span>) </a>
+                <a href="/kp-skripsi/seminar-pembimbing-penguji" class="px-1">Seminar
+                    (<span>{{ $jml_seminar_kp + $jml_sempro + $jml_sidang }}</span>) </a>
             </li>
 
             <span class="px-2">|</span>
-            <li><a href="/pembimbing/kerja-praktek" class="px-1">Bimbingan KP (<span>{{ $jml_bimbingankp }}</span>)</a></li>
+            <li><a href="/pembimbing/kerja-praktek" class="px-1">Bimbingan KP (<span>{{ $jml_bimbingankp }}</span>)</a>
+            </li>
             <span class="px-2">|</span>
-            <li><a href="/pembimbing/skripsi" class="px-1">Bimbingan Skripsi (<span>{{ $jml_bimbingan_skripsi }}</span>) </a></li>
+            <li><a href="/pembimbing/skripsi" class="px-1">Bimbingan Skripsi (<span>{{ $jml_bimbingan_skripsi }}</span>)
+                </a></li>
             <span class="px-2">|</span>
             <li><a href="/pembimbing-penguji/riwayat-bimbingan" class="px-1">Riwayat
-                        (<span>{{ $jml_riwayat_kp + $jml_riwayat_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_sidang }}</span>)
+                    (<span>{{ $jml_riwayat_kp + $jml_riwayat_skripsi + $jml_riwayat_seminar_kp + $jml_riwayat_sempro + $jml_riwayat_sidang }}</span>)
                 </a></li>
 
         </ol>
@@ -190,55 +193,55 @@
                             <!-- MULAI -->
                             <!-- PEMBIMBING -->
                             <!-- @if ($kp->status_kp == 'USULAN KP')
-                                @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
-                                    @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'USULAN KP')
-                                        <td class="text-center px-1 py-2">
-                                            @if ($daysUsulanKPPembimbing > 0)
-                                                <span class="text-danger"> {{ $daysUsulanKPPembimbing }} hari lagi</span>
-                                            @elseif($daysUsulanKPPembimbing <= 0)
-                                                Batas Waktu Unggah Surat Balasan telah habis
-                                            @endif
-                                        </td>
-                                    @endif
-                                @endif -->
+    @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
+    @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'USULAN KP')
+    <td class="text-center px-1 py-2">
+                                                    @if ($daysUsulanKPPembimbing > 0)
+    <span class="text-danger"> {{ $daysUsulanKPPembimbing }} hari lagi</span>
+@elseif($daysUsulanKPPembimbing <= 0)
+    Batas Waktu Unggah Surat Balasan telah habis
+    @endif
+                                                </td>
+    @endif
+    @endif -->
 
-                                <!-- KOORDINATOR -->
+                            <!-- KOORDINATOR -->
 
-                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                    @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                            Auth::guard('dosen')->user()->role_id == 10 ||
-                                            Auth::guard('dosen')->user()->role_id == 11)
-                                        @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'USULAN KP')
-                                            <td class="text-center px-1 py-2">
-                                                @if ($daysUsulanKPKoordinator >= 0)
-                                                    <span class="text-danger"> {{ $daysUsulanKPKoordinator }} hari
-                                                        lagi</span>
-                                                @elseif($daysUsulanKPKoordinator <= 0)
-                                                    Batas waktu telah habis
-                                                @endif
-                                            </td>
-                                        @endif
-                                    @endif
-                                @endif -->
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'USULAN KP')
+    <td class="text-center px-1 py-2">
+                                                        @if ($daysUsulanKPKoordinator >= 0)
+    <span class="text-danger"> {{ $daysUsulanKPKoordinator }} hari
+                                                                lagi</span>
+@elseif($daysUsulanKPKoordinator <= 0)
+    Batas waktu telah habis
+    @endif
+                                                    </td>
+    @endif
+    @endif
+    @endif -->
 
-                                <!-- KAPRODI -->
+                            <!-- KAPRODI -->
 
-                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                    @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                            Auth::guard('dosen')->user()->role_id == 7 ||
-                                            Auth::guard('dosen')->user()->role_id == 8)
-                                        @if ($kp->keterangan == 'Menunggu persetujuan Koordinator Program Studi' && $kp->status_kp == 'USULAN KP')
-                                            <td class="text-center px-1 py-2">
-                                                @if ($daysUsulanKPKaprodi >= 0)
-                                                    <span class="text-danger"> {{ $daysUsulanKPKaprodi }} hari lagi</span>
-                                                @elseif($daysUsulanKPKaprodi <= 0)
-                                                    Batas waktu telah habis
-                                                @endif
-                                            </td>
-                                        @endif
-                                    @endif
-                                @endif
-                            @endif -->
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator Program Studi' && $kp->status_kp == 'USULAN KP')
+    <td class="text-center px-1 py-2">
+                                                        @if ($daysUsulanKPKaprodi >= 0)
+    <span class="text-danger"> {{ $daysUsulanKPKaprodi }} hari lagi</span>
+@elseif($daysUsulanKPKaprodi <= 0)
+    Batas waktu telah habis
+    @endif
+                                                    </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                             <!-- BATAS -->
 
@@ -246,87 +249,87 @@
                             <!-- BALASAN KP KOORDINATOR -->
 
                             <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                        Auth::guard('dosen')->user()->role_id == 10 ||
-                                        Auth::guard('dosen')->user()->role_id == 11)
-                                    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'SURAT PERUSAHAAN')
-                                        <td class="text-center px-1 py-2">
-                                            @if ($daysBalasanKoordinator >= 0)
-                                                <span class="text-danger"> {{ $daysBalasanKoordinator }} hari lagi</span>
-                                            @elseif($daysBalasanKoordinator <= 0)
-                                                Batas waktu telah habis
-                                            @endif
-                                        </td>
-                                    @endif
-                                @endif
-                            @endif -->
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'SURAT PERUSAHAAN')
+    <td class="text-center px-1 py-2">
+                                                    @if ($daysBalasanKoordinator >= 0)
+    <span class="text-danger"> {{ $daysBalasanKoordinator }} hari lagi</span>
+@elseif($daysBalasanKoordinator <= 0)
+    Batas waktu telah habis
+    @endif
+                                                </td>
+    @endif
+    @endif
+    @endif -->
 
                             <!-- PEMBIMBING -->
                             <!-- @if ($kp->status_kp == 'DAFTAR SEMINAR KP')
-                                @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
-                                    @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'DAFTAR SEMINAR KP')
-                                        <td class="text-center px-1 py-2">
-                                            @if ($daysSeminarKPPemb > 0)
-                                                <span class="text-danger"> {{ $daysSeminarKPPemb }} hari lagi</span>
-                                            @elseif($daysSeminarKPPemb <= 0)
-                                                Batas Waktu Persetujuan telah habis
-                                            @endif
-                                        </td>
-                                    @endif
-                                @endif -->
+    @if ($kp->dosen_pembimbing_nip == Auth::user()->nip)
+    @if ($kp->keterangan == 'Menunggu persetujuan Pembimbing' && $kp->status_kp == 'DAFTAR SEMINAR KP')
+    <td class="text-center px-1 py-2">
+                                                    @if ($daysSeminarKPPemb > 0)
+    <span class="text-danger"> {{ $daysSeminarKPPemb }} hari lagi</span>
+@elseif($daysSeminarKPPemb <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                                </td>
+    @endif
+    @endif -->
 
-                                <!-- KOORDINATOR -->
-                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                    @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                            Auth::guard('dosen')->user()->role_id == 10 ||
-                                            Auth::guard('dosen')->user()->role_id == 11)
-                                        @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'DAFTAR SEMINAR KP')
-                                            <td class="text-center px-1 py-2">
-                                                @if ($daysSeminarKPKoordinator > 0)
-                                                    <span class="text-danger"> {{ $daysSeminarKPKoordinator }} hari
-                                                        lagi</span>
-                                                @elseif($daysSeminarKPKoordinator <= 0)
-                                                    Batas Waktu Persetujuan telah habis
-                                                @endif
-                                            </td>
-                                        @endif
-                                    @endif
-                                @endif -->
+                            <!-- KOORDINATOR -->
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'DAFTAR SEMINAR KP')
+    <td class="text-center px-1 py-2">
+                                                        @if ($daysSeminarKPKoordinator > 0)
+    <span class="text-danger"> {{ $daysSeminarKPKoordinator }} hari
+                                                                lagi</span>
+@elseif($daysSeminarKPKoordinator <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                                    </td>
+    @endif
+    @endif
+    @endif -->
 
-                                <!-- KAPRODI -->
-                                <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                    @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                            Auth::guard('dosen')->user()->role_id == 7 ||
-                                            Auth::guard('dosen')->user()->role_id == 8)
-                                        @if ($kp->keterangan == 'Menunggu persetujuan Koordinator Program Studi' && $kp->status_kp == 'DAFTAR SEMINAR KP')
-                                            <td class="text-center px-1 py-2">
-                                                @if ($daysSeminarKPKaprodi > 0)
-                                                    <span class="text-danger"> {{ $daysSeminarKPKaprodi }} hari lagi</span>
-                                                @elseif($daysSeminarKPKaprodi <= 0)
-                                                    Batas Waktu Persetujuan telah habis
-                                                @endif
-                                            </td>
-                                        @endif
-                                    @endif
-                                @endif
-                            @endif -->
+                            <!-- KAPRODI -->
+                            <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator Program Studi' && $kp->status_kp == 'DAFTAR SEMINAR KP')
+    <td class="text-center px-1 py-2">
+                                                        @if ($daysSeminarKPKaprodi > 0)
+    <span class="text-danger"> {{ $daysSeminarKPKaprodi }} hari lagi</span>
+@elseif($daysSeminarKPKaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                                    </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                             <!-- PENYERAHAN LAPORAN KOORDINATOR -->
                             <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                                @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                        Auth::guard('dosen')->user()->role_id == 10 ||
-                                        Auth::guard('dosen')->user()->role_id == 11)
-                                    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'BUKTI PENYERAHAN LAPORAN')
-                                        <td class="text-center px-1 py-2">
-                                            @if ($daysKPTI10Koordinator > 0)
-                                                <span class="text-danger"> {{ $daysKPTI10Koordinator }} hari lagi</span>
-                                            @elseif($daysKPTI10Koordinator <= 0)
-                                                Batas Waktu Persetujuan telah habis
-                                            @endif
-                                        </td>
-                                    @endif
-                                @endif
-                            @endif -->
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'BUKTI PENYERAHAN LAPORAN')
+    <td class="text-center px-1 py-2">
+                                                    @if ($daysKPTI10Koordinator > 0)
+    <span class="text-danger"> {{ $daysKPTI10Koordinator }} hari lagi</span>
+@elseif($daysKPTI10Koordinator <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                                </td>
+    @endif
+    @endif
+    @endif -->
 
                             <td class="text-center px-1 py-2"> {{ $kp->keterangan }}</td>
 
@@ -371,11 +374,9 @@
                                                 @if ($kp->keterangan == 'Menunggu persetujuan Koordinator KP' && $kp->status_kp == 'USULAN KP')
                                                     <div class="row ml-0 ml-md-4">
                                                         <div class="col-lg-3 col-12 py-2 py-md-0">
-                                                            <button
-                                                                onclick="tolakUsulanKPKoordinator({{ $kp->id }})"
+                                                            <button onclick="tolakUsulanKPKoordinator({{ $kp->id }})"
                                                                 class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
-                                                                title="Tolak"><i
-                                                                    class="fas fa-times-circle"></i></button>
+                                                                title="Tolak"><i class="fas fa-times-circle"></i></button>
                                                         </div>
                                                         <div class="col-lg-3 col-12 py-2 py-md-0">
                                                             <a href="/kp-skripsi/persetujuan/usulankp/{{ $kp->id }}"
@@ -902,270 +903,270 @@
 
                 <!-- BATAS PERSETUJUAN -->
                 <!-- @if ($skripsi->status_skripsi == 'USULAN JUDUL')
-                    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'USULAN JUDUL')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysUsulJudulPemb1 > 0)
-                                    <span class="text-danger"> {{ $daysUsulJudulPemb1 }} hari lagi</span>
-                                @elseif($daysUsulJudulPemb1 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'USULAN JUDUL')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysUsulJudulPemb1 > 0)
+    <span class="text-danger"> {{ $daysUsulJudulPemb1 }} hari lagi</span>
+@elseif($daysUsulJudulPemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'USULAN JUDUL')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysUsulJudulPemb2 > 0)
-                                    <span class="text-danger"> {{ $daysUsulJudulPemb2 }} hari lagi</span>
-                                @elseif($daysUsulJudulPemb2 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+                            @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'USULAN JUDUL')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysUsulJudulPemb2 > 0)
+    <span class="text-danger"> {{ $daysUsulJudulPemb2 }} hari lagi</span>
+@elseif($daysUsulJudulPemb2 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                Auth::guard('dosen')->user()->role_id == 10 ||
-                                Auth::guard('dosen')->user()->role_id == 11)
-                            @if ($skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' && $skripsi->status_skripsi == 'USULAN JUDUL')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysUsulJudulKoordinator > 0)
-                                        <span class="text-danger"> {{ $daysUsulJudulKoordinator }} hari lagi</span>
-                                    @elseif($daysUsulJudulKoordinator <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' && $skripsi->status_skripsi == 'USULAN JUDUL')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysUsulJudulKoordinator > 0)
+    <span class="text-danger"> {{ $daysUsulJudulKoordinator }} hari lagi</span>
+@elseif($daysUsulJudulKoordinator <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                Auth::guard('dosen')->user()->role_id == 7 ||
-                                Auth::guard('dosen')->user()->role_id == 8)
-                            @if (
-                                $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
-                                    $skripsi->status_skripsi == 'USULAN JUDUL')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysUsulJudulKaprodi > 0)
-                                        <span class="text-danger"> {{ $daysUsulJudulKaprodi }} hari lagi</span>
-                                    @elseif($daysUsulJudulKaprodi <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
-                @endif -->
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
+            $skripsi->status_skripsi == 'USULAN JUDUL')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysUsulJudulKaprodi > 0)
+    <span class="text-danger"> {{ $daysUsulJudulKaprodi }} hari lagi</span>
+@elseif($daysUsulJudulKaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                 <!-- DAFTAR SEMPRO -->
                 <!-- @if ($skripsi->status_skripsi == 'DAFTAR SEMPRO')
-                    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SEMPRO')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysDaftarSemproPemb1 > 0)
-                                    <span class="text-danger"> {{ $daysDaftarSemproPemb1 }} hari lagi</span>
-                                @elseif($daysDaftarSemproPemb1 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SEMPRO')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysDaftarSemproPemb1 > 0)
+    <span class="text-danger"> {{ $daysDaftarSemproPemb1 }} hari lagi</span>
+@elseif($daysDaftarSemproPemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'DAFTAR SEMPRO')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysDaftarSemproPemb2 > 0)
-                                    <span class="text-danger"> {{ $daysDaftarSemproPemb2 }} hari lagi</span>
-                                @elseif($daysDaftarSemproPemb2 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
-                @endif -->
+                            @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'DAFTAR SEMPRO')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysDaftarSemproPemb2 > 0)
+    <span class="text-danger"> {{ $daysDaftarSemproPemb2 }} hari lagi</span>
+@elseif($daysDaftarSemproPemb2 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
+    @endif -->
 
                 <!-- PERPANJANGAN 1 -->
                 <!-- @if ($skripsi->status_skripsi == 'PERPANJANGAN 1')
-                    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 1')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysPerpanjangan1Pemb1 > 0)
-                                    <span class="text-danger"> {{ $daysPerpanjangan1Pemb1 }} hari lagi</span>
-                                @elseif($daysPerpanjangan1Pemb1 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 1')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysPerpanjangan1Pemb1 > 0)
+    <span class="text-danger"> {{ $daysPerpanjangan1Pemb1 }} hari lagi</span>
+@elseif($daysPerpanjangan1Pemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                Auth::guard('dosen')->user()->role_id == 7 ||
-                                Auth::guard('dosen')->user()->role_id == 8)
-                            @if (
-                                $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
-                                    $skripsi->status_skripsi == 'PERPANJANGAN 1')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysPerpanjangan1Kaprodi > 0)
-                                        <span class="text-danger"> {{ $daysPerpanjangan1Kaprodi }} hari lagi</span>
-                                    @elseif($daysPerpanjangan1Kaprodi <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
-                @endif -->
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
+            $skripsi->status_skripsi == 'PERPANJANGAN 1')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysPerpanjangan1Kaprodi > 0)
+    <span class="text-danger"> {{ $daysPerpanjangan1Kaprodi }} hari lagi</span>
+@elseif($daysPerpanjangan1Kaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                 <!-- PERPANJANGAN 2 -->
                 <!-- @if ($skripsi->status_skripsi == 'PERPANJANGAN 2')
-                    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 2')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysPerpanjangan2Pemb1 > 0)
-                                    <span class="text-danger"> {{ $daysPerpanjangan2Pemb1 }} hari lagi</span>
-                                @elseif($daysPerpanjangan2Pemb1 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN 2')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysPerpanjangan2Pemb1 > 0)
+    <span class="text-danger"> {{ $daysPerpanjangan2Pemb1 }} hari lagi</span>
+@elseif($daysPerpanjangan2Pemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                Auth::guard('dosen')->user()->role_id == 7 ||
-                                Auth::guard('dosen')->user()->role_id == 8)
-                            @if (
-                                $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
-                                    $skripsi->status_skripsi == 'PERPANJANGAN 2')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysPerpanjangan2Kaprodi > 0)
-                                        <span class="text-danger"> {{ $daysPerpanjangan2Kaprodi }} hari lagi</span>
-                                    @elseif($daysPerpanjangan2Kaprodi <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
-                @endif -->
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
+            $skripsi->status_skripsi == 'PERPANJANGAN 2')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysPerpanjangan2Kaprodi > 0)
+    <span class="text-danger"> {{ $daysPerpanjangan2Kaprodi }} hari lagi</span>
+@elseif($daysPerpanjangan2Kaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                 <!-- DAFTAR SIDANG -->
 
                 <!-- @if ($skripsi->status_skripsi == 'DAFTAR SIDANG')
-                    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysDaftarSidangPemb1 > 0)
-                                    <span class="text-danger"> {{ $daysDaftarSidangPemb1 }} hari lagi</span>
-                                @elseif($daysDaftarSidangPemb1 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+    @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysDaftarSidangPemb1 > 0)
+    <span class="text-danger"> {{ $daysDaftarSidangPemb1 }} hari lagi</span>
+@elseif($daysDaftarSidangPemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
-                        @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysDaftarSidangPemb2 > 0)
-                                    <span class="text-danger"> {{ $daysDaftarSidangPemb2 }} hari lagi</span>
-                                @elseif($daysDaftarSidangPemb2 <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
+                            @if ($skripsi->pembimbing_2_nip == Auth::user()->nip)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 2' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysDaftarSidangPemb2 > 0)
+    <span class="text-danger"> {{ $daysDaftarSidangPemb2 }} hari lagi</span>
+@elseif($daysDaftarSidangPemb2 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                                Auth::guard('dosen')->user()->role_id == 10 ||
-                                Auth::guard('dosen')->user()->role_id == 11)
-                            @if ($skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysDaftarSidangKoordinator > 0)
-                                        <span class="text-danger"> {{ $daysDaftarSidangKoordinator }} hari lagi</span>
-                                    @elseif($daysDaftarSidangKoordinator <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' && $skripsi->status_skripsi == 'DAFTAR SIDANG')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysDaftarSidangKoordinator > 0)
+    <span class="text-danger"> {{ $daysDaftarSidangKoordinator }} hari lagi</span>
+@elseif($daysDaftarSidangKoordinator <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
 
 
-                    @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                        @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                                Auth::guard('dosen')->user()->role_id == 7 ||
-                                Auth::guard('dosen')->user()->role_id == 8)
-                            @if (
-                                $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
-                                    $skripsi->status_skripsi == 'DAFTAR SIDANG')
-                                <td class="text-center px-1 py-2">
-                                    @if ($daysDaftarSidangKaprodi > 0)
-                                        <span class="text-danger"> {{ $daysDaftarSidangKaprodi }} hari lagi</span>
-                                    @elseif($daysDaftarSidangKaprodi <= 0)
-                                        Batas Waktu Persetujuan telah habis
-                                    @endif
-                                </td>
-                            @endif
-                        @endif
-                    @endif
-                @endif -->
+                            @if (Str::length(Auth::guard('dosen')->user()) > 0)
+    @if (Auth::guard('dosen')->user()->role_id == 6 ||
+            Auth::guard('dosen')->user()->role_id == 7 ||
+            Auth::guard('dosen')->user()->role_id == 8)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
+            $skripsi->status_skripsi == 'DAFTAR SIDANG')
+    <td class="text-center px-1 py-2">
+                                            @if ($daysDaftarSidangKaprodi > 0)
+    <span class="text-danger"> {{ $daysDaftarSidangKaprodi }} hari lagi</span>
+@elseif($daysDaftarSidangKaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                        </td>
+    @endif
+    @endif
+    @endif
+    @endif -->
 
                 <!-- PERPANJANGAN REVISI -->
 
                 <!-- @if ($skripsi->pembimbing_1_nip == Auth::user()->nip)
-                    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN REVISI')
-                        <td class="text-center px-1 py-2">
-                            @if ($daysRevisiPemb1 > 0)
-                                <span class="text-danger"> {{ $daysRevisiPemb1 }} hari lagi</span>
-                            @elseif($daysRevisiPemb1 <= 0)
-                                Batas Waktu Persetujuan telah habis
-                            @endif
-                        </td>
-                    @endif
-                @endif
+    @if ($skripsi->keterangan == 'Menunggu persetujuan Pembimbing 1' && $skripsi->status_skripsi == 'PERPANJANGAN REVISI')
+    <td class="text-center px-1 py-2">
+                                    @if ($daysRevisiPemb1 > 0)
+    <span class="text-danger"> {{ $daysRevisiPemb1 }} hari lagi</span>
+@elseif($daysRevisiPemb1 <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                </td>
+    @endif
+    @endif
 
-                @if (Auth::guard('dosen')->user()->role_id == 6 ||
-                        Auth::guard('dosen')->user()->role_id == 7 ||
-                        Auth::guard('dosen')->user()->role_id == 8)
-                    @if (
-                        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
-                            $skripsi->status_skripsi == 'PERPANJANGAN REVISI')
-                        <td class="text-center px-1 py-2">
-                            @if ($daysRevisiKaprodi > 0)
-                                <span class="text-danger"> {{ $daysRevisiKaprodi }} hari lagi</span>
-                            @elseif($daysRevisiKaprodi <= 0)
-                                Batas Waktu Persetujuan telah habis
-                            @endif
-                        </td>
-                    @endif
-                @endif -->
+                        @if (Auth::guard('dosen')->user()->role_id == 6 ||
+                                Auth::guard('dosen')->user()->role_id == 7 ||
+                                Auth::guard('dosen')->user()->role_id == 8)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Program Studi' &&
+            $skripsi->status_skripsi == 'PERPANJANGAN REVISI')
+    <td class="text-center px-1 py-2">
+                                    @if ($daysRevisiKaprodi > 0)
+    <span class="text-danger"> {{ $daysRevisiKaprodi }} hari lagi</span>
+@elseif($daysRevisiKaprodi <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                </td>
+    @endif
+    @endif -->
 
                 <!-- PENYERAHAN BUKU SKRIPSI -->
 
                 <!-- @if (Str::length(Auth::guard('dosen')->user()) > 0)
-                    @if (Auth::guard('dosen')->user()->role_id == 9 ||
-                            Auth::guard('dosen')->user()->role_id == 10 ||
-                            Auth::guard('dosen')->user()->role_id == 11)
-                        @if (
-                            $skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' &&
-                                $skripsi->status_skripsi == 'BUKTI PENYERAHAN BUKU SKRIPSI')
-                            <td class="text-center px-1 py-2">
-                                @if ($daysBukuSkripsiKoordinator > 0)
-                                    <span class="text-danger"> {{ $daysBukuSkripsiKoordinator }} hari lagi</span>
-                                @elseif($daysBukuSkripsiKoordinator <= 0)
-                                    Batas Waktu Persetujuan telah habis
-                                @endif
-                            </td>
-                        @endif
-                    @endif
-                @endif -->
+    @if (Auth::guard('dosen')->user()->role_id == 9 ||
+            Auth::guard('dosen')->user()->role_id == 10 ||
+            Auth::guard('dosen')->user()->role_id == 11)
+    @if (
+        $skripsi->keterangan == 'Menunggu persetujuan Koordinator Skripsi' &&
+            $skripsi->status_skripsi == 'BUKTI PENYERAHAN BUKU SKRIPSI')
+    <td class="text-center px-1 py-2">
+                                        @if ($daysBukuSkripsiKoordinator > 0)
+    <span class="text-danger"> {{ $daysBukuSkripsiKoordinator }} hari lagi</span>
+@elseif($daysBukuSkripsiKoordinator <= 0)
+    Batas Waktu Persetujuan telah habis
+    @endif
+                                    </td>
+    @endif
+    @endif
+    @endif -->
 
                 <td class="text-center px-1 py-2"> {{ $skripsi->keterangan }}</td>
 
@@ -1813,21 +1814,21 @@
 
                         <!-- <td class="text-center px-1 py-2">{{ $skripsi->lokasi }}</td>-->
                         <!-- <td class="text-center px-1 py-2">
-                <p>1. {{ $skripsi->pembimbingsatu->nama_singkat }}</p>
-                @if ($skripsi->pembimbingdua == !null)
+                        <p>1. {{ $skripsi->pembimbingsatu->nama_singkat }}</p>
+                        @if ($skripsi->pembimbingdua == !null)
     <p>2. {{ $skripsi->pembimbingdua->nama_singkat }}</p>
     @endif
-              </td>
-              <td class="text-center px-1 py-2">
-                <p>1. {{ $skripsi->pengujisatu->nama_singkat }}</p>
-                <p>2. {{ $skripsi->pengujidua->nama_singkat }}</p>
-                @if ($skripsi->pengujitiga == !null)
+                      </td>
+                      <td class="text-center px-1 py-2">
+                        <p>1. {{ $skripsi->pengujisatu->nama_singkat }}</p>
+                        <p>2. {{ $skripsi->pengujidua->nama_singkat }}</p>
+                        @if ($skripsi->pengujitiga == !null)
     <p>3. {{ $skripsi->pengujitiga->nama_singkat }}</p>
     @endif
-              </td>           -->
+                      </td>           -->
                         <!-- <td class="text-center px-1 py-2">
-                <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}" class="badge bg-success px-1 py-2"style="border-radius:20px;">Berita Acara</a>
-              </td> -->
+                        <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}" class="badge bg-success px-1 py-2"style="border-radius:20px;">Berita Acara</a>
+                      </td> -->
 
                         @if (Str::length(Auth::guard('dosen')->user()) > 0)
                             @if (Auth::guard('dosen')->user()->role_id == 9 ||
@@ -1835,29 +1836,29 @@
                                     Auth::guard('dosen')->user()->role_id == 11)
                                 <td class="text-center px-1 py-2">
                                     <div class="row ml-0 ml-md-4">
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                <form action="/persetujuanskripsi-koordinator/tolak/{{ $skripsi->id }}"
-                                    class="tolak-persetujuan-sidang-koordinator" method="POST">
-                                    @method('put')
-                                    @csrf
-                                    <button class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
-                                        title="Tolak"><i class="fas fa-times-circle"></i></button>
-                                </form>
-                            </div>
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"
-                                            class="badge btn btn-info p-1" data-bs-toggle="tooltip"
-                                            title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
-                            </div>
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                <form action="/persetujuanskripsi-koordinator/approve/{{ $skripsi->id }}"
-                                    class="setujui-persetujuan-sidang-koordinator" method="POST">
-                                    @method('put')
-                                    @csrf
-                                    <button class="btn btn-success badge p-1 " data-bs-toggle="tooltip"
-                                        title="Setujui"><i class="fas fa-check-circle"></i></button>
-                                </form>
-                            </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <form action="/persetujuanskripsi-koordinator/tolak/{{ $skripsi->id }}"
+                                                class="tolak-persetujuan-sidang-koordinator" method="POST">
+                                                @method('put')
+                                                @csrf
+                                                <button class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
+                                                    title="Tolak"><i class="fas fa-times-circle"></i></button>
+                                            </form>
+                                        </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"
+                                                class="badge btn btn-info p-1" data-bs-toggle="tooltip"
+                                                title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
+                                        </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <form action="/persetujuanskripsi-koordinator/approve/{{ $skripsi->id }}"
+                                                class="setujui-persetujuan-sidang-koordinator" method="POST">
+                                                @method('put')
+                                                @csrf
+                                                <button class="btn btn-success badge p-1 " data-bs-toggle="tooltip"
+                                                    title="Setujui"><i class="fas fa-check-circle"></i></button>
+                                            </form>
+                                        </div>
                                 </td>
                             @endif
                         @endif
@@ -1868,29 +1869,29 @@
                                     Auth::guard('dosen')->user()->role_id == 8)
                                 <td class="text-center px-1 py-2">
                                     <div class="row ml-0 ml-md-4">
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                <form action="/persetujuanskripsi-kaprodi/tolak/{{ $skripsi->id }}"
-                                    class="tolak-persetujuan-sidang-kaprodi" method="POST">
-                                    @method('put')
-                                    @csrf
-                                    <button class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
-                                        title="Tolak"><i class="fas fa-times-circle"></i></button>
-                                </form>
-                            </div>
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                 <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"
-                                            class="badge btn btn-info p-1" data-bs-toggle="tooltip"
-                                            title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
-                            </div>
-                            <div class="col-lg-3 col-12 py-2 py-md-0">
-                                <form action="/persetujuanskripsi-kaprodi/approve/{{ $skripsi->id }}"
-                                    class="setujui-persetujuan-sidang-kaprodi" method="POST">
-                                    @method('put')
-                                    @csrf
-                                    <button class="btn btn-success badge p-1 " data-bs-toggle="tooltip"
-                                        title="Setujui"><i class="fas fa-check-circle"></i></button>
-                                </form>
-                            </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <form action="/persetujuanskripsi-kaprodi/tolak/{{ $skripsi->id }}"
+                                                class="tolak-persetujuan-sidang-kaprodi" method="POST">
+                                                @method('put')
+                                                @csrf
+                                                <button class="btn btn-danger badge p-1 " data-bs-toggle="tooltip"
+                                                    title="Tolak"><i class="fas fa-times-circle"></i></button>
+                                            </form>
+                                        </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <a href="/penilaian-skripsi/cek-nilai/{{ Crypt::encryptString($skripsi->id) }}"
+                                                class="badge btn btn-info p-1" data-bs-toggle="tooltip"
+                                                title="Lihat Detail"><i class="fas fa-info-circle"></i></a>
+                                        </div>
+                                        <div class="col-lg-3 col-12 py-2 py-md-0">
+                                            <form action="/persetujuanskripsi-kaprodi/approve/{{ $skripsi->id }}"
+                                                class="setujui-persetujuan-sidang-kaprodi" method="POST">
+                                                @method('put')
+                                                @csrf
+                                                <button class="btn btn-success badge p-1 " data-bs-toggle="tooltip"
+                                                    title="Setujui"><i class="fas fa-check-circle"></i></button>
+                                            </form>
+                                        </div>
                                 </td>
                             @endif
                         @endif
@@ -1909,7 +1910,7 @@
 
     </div>
 
-<br>
+    <br>
     <br>
     <br>
 @endsection
@@ -3408,7 +3409,7 @@
                     }
                 })
             });
-            
+
             // PERSETUJUAN SIDANG KOORDINATOR DAN KAPRODI
             $('.tolak-persetujuan-sidang-koordinator').submit(function(event) {
                 event.preventDefault();
@@ -3445,7 +3446,7 @@
                     }
                 })
             });
-            
+
             $('.tolak-persetujuan-sidang-kaprodi').submit(function(event) {
                 event.preventDefault();
                 Swal.fire({

@@ -17,7 +17,7 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class DokumenController extends Controller
 {
-    private $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
+    private $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'Pribadi', 'Sertifikat', 'lainnya'];
 
     public function create(Request $request)
     {
@@ -49,12 +49,12 @@ class DokumenController extends Controller
             'dokumen' => 'file',
             'kategori' => 'required',
             'tgl_dokumen' => "required",
-            'semester' => 'required'
+            'semester' => 'required',
         ], [
             'nama.required' => 'Nama dokumen harus diisi.',
             'tgl_dokumen.required' => 'Tanggal dokumen harus diisi.',
-            'kategori' => 'Pilih kategori dokumen terlebih dahulu',
-            'semester' => 'Pilih semester terlebih dahulu'
+            'kategori.required' => 'Pilih kategori dokumen terlebih dahulu',
+            'semester.required' => 'Pilih semester terlebih dahulu',
         ]);
 
         // Cek apakah user mengirimkan file dan membuat Usulan Baru
@@ -70,7 +70,7 @@ class DokumenController extends Controller
                 'tgl_dokumen' => $request->tgl_dokumen,
                 'kategori' => $request->kategori,
                 'semester' => $request->semester,
-                'nomor_dokumen' => $request->nomor_dokumen
+                'nomor_dokumen' => $request->nomor_dokumen,
             ]);
         } else {
             $dokumen = Dokumen::create([
@@ -98,7 +98,7 @@ class DokumenController extends Controller
         $userId = $request->user_id;
         $dokumen = Dokumen::findOrFail($id);
         $mentioned = DokumenMention::where("dokumen_id", $id)->where("user_mentioned", $userId)->first();
-        if (!($dokumen->user_created == $userId || $mentioned)) abort(403);
+        // if (!($dokumen->user_created == $userId || $mentioned)) abort(403);
         return view('doc.dokumen.detail', compact('dokumen', 'userId', 'mentioned'));
     }
 

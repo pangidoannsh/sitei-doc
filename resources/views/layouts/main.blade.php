@@ -224,25 +224,10 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="" aria-current="page" aria-expanded="false"
-                                        role="button" data-bs-toggle="dropdown"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                    <ul aria-labelledby="dokumendropdown"
-                                        class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
-                                                aria-current="page"
-                                                href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                        </li>
-                                    </ul>
+                                    <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                        class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                        DOKUMEN
+                                    </a>
                                 </li>
                             @endif
 
@@ -302,25 +287,10 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="" aria-current="page" aria-haspopup="true"
-                                        aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                    <ul aria-labelledby="dokumendropdown"
-                                        class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }}"
-                                                aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
-                                                aria-current="page"
-                                                href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                        </li>
-                                    </ul>
+                                    <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                        class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                        DOKUMEN
+                                    </a>
                                 </li>
                             @endif
 
@@ -380,25 +350,10 @@
                                     </li>
                                     {{-- DistribusiDokumen --}}
                                     <li class="nav-item dropdown baru">
-                                        <a id="dokumendropdown" href="" aria-current="page"
-                                            aria-haspopup="true" aria-expanded="false"
-                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                        <ul aria-labelledby="dokumendropdown"
-                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
-                                                    aria-current="page"
-                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                            </li>
-                                        </ul>
+                                        <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
                                     </li>
                                 @endif
 
@@ -450,29 +405,10 @@
                                     </li>
                                     {{-- DistribusiDokumen --}}
                                     <li class="nav-item dropdown baru">
-                                        <a id="dokumendropdown" href="" aria-current="page"
-                                            aria-haspopup="true" aria-expanded="false"
-                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                        <ul aria-labelledby="dokumendropdown"
-                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/terbaru*') ? 'text-success' : '' }}"
-                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/pengumuman*') ? 'text-success' : '' }} "
-                                                    aria-current="page"
-                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/arsip*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/pengaturan*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="#">Pengaturan</a>
-                                            </li>
-                                        </ul>
+                                        <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
                                     </li>
 
                                     <ul class="navbar-nav">

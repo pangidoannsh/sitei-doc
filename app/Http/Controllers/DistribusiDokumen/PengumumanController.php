@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\DistribusiDokumen;
 
+use App\Events\NotifiCreate;
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\Pengumuman;
 use App\Models\DistribusiDokumen\PengumumanMention;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\MahasiswaService;
 use App\Services\DosenService;
 use App\Services\PengumumanService;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Laravel\Firebase\Facades\Firebase;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class PengumumanController extends Controller
@@ -26,14 +29,30 @@ class PengumumanController extends Controller
 
         //get data pengumuman
         $pengumumans = Pengumuman::getForUser($jenis_user, $userId);
-
         // get data pengumuman dari mentions
         $pengumumanMentioned = PengumumanService::getFromMentions($userId, $jenis_user);
         foreach ($pengumumanMentioned as $mention) {
             $pengumumans = $pengumumans->merge([$mention->dokumen]);
         }
+        $arsipCount = Pengumuman::getCountArchive($jenis_user, $userId) + PengumumanService::getCountArchiveFromMentions($userId, $jenis_user);
+        $semesters = Semester::all();
+        return view('doc.pengumuman.index', compact('pengumumans', 'userId', 'jenis_user', 'arsipCount', 'semesters'));
+    }
+    public function arsip(Request $request)
+    {
+        $userId = $request->user_id;
+        $jenis_user = $request->jenis_user;
 
-        return view('doc.pengumuman.index', compact('pengumumans', 'userId', 'jenis_user'));
+        //get data pengumuman
+        $pengumumans = Pengumuman::getArchiveForUser($jenis_user, $userId);
+        // get data pengumuman dari mentions
+        $pengumumanMentioned = PengumumanService::archiveFromMentions($userId, $jenis_user);
+        foreach ($pengumumanMentioned as $mention) {
+            $pengumumans = $pengumumans->merge([$mention->dokumen]);
+        }
+        $latestCount = Pengumuman::getCountLatest($jenis_user, $userId) + PengumumanService::getCountFromMentions($userId, $jenis_user);
+        $semesters = Semester::all();
+        return view('doc.pengumuman.arsip', compact('pengumumans', 'userId', 'jenis_user', 'latestCount', 'semesters'));
     }
 
     public function create(Request $request)
@@ -84,7 +103,18 @@ class PengumumanController extends Controller
             'isi' => "isi pengumuman harus diisi",
             'semester' => 'Pilih semester terlebih dahulu'
         ]);
-
+        $message = CloudMessage::fromArray([
+            'notification' => [
+                'title' => $request->nama,
+                'body' => $request->isi,
+            ],
+            'topic' => 'semua_pengguna',
+            'data' => [
+                'id' => 'test_id',
+            ],
+        ]);
+        // $response = Firebase::messaging()->send($message);
+        // dd($response);
         // Cek apakah user mengirimkan file dan membuat Usulan Baru
         $dokumenUpload = $request->file('dokumen');
         if ($dokumenUpload) {
@@ -113,7 +143,7 @@ class PengumumanController extends Controller
                 'kategori' => $request->kategori,
                 'for_all_dosen' => $request->has("select_all_dosen"),
                 'for_all_staf' => $request->has("select_all_staf"),
-                'for_all_mahasiswa' => $request->has("select_all_mahasiswa"),
+                'for_all_mahasiswa' => $request->has("select_all_maha3333333333333siswa"),
                 'semester' => $request->semester
             ]);
         }
@@ -121,8 +151,10 @@ class PengumumanController extends Controller
         // Untuk Menyimpan Data Orang Yang Dikirim Pengumuman
         PengumumanService::saveMentions($request, $pengumuman->id);
 
+        NotifiCreate::dispatch($request->nama);
+
         Alert::success('Berhasil!', 'Berhasil membuat pengumuman baru')->showConfirmButton('Ok', '#28a745');
-        return redirect()->route('pengumuman.index');
+        return redirect()->route('pengumuman');
     }
     public function detail($id, Request $request)
     {
@@ -202,7 +234,7 @@ class PengumumanController extends Controller
         PengumumanService::saveMentions($request, $pengumuman->id);
 
         Alert::success('Berhasil!', 'Berhasil membuat mengubah pengumuman')->showConfirmButton('Ok', '#28a745');
-        return redirect()->route("pengumuman.index");
+        return redirect()->route("pengumuman");
     }
     public function destroy($id)
     {
@@ -211,6 +243,6 @@ class PengumumanController extends Controller
         // Hapus Data Usulan
         Pengumuman::where("id", $id)->delete();
         Alert::success('Berhasil!', 'Berhasil menghapus Pengumuman')->showConfirmButton('Ok', '#28a745');
-        return redirect()->route('pengumuman.index');
+        return redirect()->route('pengumuman');
     }
 }

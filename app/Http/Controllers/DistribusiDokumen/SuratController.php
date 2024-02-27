@@ -4,16 +4,35 @@ namespace App\Http\Controllers\DistribusiDokumen;
 
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\Surat;
+use App\Models\DistribusiSurat\Semester;
+use App\Models\Dosen;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SuratController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        $roles = Role::getRolePengelola();
-        return view("doc.surat.create", compact("roles"));
+        $prodiId = Auth::guard($request->jenis_user)->user()->prodi_id;
+
+        $dosens = Dosen::where("role_id", 5);
+        switch ($prodiId) {
+            case 1:
+                $dosens->orWhere("role_id", 6);
+                break;
+            case 2:
+                $dosens->orWhere("role_id", 7);
+                break;
+            case 3:
+                $dosens->orWhere("role_id", 8);
+                break;
+
+            default:
+        }
+        $dosens = $dosens->get();
+        $semester = Semester::latest("id")->first();
+        return view("doc.surat.create", compact("dosens", "semester"));
     }
 
     public function store(Request $request)
@@ -67,6 +86,7 @@ class SuratController extends Controller
                 "user_created" => $request->user_id,
                 "prodi_user" => $prodiUser,
                 "role_handler" => $rolehandler,
+                "semester" => $request->semester,
             ]);
         } else {
             Surat::create([
@@ -78,6 +98,7 @@ class SuratController extends Controller
                 "user_created" => $request->user_id,
                 "url_lampiran" => $request->url_lampiran,
                 "role_tujuan" => $request->tujuan_surat,
+                "semester" => $request->semester,
                 "prodi_user" => $prodiUser,
                 "role_handler" => $rolehandler
             ]);
@@ -93,44 +114,43 @@ class SuratController extends Controller
         $userId = $request->user_id;
 
         $jenisUser = $request->jenis_user;
-        $roles = [];
+        $dosens = [];
         if ($jenisUser == "admin") {
-            $roles = Role::where("role.id", "<", 12)
-                ->leftJoin("dosen", "dosen.role_id", "role.id")
-                ->leftJoin("users", "users.role_id", "role.id")
-                ->select(
-                    "role.id as id",
-                    "role.role_akses as akses",
-                    "dosen.nama as nama_dosen",
-                    "users.nama as nama_admin",
-                )
-                ->get();
-        }
-
-        if ($jenisUser != "mahasiswa") {
-            $role = Auth::guard($jenisUser == "admin" ? "web" : "dosen")->user()->role_id;
-            switch ($role) {
+            $dosenQuery = Dosen::where("role_id", 5);
+            switch ($surat->prodi_user) {
+                case 1:
+                    $dosenQuery->orWhere("role_id", 6);
+                    break;
                 case 2:
-                case 6:
-                    $userProdi = 1;
+                    $dosenQuery->orWhere("role_id", 7);
                     break;
                 case 3:
-                case 7;
-                    $userProdi = 2;
-                    break;
-                case 4:
-                case 8;
-                    $userProdi = 3;
+                    $dosenQuery->orWhere("role_id", 8);
                     break;
 
                 default:
-                    $userProdi = 0;
-                    break;
             }
-        } else {
-            $userProdi = Auth::guard("mahasiswa")->user()->prodi_id;
+            $dosens  = $dosenQuery->get();
         }
-        return view("doc.surat.detail", compact('surat', 'userId', 'jenisUser', 'roles', 'userProdi'));
+        $isKaprodi = false;
+        if ($jenisUser == "dosen") {
+            switch ($surat->prodi_user) {
+                case 1:
+                    $kaprodi = 6;
+                    break;
+                case 2:
+                    $kaprodi = 7;
+                    break;
+                case 3:
+                    $kaprodi = 8;
+                    break;
+
+                default:
+                    $kaprodi = 0;
+            }
+            $isKaprodi = $kaprodi == Auth::guard("dosen")->user()->role_id;
+        }
+        return view("doc.surat.detail", compact('surat', 'userId', 'jenisUser',   'dosens', 'isKaprodi'));
     }
 
     public function edit($id, Request $request)

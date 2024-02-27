@@ -33,12 +33,6 @@
             style="position: relative;padding-bottom: 200px" enctype="multipart/form-data">
             @method('post')
             @csrf
-            <input type="text" class="d-none" value="{{ $data->sertifikat_id }}" name="sertifikat_id">
-            <div>
-                <label for="jenis" class="fw-semibold">Jenis Sertifikat</label>
-                <input type="text" class="form-control rounded-3 py-4 text-capitalize" id="jenis"
-                    value="{{ $data->jenis }}" disabled>
-            </div>
             <div>
                 <label for="isi" class="fw-semibold">Isi Sertifikat</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Isi Sertifikat" name="isi" id="isi" cols="3"
@@ -50,7 +44,7 @@
                         <label for="nomor_sertif_{{ $penerima->id }}" class="fw-semibold ellipsis-1">
                             Nomor Sertifikat
                             <span class="text-secondary" style="font-size: 14px">
-                                ({{ optional($penerima->mahasiswa)->nama ?? $penerima->nama_penerima }})
+                                ({{ data_get($penerima, $penerima->jenis_penerima . '.nama') ?? $penerima->nama_penerima }})
                             </span>
                         </label>
                         <input type="text" class="form-control rounded-3 py-4 text-capitalize"

@@ -30,6 +30,12 @@ class Mahasiswa extends Authenticatable
     // ];
     protected $table = 'mahasiswa';
     protected $guarded = [];
+    protected $appends = ['jenisUser'];
+
+    public function getJenisUserAttribute()
+    {
+        return "mahasiswa";
+    }
 
     public function role()
     {

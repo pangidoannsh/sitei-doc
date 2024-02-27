@@ -15,7 +15,8 @@
 @endsection
 
 @section('content')
-    <section class="row">
+    @include('doc.components.preview-sertif')
+    <section class="row pb-3">
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
@@ -63,6 +64,10 @@
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama Sertifikat</div>
                     <div class="value text-capitalize">{{ $data->nama }}</div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Penandatangan</div>
+                    <div class="value text-capitalize">{{ $data->signed->nama }}</div>
                 </div>
                 @if ($data->isi)
                     <div class="d-flex flex-column gap-1">
@@ -141,7 +146,7 @@
                                     Tolak Pembuatan Sertifikat
                                 </button>
                             @endif
-                        @elseif ($data->sign_by === $userId && $data->sign_by == 'meminta_persetujuan')
+                        @elseif ($data->sign_by == $userId && $data->status == 'meminta_persetujuan')
                             <a href="{{ route('sertif.acc.sign', $data->id) }}"
                                 class="btn btn-success rounded-3 py-2 px-4">
                                 Setujui Sertifikat
@@ -155,7 +160,71 @@
                 </div>
             </div>
             @if ($data->status == 'selesai')
-                <div class="dokumen-card my-3">
+                <div class="dokumen-card mt-3">
+                    <div>
+                        <h2>Pemberi Sertifikat</h2>
+                        <div class="divider-green"></div>
+                    </div>
+                    @if ($data->jenis_user == 'dosen')
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">NIP</div>
+                            <div class="value text-capitalize">{{ $data->user_created }}</div>
+                        </div>
+                    @endif
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Nama</div>
+                        <div class="value text-capitalize">{{ data_get($data, $data->jenis_user . '.nama') }}</div>
+                    </div>
+                    @if (optional($data->dosen)->role_id)
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">Jabatan</div>
+                            <div class="value text-capitalize">{{ $data->dosen->role->role_akses }}</div>
+                        </div>
+                    @endif
+                </div>
+            @endif
+        </div>
+        {{-- Section Kanan --}}
+        <div class="col-lg-4">
+            {{-- Penerima before Done --}}
+            @if ($data->status != 'selesai')
+                <div class="dokumen-card">
+                    <div>
+                        <h2>Pemberi Sertifikat</h2>
+                        <div class="divider-green"></div>
+                    </div>
+                    @if ($data->jenis_user == 'dosen')
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">NIP</div>
+                            <div class="value text-capitalize">{{ $data->user_created }}</div>
+                        </div>
+                    @endif
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Nama</div>
+                        <div class="value text-capitalize">{{ data_get($data, $data->jenis_user . '.nama') }}</div>
+                    </div>
+                    @if (optional($data->dosen)->role_id)
+                        <div class="d-flex flex-column gap-1">
+                            <div class="label">Jabatan</div>
+                            <div class="value text-capitalize">{{ $data->dosen->role->role_akses }}</div>
+                        </div>
+                    @endif
+                </div>
+                <div class="dokumen-card" style="margin-top: 16px">
+                    <div>
+                        <h2>Calon Penerima Sertifikat</h2>
+                        <div class="divider-green"></div>
+                    </div>
+                    <ul style="margin-bottom: 0px">
+                        @foreach ($data->penerimas as $penerima)
+                            <li style="margin-bottom: 4px">
+                                {{ data_get($penerima, $penerima->jenis_penerima . '.nama') ?? $penerima->nama_penerima }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            @else
+                <div class="dokumen-card">
                     <div>
                         <h2>Penerima Sertifikat</h2>
                         <div class="divider-green"></div>
@@ -166,7 +235,8 @@
                                 <div class="d-flex flex-column gap-1">
                                     <div class="label">Nama</div>
                                     <div class="value text-capitalize">
-                                        {{ optional($penerima->mahasiswa)->nama ?? $penerima->nama_penerima }}</div>
+                                        {{ data_get($penerima, $penerima->jenis_penerima . '.nama') ?? $penerima->nama_penerima }}
+                                    </div>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">
                                     <button class="btn text-secondary fw-semibold rounded-3 btnCopy"
@@ -174,7 +244,8 @@
                                         data-slug="{{ route('sertif.penerima', $penerima->slug) }}">
                                         <i class="fa-solid fa-share-nodes"></i>
                                     </button>
-                                    <a href="#" class="btn btn-outline-success rounded-3" style="width:max-content"
+                                    <a href="{{ route('sertif.download', $penerima->slug) }}"
+                                        class="btn btn-outline-success rounded-3 btnDownload" style="width:max-content"
                                         title="download sertifikat">
                                         <i class="fa-solid fa-download"></i>
                                     </a>
@@ -183,47 +254,6 @@
                             <hr>
                         @endforeach
                     </div>
-                </div>
-            @endif
-        </div>
-        {{-- Section Kanan --}}
-        <div class="col-lg-4">
-            <div class="dokumen-card">
-                <div>
-                    <h2>Pemberi Sertifikat</h2>
-                    <div class="divider-green"></div>
-                </div>
-                @if ($data->jenis_user == 'dosen')
-                    <div class="d-flex flex-column gap-1">
-                        <div class="label">NIP</div>
-                        <div class="value text-capitalize">{{ $data->user_created }}</div>
-                    </div>
-                @endif
-                <div class="d-flex flex-column gap-1">
-                    <div class="label">Nama</div>
-                    <div class="value text-capitalize">{{ data_get($data, $data->jenis_user . '.nama') }}</div>
-                </div>
-                @if (optional($data->dosen)->role_id)
-                    <div class="d-flex flex-column gap-1">
-                        <div class="label">Jabatan</div>
-                        <div class="value text-capitalize">{{ $data->dosen->role->role_akses }}</div>
-                    </div>
-                @endif
-            </div>
-            {{-- Penerima before Done --}}
-            @if ($data->status != 'selesai')
-                <div class="dokumen-card" style="margin-top: 16px">
-                    <div>
-                        <h2>Calon Penerima Sertifikat</h2>
-                        <div class="divider-green"></div>
-                    </div>
-                    <ul style="margin-bottom: 0px">
-                        @foreach ($data->penerimas as $penerima)
-                            <li style="margin-bottom: 4px">
-                                {{ optional($penerima->mahasiswa)->nama ?? $penerima->nama_penerima }}
-                            </li>
-                        @endforeach
-                    </ul>
                 </div>
             @endif
         </div>
@@ -345,5 +375,21 @@
                 }
             })
         });
+        $(".btnDownload").click(function() {
+            Swal.fire({
+                toast: true,
+                icon: 'info',
+                title: 'Sedang mengunduh sertifikat',
+                animation: false,
+                position: 'bottom-right',
+                showConfirmButton: false,
+                timer: 12000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        })
     </script>
 @endpush

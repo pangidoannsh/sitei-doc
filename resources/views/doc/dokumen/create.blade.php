@@ -23,8 +23,8 @@
             <div>
                 <label for="kategori" class="fw-semibold">Kategori<span class="text-danger">*</span></label>
                 <div class="input-group">
-                    <select name="kategori" id="kategori"
-                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('kategori') border border-danger @enderror">
+                    <select name="kategori" id="kategori" style="width: 100%"
+                        class="text-secondary form-select rounded-3 text-capitalize @error('kategori') border border-danger @enderror">
                         <option value="" disabled selected>Pilih Kategori</option>
                         @foreach ($kategoris as $kategori)
                             <option value="{{ $kategori }}" class="text-capitalize"
@@ -33,7 +33,7 @@
                         @endforeach
                     </select>
                     @error('kategori')
-                        <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
+                        <div class=" text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
                     @enderror
                 </div>
             </div>
@@ -41,7 +41,7 @@
                 <label for="semester" class="fw-semibold">Semester<span class="text-danger">*</span></label>
                 <div class="input-group">
                     <select name="semester" id="semester"
-                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('semester') border border-danger @enderror">
+                        class="text-secondary form-select rounded-3 text-capitalize @error('semester') border border-danger @enderror">
                         @foreach ($semesters as $semester)
                             <option value="{{ $semester->nama }}" class="text-capitalize"
                                 {{ old('semester') == $semester->nama || $semesters->last()->nama == $semester->nama ? 'selected' : '' }}>
@@ -57,6 +57,14 @@
             <div>
                 <label for="keterangan" class="fw-semibold">Keterangan</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Keterangan" name="keterangan" id="keterangan" cols="3">{{ old('keterangan') }}</textarea>
+            </div>
+            <div>
+                <label for="nomor_dokumen" class="fw-semibold">Nomor Dokumen</label>
+                <input type="text" class="form-control @error('nomor_dokumen') is-invalid @enderror rounded-3 py-4"
+                    name="nomor_dokumen" placeholder="Nomor Dokumen" id="nomor_dokumen" value="{{ old('nomor_dokumen') }}">
+                @error('nomor_dokumen')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
             </div>
             <div class="d-flex gap-4 align-items-center">
                 <div class="w-100">

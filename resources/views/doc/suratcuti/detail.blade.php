@@ -79,7 +79,7 @@
                         @if ($data->url_lampiran)
                             <a href="{{ $data->url_lampiran }}" target="_blank" class="btn btn-success px-5 rounded-3"
                                 style="width:max-content">
-                                Lampiran
+                                Lampiran Link
                             </a>
                         @endif
                     @else

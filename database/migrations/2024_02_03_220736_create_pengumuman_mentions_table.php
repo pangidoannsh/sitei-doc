@@ -17,7 +17,7 @@ class CreatePengumumanMentionsTable extends Migration
             $table->id();
             $table->foreignId('pengumuman_id');
             $table->string("user_mentioned");
-            $table->enum('jenis_user', ['dosen', 'plp', 'admin', 'mahasiswa']);
+            $table->enum('jenis_user', ['dosen', 'plp', 'admin', 'mahasiswa', 'angkatan']);
             $table->timestamps();
         });
     }

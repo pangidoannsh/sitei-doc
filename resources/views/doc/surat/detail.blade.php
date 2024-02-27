@@ -2,9 +2,23 @@
 
 @php
     use Carbon\Carbon;
-    $batasPengajuan = Carbon::parse($surat->created_at)->addDays(3);
-    $sisaHari = now()->diffInDays($batasPengajuan, false);
+    function getProdi($prodiId)
+    {
+        switch ($prodiId) {
+            case 1:
+                return 'D3 TE';
+                break;
+            case 2:
+                return 'S1 TE';
+                break;
+            case 3:
+                return 'S1 TI';
+                break;
 
+            default:
+                return 'UNDEFINED';
+        }
+    }
 @endphp
 
 @section('title')
@@ -29,15 +43,12 @@
 
                     @case('staf_jurusan')
                     @case('kajur')
-                        @if ($sisaHari >= 0)
-                            <div class="rounded-2 py-3 text-center fw-semibold text-white" style="background-color: #fbbf24">
-                                {{ $surat->keterangan_status }}
-                            </div>
-                        @else
-                            <div class="bg-danger rounded-2 py-3 text-center fw-semibold ">
-                                Pengajuan Telah Melewati Batas Waktu
-                            </div>
-                        @endif
+                        <div class="rounded-2 py-3 text-center fw-semibold text-white" style="background-color: #fbbf24">
+                            {{ $surat->keterangan_status }}
+                            @if ($surat->status == 'staf_prodi' || $surat->status == 'kaprodi')
+                                {{ getProdi($surat->prodi_user) }}
+                            @endif
+                        </div>
                     @break
 
                     @case('diterima')
@@ -73,33 +84,21 @@
                         {{ Carbon::parse($surat->created_at)->translatedFormat('l, d F Y') }}
                     </div>
                 </div>
-                @if (!$surat->user_handler)
-                    <div class="d-flex flex-column gap-1">
-                        <div class="label">Batas Pengajuan</div>
-                        <div class="value">
-                            {{ $batasPengajuan->translatedFormat('l, d F Y') }}
-
-                            <span style="font-weight: 300" class="text-danger">
-                                @if ($sisaHari > 0)
-                                    ({{ $sisaHari }} Hari Lagi)
-                                @elseif ($sisaHari == 0)
-                                    (Hari Terakhir)
-                                @else
-                                    (Masa Berakhir)
-                                @endif
-                            </span>
-                        </div>
-                    </div>
-                @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Lampiran</div>
-                    @if ($surat->url_lampiran)
-                        <a href="@if ($surat->is_local_file) {{ asset('storage/' . $surat->url_lampiran) }}
-                    @else
-                        {{ $surat->url_lampiran }} @endif"
-                            target="_blank" class="btn btn-outline-success px-5 rounded-3" style="width:max-content">
-                            Lihat Lampiran
-                        </a>
+                    @if ($surat->url_lampiran || $surat->url_lampiran_lokal)
+                        @if ($surat->url_lampiran_lokal)
+                            <a href="{{ asset('storage/' . $surat->url_lampiran_lokal) }}" target="_blank"
+                                class="btn btn-outline-success px-5 rounded-3" style="width:max-content">
+                                Lihat Lampiran
+                            </a>
+                        @endif
+                        @if ($surat->url_lampiran)
+                            <a href="{{ $surat->url_lampiran }}" target="_blank"
+                                class="btn btn-outline-success px-5 rounded-3" style="width:max-content">
+                                Link
+                            </a>
+                        @endif
                     @else
                         <div class="value">(Tidak ada file terlampir)</div>
                     @endif
@@ -114,13 +113,13 @@
                     </div>
                 @endif
                 @if ($surat->user_created == $userId)
-                    @if ($surat->status == 'staf_prodi' && $sisaHari >= 0)
+                    @if ($surat->status == 'staf_prodi')
                         <a href="{{ route('surat.edit', $surat->id) }}"
                             class="btn btn-outline-success py-2 fw-semibold rounded-3 mt-3">
                             Ubah Pengajuan
                         </a>
                     @endif
-                    @if ($surat->status == 'ditolak' || $sisaHari < 0)
+                    @if ($surat->status == 'ditolak')
                         <form action="{{ route('surat.delete', $surat->id) }}" method="POST" id="show-delete-confirm"
                             class="d-flex ">
                             @method('delete')
@@ -132,134 +131,128 @@
                         </form>
                     @endif
                 @endif
-                @if ($sisaHari > 0)
-                    @if ($jenisUser == 'admin')
-                        @if (Auth::guard('web')->user()->role_id === 1 && $surat->status == 'staf_jurusan')
-                            <a href="{{ route('surat.acc.stafjurusan', $surat->id) }}"
-                                class="btn btn-success rounded-3 py-2 px-4">
-                                Setujui Pengajuan Surat
-                            </a>
-                            <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
-                                style="margin-top: -8px">
-                                Tolak Surat
-                            </button>
-                        @endif
-                        @if ($surat->status == 'staf_prodi')
-                            <a href="{{ route('surat.acc.stafprodi', $surat->id) }}"
-                                class="btn btn-success rounded-3 py-2 px-4">
-                                Setujui Pengajuan Surat
-                            </a>
-                            <button data-toggle="modal" data-target="#change_tujuan_modal"
-                                class="btn btn-outline-success rounded-3 py-2 px-4">
-                                Ubah Tujuan
-                            </button>
-                            <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
-                                style="margin-top: -8px">
-                                Tolak Surat
-                            </button>
-                            {{-- Modal Ubah Tujuan Surat --}}
-                            <div class="modal fade w-100" id="change_tujuan_modal" tabindex="-1" role="dialog"
-                                aria-labelledby="accepted" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                    <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
-                                        <form action="{{ route('surat.edit.tujuan', $surat->id) }}" method="POST"
-                                            enctype="multipart/form-data" class="d-flex gap-1 flex-column">
-                                            @csrf
-                                            @method('post')
-                                            <h5 class="modal-title">Detail Surat</h5>
-                                            <div class="divider-green"></div>
-                                            <div class="mt-2">
-                                                <label for="kepada" class="fw-semibold">Tujuan Surat</label>
-                                                <div class="input-group">
-                                                    <select name="tujuan_surat" id="kepada"
-                                                        class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
-                                                        <option value="" class="text-capitalize" selected disabled>
-                                                            Pilih
-                                                            Tujuan Surat</option>
-                                                        @if (isset($roles))
-                                                            @foreach ($roles as $role)
-                                                                <option value="{{ $role->id }}" class="text-capitalize"
-                                                                    {{ $surat->penerima->id == $role->id ? 'selected' : '' }}>
-                                                                    {{ $role->nama_dosen ?? $role->nama_admin }}
-                                                                    ({{ $role->akses }})
-                                                                </option>
-                                                            @endforeach
-                                                        @endif
-                                                    </select>
-                                                    @error('tujuan_surat')
-                                                        <div class="text-danger mt-1" style="font-size: 11px">
-                                                            {{ $message }}
-                                                        </div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="rounded-3 btn mt-3 btn-success py-3">
-                                                Kirim
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        @elseif($surat->status === 'diterima' && $surat->role_handler == Auth::guard('web')->user()->role_id)
-                            <button data-toggle="modal" data-target="#done_modal"
-                                class="btn btn-success rounded-3 py-2 px-4">
-                                Selesaikan Surat
-                            </button>
-                            {{-- Modal Penyelesaian Surat --}}
-                            <div class="modal fade w-100" id="done_modal" tabindex="-1" role="dialog"
-                                aria-labelledby="accepted" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                    <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
-                                        <form action="{{ route('surat.done', $surat->id) }}" method="POST"
-                                            enctype="multipart/form-data" class="d-flex gap-1 flex-column">
-                                            @csrf
-                                            @method('post')
-                                            <h5 class="modal-title">Ubah Tujuan Surat</h5>
-                                            <div class="divider-green"></div>
-                                            <div class="mt-2">
-                                                <label for="nomor_surat" class="fw-semibold">Nomor Surat<span
-                                                        class="text-danger">*</span>
-                                                </label>
-                                                <input id="nomor_surat" name="nomor_surat" type="text"
-                                                    class="form-control rounded-3 py-4" required>
-                                            </div>
-                                            <div class="mt-2">
-                                                <label for="surat" class="fw-semibold">Hasil Surat<span
-                                                        class="text-danger">*</span>
-                                                </label>
-                                                <input id="surat" name="surat" type="file"
-                                                    class="form-control rounded-3" required>
-                                            </div>
-                                            <button type="submit" class="rounded-3 btn mt-3 btn-success py-3">
-                                                Selesaikan Surat
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                @if ($jenisUser == 'admin')
+                    @if (Auth::guard('web')->user()->role_id === 1 && $surat->status == 'staf_jurusan')
+                        <a href="{{ route('surat.acc.stafjurusan', $surat->id) }}"
+                            class="btn btn-success rounded-3 py-2 px-4">
+                            Setujui Pengajuan Surat
+                        </a>
+                        <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4" style="margin-top: -8px">
+                            Tolak Surat
+                        </button>
                     @endif
-                    @if ($jenisUser == 'dosen')
-                        @if (Auth::guard('dosen')->user()->role_id === $surat->role_tujuan &&
-                                ($surat->status != 'diterima' && $surat->status != 'ditolak'))
-                            <a href="{{ route('surat.accept', $surat->id) }}"
-                                class="btn btn-success rounded-3 py-2 px-4">
-                                Setujui Pengajuan Surat
-                            </a>
-                            <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
-                                style="margin-top: -8px">
-                                Tolak Surat
-                            </button>
-                        @elseif($surat->prodi_user === $userProdi && $surat->status == 'kaprodi')
-                            <a href="{{ route('surat.acc.kaprodi', $surat->id) }}"
-                                class="btn btn-success rounded-3 py-2 px-4">
-                                Setujui Pengajuan Surat
-                            </a>
-                            <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
-                                style="margin-top: -8px">
-                                Tolak Surat
-                            </button>
-                        @endif
+                    @if ($surat->status == 'staf_prodi')
+                        <a href="{{ route('surat.acc.stafprodi', $surat->id) }}"
+                            class="btn btn-success rounded-3 py-2 px-4">
+                            Setujui Pengajuan Surat
+                        </a>
+                        <button data-toggle="modal" data-target="#change_tujuan_modal"
+                            class="btn btn-outline-success rounded-3 py-2 px-4">
+                            Ubah Tujuan
+                        </button>
+                        <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4" style="margin-top: -8px">
+                            Tolak Surat
+                        </button>
+                        {{-- Modal Ubah Tujuan Surat --}}
+                        <div class="modal fade w-100" id="change_tujuan_modal" tabindex="-1" role="dialog"
+                            aria-labelledby="accepted" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
+                                    <form action="{{ route('surat.edit.tujuan', $surat->id) }}" method="POST"
+                                        enctype="multipart/form-data" class="d-flex gap-1 flex-column">
+                                        @csrf
+                                        @method('post')
+                                        <h5 class="modal-title">Detail Surat</h5>
+                                        <div class="divider-green"></div>
+                                        <div class="mt-2">
+                                            <label for="kepada" class="fw-semibold">Tujuan Surat</label>
+                                            <div class="input-group">
+                                                <select name="tujuan_surat" id="kepada"
+                                                    class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
+                                                    <option value="" class="text-capitalize" selected disabled>
+                                                        Pilih
+                                                        Tujuan Surat</option>
+                                                    @if (isset($dosens))
+                                                        @foreach ($dosens as $dosen)
+                                                            <option value="{{ $dosen->role_id }}" class="text-capitalize"
+                                                                {{ $surat->role_tujuan == $dosen->role_id ? 'selected' : '' }}>
+                                                                {{ $dosen->nama }}
+                                                                ({{ $dosen->role->role_akses }})
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                @error('tujuan_surat')
+                                                    <div class="text-danger mt-1" style="font-size: 11px">
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="rounded-3 btn mt-3 btn-success py-3">
+                                            Kirim
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($surat->status === 'diterima' && $surat->role_handler == Auth::guard('web')->user()->role_id)
+                        <button data-toggle="modal" data-target="#done_modal" class="btn btn-success rounded-3 py-2 px-4">
+                            Selesaikan Surat
+                        </button>
+                        {{-- Modal Penyelesaian Surat --}}
+                        <div class="modal fade w-100" id="done_modal" tabindex="-1" role="dialog"
+                            aria-labelledby="accepted" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
+                                    <form action="{{ route('surat.done', $surat->id) }}" method="POST"
+                                        enctype="multipart/form-data" class="d-flex gap-1 flex-column">
+                                        @csrf
+                                        @method('post')
+                                        <h5 class="modal-title">Ubah Tujuan Surat</h5>
+                                        <div class="divider-green"></div>
+                                        <div class="mt-2">
+                                            <label for="nomor_surat" class="fw-semibold">Nomor Surat<span
+                                                    class="text-danger">*</span>
+                                            </label>
+                                            <input id="nomor_surat" name="nomor_surat" type="text"
+                                                class="form-control rounded-3 py-4" required>
+                                        </div>
+                                        <div class="mt-2">
+                                            <label for="surat" class="fw-semibold">Hasil Surat<span
+                                                    class="text-danger">*</span>
+                                            </label>
+                                            <input id="surat" name="surat" type="file"
+                                                class="form-control rounded-3" required>
+                                        </div>
+                                        <button type="submit" class="rounded-3 btn mt-3 btn-success py-3">
+                                            Selesaikan Surat
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endif
+                @if ($jenisUser == 'dosen')
+                    @if (Auth::guard('dosen')->user()->role_id == $surat->role_tujuan &&
+                            !in_array($surat->status, ['diterima', 'ditolak', 'selesai']))
+                        <a href="{{ route('surat.accept', $surat->id) }}" class="btn btn-success rounded-3 py-2 px-4">
+                            Setujui Pengajuan Surat
+                        </a>
+                        <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
+                            style="margin-top: -8px">
+                            Tolak Surat
+                        </button>
+                    @elseif($isKaprodi && $surat->status == 'kaprodi')
+                        <a href="{{ route('surat.acc.kaprodi', $surat->id) }}"
+                            class="btn btn-success rounded-3 py-2 px-4">
+                            Setujui Pengajuan Surat
+                        </a>
+                        <button id="btnReject" class="btn text-danger fw-bold rounded-3 py-2 px-4"
+                            style="margin-top: -8px">
+                            Tolak Surat
+                        </button>
                     @endif
                 @endif
 

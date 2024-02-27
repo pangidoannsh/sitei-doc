@@ -36,9 +36,22 @@ class Dokumen extends Model
         return $this->belongsTo(User::class, "user_created", "username");
     }
 
-    public static function getLatestDokumen()
+    public static function getAllLatestDokumen()
     {
         return self::whereDate("created_at", ">=", Carbon::today()->subDays(5))->get();
+    }
+    public static function countAllLatestDokumen()
+    {
+        return self::whereDate("created_at", ">=", Carbon::today()->subDays(5))->count();
+    }
+
+    public static function getAllArchive()
+    {
+        return self::whereDate("created_at", "<", Carbon::today()->subDays(5))->get();
+    }
+    public static function countAllArchive()
+    {
+        return self::whereDate("created_at", "<", Carbon::today()->subDays(5))->count();
     }
 
     public static function getLatestByUser($userId)

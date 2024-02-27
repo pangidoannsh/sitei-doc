@@ -47,6 +47,44 @@ class PengumumanService
 
         return $pengumumanMentioned->get();
     }
+    public static function getCountFromMentions($userId, $jenisUser)
+    {
+        // get data pengumuman dari mentions
+        $pengumumanMentioned = PengumumanMention::whereHas('dokumen', function ($query) {
+            $query->whereDate('tgl_batas_pengumuman', '>=', Carbon::today());
+        });
+
+        if ($jenisUser == "mahasiswa") {
+            $prodiId = Auth::guard("mahasiswa")->user()->prodi_id;
+            $angkatan = Auth::guard("mahasiswa")->user()->angkatan;
+            switch ($prodiId) {
+                case 1:
+                    $userMentionId = "d3te_all";
+                    $fromAngkatan = "d3te_$angkatan";
+                    break;
+                case 2:
+                    $userMentionId = "s1te_all";
+                    $fromAngkatan = "s1te_$angkatan";
+                    break;
+                case 3:
+                    $userMentionId = "s1ti_all";
+                    $fromAngkatan = "s1ti_$angkatan";
+                    break;
+
+                default:
+                    $userMentionId = "";
+                    $fromAngkatan = "";
+                    break;
+            }
+            $pengumumanMentioned->where(function ($query) use ($userId, $userMentionId, $fromAngkatan) {
+                $query->where('user_mentioned', $userId)->orWhere("user_mentioned", $userMentionId)->orWhere("user_mentioned", $fromAngkatan);
+            });
+        } else {
+            $pengumumanMentioned->where('user_mentioned', $userId);
+        }
+
+        return $pengumumanMentioned->count();
+    }
     public static function archiveFromMentions($userId, $jenisUser)
     {
         // get data pengumuman dari mentions
@@ -84,6 +122,44 @@ class PengumumanService
         }
 
         return $pengumumanMentioned->get();
+    }
+    public static function getCountArchiveFromMentions($userId, $jenisUser)
+    {
+        // get data pengumuman dari mentions
+        $pengumumanMentioned = PengumumanMention::whereHas('dokumen', function ($query) {
+            $query->whereDate('tgl_batas_pengumuman', '<', Carbon::today());
+        });
+
+        if ($jenisUser == "mahasiswa") {
+            $prodiId = Auth::guard("mahasiswa")->user()->prodi_id;
+            $angkatan = Auth::guard("mahasiswa")->user()->angkatan;
+            switch ($prodiId) {
+                case 1:
+                    $userMentionId = "d3te_all";
+                    $fromAngkatan = "d3te_$angkatan";
+                    break;
+                case 2:
+                    $userMentionId = "s1te_all";
+                    $fromAngkatan = "s1te_$angkatan";
+                    break;
+                case 3:
+                    $userMentionId = "s1ti_all";
+                    $fromAngkatan = "s1ti_$angkatan";
+                    break;
+
+                default:
+                    $userMentionId = "";
+                    $fromAngkatan = "";
+                    break;
+            }
+            $pengumumanMentioned->where(function ($query) use ($userId, $userMentionId, $fromAngkatan) {
+                $query->where('user_mentioned', $userId)->orWhere("user_mentioned", $userMentionId)->orWhere("user_mentioned", $fromAngkatan);
+            });
+        } else {
+            $pengumumanMentioned->where('user_mentioned', $userId);
+        }
+
+        return $pengumumanMentioned->count();
     }
 
     public static function saveMentions(Request $request, $pengumumanId)

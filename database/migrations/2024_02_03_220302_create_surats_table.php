@@ -29,6 +29,7 @@ class CreateSuratsTable extends Migration
             $table->string("status");
             $table->string("keterangan_status");
             $table->string("nomor_surat")->nullable();
+            $table->string("semester");
             $table->string("url_surat_jadi")->nullable();
             $table->timestamps();
         });

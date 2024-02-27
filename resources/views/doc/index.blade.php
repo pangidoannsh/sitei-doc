@@ -100,51 +100,45 @@
         <ul class="breadcrumb col-lg-12">
             <li>
                 <a href="#" class="breadcrumb-item active fw-bold text-success px-1">
-                    Usulan Terbaru (<span>{{ count($dokumens) }}</span>)
-                </a>
-            </li>
-            <span class="px-2">|</span>
-            <li>
-                <a href="{{ route('pengumuman.index') }}" class="px-1">
-                    Pengumuman
+                    Usulan ({{ count($dokumens) }})
                 </a>
             </li>
             <span class="px-2">|</span>
             <li>
                 <a href="{{ route('doc.arsip') }}" class="px-1">
-                    Arsip
+                    Arsip ({{ $countArsip }})
                 </a>
             </li>
         </ul>
-        <div class="d-flex justify-content-center gap-3 filter">
-            <div class="input-group" style="width: max-content">
-                <label for="statusFilter">Status</label>
-                <select id="statusFilter" class="rounded-3 py-1" text-capitalize>
+        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+            <label>
+                Status:
+                <select id="statusFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
-                    <option value="pengumuman">Pengumuman</option>
                     <option value="dokumen">Dokumen</option>
                     <option value="surat">Surat</option>
+                    <option value="surat cuti">Surat Cuti</option>
                     <option value="sertifikat">Sertifikat</option>
                 </select>
-            </div>
-            <div class="input-group" style="width: max-content">
-                <label for="kategoriFilter">Jenis/Kategori</label>
-                <select id="kategoriFilter" class="rounded-3 py-1 text-capitalize">
+            </label>
+            <label>
+                Kategori:
+                <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($kategoris as $kategori)
                         <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div class="input-group" style="width: max-content">
-                <label for="semesterFilter">Semester</label>
-                <select id="semesterFilter" class="rounded-3 py-1 text-capitalize">
+            </label>
+            <label>
+                Semester:
+                <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($semesters as $semester)
                         <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
                     @endforeach
                 </select>
-            </div>
+            </label>
         </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
@@ -250,7 +244,7 @@
                                                     @if ($penerima->user_penerima)
                                                         <div class="ellipsis-2">
                                                             <span>{{ $loop->iteration }}.</span>
-                                                            <span>{{ $penerima->mahasiswa->nama }}</span>
+                                                            <span>{{ data_get($penerima, $penerima->jenis_penerima . '.nama') }}</span>
                                                         </div>
                                                     @else
                                                         <div class="ellipsis-2">
@@ -311,12 +305,8 @@
                                     Cuti {{ $dokumen->jenis_cuti }}
                                 @break
 
-                                @case('sertifikat')
-                                    {{ $dokumen->jenis }}
-                                @break
-
                                 @default
-                                    (Kosong)
+                                    -
                             @endswitch
                         </td>
                         {{-- Isi/Keterangan --}}
@@ -349,7 +339,7 @@
                         </td>
                         {{-- Semester --}}
                         <td class="text-center text-capitalize">
-                            {{ $dokumen->semester ?? '' }}
+                            {{ $dokumen->semester ?? '-' }}
                         </td>
                         {{-- Aksi --}}
                         <td class="text-center" style="width: max-content">

@@ -91,7 +91,7 @@
             <span class="px-2">|</span>
             <li>
                 <a href="{{ route('pengelola.arsip') }}" class="px-1">
-                    Arsip
+                    Arsip ({{ $countArsip }})
                 </a>
             </li>
         </ul>
@@ -194,7 +194,7 @@
                                                 @if ($penerima->user_penerima)
                                                     <div class="ellipsis-2">
                                                         <span>{{ $loop->iteration }}.</span>
-                                                        <span>{{ $penerima->mahasiswa->nama }}</span>
+                                                        <span>{{ data_get($penerima, $penerima->jenis_penerima . '.nama') }}</span>
                                                     </div>
                                                 @else
                                                     <div class="ellipsis-2">
@@ -254,12 +254,8 @@
                                     Cuti {{ $dokumen->jenis_cuti }}
                                 @break
 
-                                @case('sertifikat')
-                                    {{ $dokumen->jenis }}
-                                @break
-
                                 @default
-                                    (Kosong)
+                                    -
                             @endswitch
                         </td>
                         {{-- Isi/Keterangan --}}

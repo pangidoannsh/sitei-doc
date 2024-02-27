@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuratCutiController extends Controller
 {
@@ -175,5 +176,22 @@ class SuratCutiController extends Controller
         $suratCuti->update();
         Alert::success('Berhasil!', 'Surat Cuti Ditolak')->showConfirmButton('Ok', '#28a745');
         return redirect()->route('doc.index');
+    }
+
+    public function download($id)
+    {
+        $data = SuratCuti::where("id", $id)->where("status", "diterima")->first();
+        if (!$data) return abort(404);
+        $kajur = Role::where("role.id", 5)
+            ->rightJoin("dosen", "role.id", "=", "dosen.role_id")
+            ->select(
+                "dosen.nama as nama",
+                "dosen.nip as nip"
+            )->first();
+        // $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/sertifikat') . '/' . $slug));
+        $pdf = Pdf::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->setPaper("a4", 'potrait');
+        $pdf->loadView("doc.pdf.suratcuti", compact('data', 'kajur'));
+        // return $pdf->download("Surat Cuti " . data_get($data, $data->jenis_user . ".nama") . '.pdf');
+        return $pdf->stream("Surat Cuti " . data_get($data, $data->jenis_user . ".nama") . '.pdf', array("Attachment" => false));
     }
 }

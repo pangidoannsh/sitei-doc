@@ -61,6 +61,15 @@
                 <label for="keterangan" class="fw-semibold">Keterangan</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Keterangan" name="keterangan" id="keterangan" cols="3">{{ $dokumen->keterangan }}</textarea>
             </div>
+            <div>
+                <label for="nomor_dokumen" class="fw-semibold">Nomor Dokumen</label>
+                <input type="text" class="form-control @error('nomor_dokumen') is-invalid @enderror rounded-3 py-4"
+                    name="nomor_dokumen" placeholder="Nomor Dokumen" id="nomor_dokumen"
+                    value="{{ old('nomor_dokumen') ?? $dokumen->nomor_dokumen }}">
+                @error('nomor_dokumen')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
+            </div>
             <div id="current-dokumen">
                 <label class="fw-semibold">Lampiran</label>
                 <div class="d-flex gap-2 align-items-center">

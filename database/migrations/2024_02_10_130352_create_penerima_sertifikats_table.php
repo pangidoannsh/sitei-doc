@@ -20,7 +20,9 @@ class CreatePenerimaSertifikatsTable extends Migration
             $table->foreignId("sertifikat_id");
             $table->string("nomor_sertif")->nullable();
             $table->string("user_penerima")->nullable();
+            $table->enum("jenis_penerima", ['dosen', 'staf', 'mahasiswa', 'lainnya'])->default('lainnya');
             $table->string("nama_penerima")->nullable();
+            $table->string("nama_display")->nullable();
             $table->timestamps();
         });
     }

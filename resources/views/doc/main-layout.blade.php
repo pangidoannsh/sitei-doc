@@ -7,6 +7,11 @@
     <title>@yield('title')</title>
 
     <!-- Google Font: Source Sans Pro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/bootstrap.min.css') }}">
@@ -16,9 +21,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
 
+    <link rel="stylesheet" href="{{ asset('/assets/css/dokumen.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('/assets/dist/css/adminlte.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('/assets/css/dokumen.css') }}">
     <link rel="stylesheet" href="{{ asset('/assets/css/style.css?v=0.001') }}">
     <!--<link rel="stylesheet" href="{{ asset('/assets/dataTables/datatables.min.css') }}">-->
 
@@ -28,6 +33,8 @@
     <link href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.bootstrap4.min.css" rel="stylesheet">
 
     <script src="https://kit.fontawesome.com/9c94b38548.js" crossorigin="anonymous"></script>
+
+    <link rel="icon" href="{{ asset('logo.png') }}">
 
     <style>
         .dropdown-menu {
@@ -99,6 +106,9 @@
             background-color: white !important;
         }
     </style>
+
+
+
 </head>
 
 <body class="hold-transition layout-top-nav">
@@ -119,6 +129,8 @@
                                 <a class="navbar-brand mt-1 " href="/persetujuan-kp-skripsi">SITEI
                                 @elseif (Str::length(Auth::guard('mahasiswa')->user()) > 0)
                                     <a class="navbar-brand mt-1 " href="/">SITEI
+                                    @else
+                                        <a class="navbar-brand mt-1 " href="/">SITEI
                         @endif
                         </a>
                     </div>
@@ -129,6 +141,8 @@
                         <i class="fas fa-bars fs-1 fa-lg"></i>
                     </span>
 
+
+
                     <div class="collapse navbar-collapse navbar-toggler-collapse rounded-bottom"
                         id="navbarSupportedContent">
                         <ul class="navbar-nav">
@@ -138,6 +152,10 @@
                             @if (Str::length(Auth::guard('dosen')->user()) > 0)
 
                                 <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                            aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                    </li>
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
                                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -201,33 +219,44 @@
                                         aria-current="page" href="/inventaris/peminjaman-dosen">INVENTARIS</a>
                                 </li>
                                 {{-- DistribusiDokumen --}}
-                                <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="" aria-current="page" aria-expanded="false"
-                                        role="button" data-bs-toggle="dropdown"
-                                        class="nav-link dropdown-toggle {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                    <ul aria-labelledby="dokumendropdown"
-                                        class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen/pengumuman*') ? 'text-success' : '' }} "
-                                                aria-current="page"
-                                                href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen/arsip*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                        </li>
-                                    </ul>
-                                </li>
+                                @if (in_array(Auth::guard('dosen')->user()->role_id, [5, 6, 7, 8]))
+                                    <li class="nav-item dropdown ">
+                                        <a class="nav-link dropdown-toggle" id="dokumenDropdown" role="button"
+                                            data-bs-toggle="dropdown" class="nav-link ">
+                                            <span
+                                                class="fw-bold {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                                DOKUMEN
+                                            </span>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="dokumenDropdown">
+                                            <li class="nav-item">
+                                                <a href="{{ route('doc.index') }}"
+                                                    class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">Usulan</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link {{ Request::is('distribusi-dokumen/pengelola*') ? 'text-success' : '' }}"
+                                                    href="{{ route('pengelola') }}">Pengelola</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @else
+                                    <li class="nav-item dropdown baru">
+                                        <a href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
+                                    </li>
+                                @endif
                             @endif
 
                             {{-- Menu PLP --}}
 
                             @if (Str::length(Auth::guard('web')->user()) > 0)
                                 @if (Auth::guard('web')->user()->role_id == 12)
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                            aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                    </li>
                                     <li class="nav-item">
                                         <a class="nav-link {{ Request::is('inventaris*') ? 'text-success' : '' }} "
                                             aria-current="page" href="/inventaris/peminjaman-plp">INVENTARIS</a>
@@ -239,6 +268,10 @@
 
                             @if (Str::length(Auth::guard('mahasiswa')->user()) > 0)
                                 <ul class="navbar-nav">
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                            aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                    </li>
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
                                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -280,34 +313,22 @@
                                 </li>
                                 {{-- DistribusiDokumen --}}
                                 <li class="nav-item dropdown baru">
-                                    <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                        aria-haspopup="true" aria-expanded="false"
-                                        class="nav-link dropdown-toggle {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                    <ul aria-labelledby="dokumendropdown"
-                                        class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }}"
-                                                aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen/pengumuman*') ? 'text-success' : '' }} "
-                                                aria-current="page"
-                                                href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                        </li>
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ Request::is('distribusi-dokumen/arsip*') ? 'text-success' : '' }} "
-                                                aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                        </li>
-                                    </ul>
+                                    <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                        class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                        DOKUMEN
+                                    </a>
                                 </li>
                             @endif
 
-                            {{-- All Admin --}}
                             @if (Str::length(Auth::guard('web')->user()) > 0)
                                 @if (Auth::guard('web')->user()->role_id == 2 ||
                                         Auth::guard('web')->user()->role_id == 3 ||
                                         Auth::guard('web')->user()->role_id == 4)
                                     <ul class="navbar-nav">
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                                aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                        </li>
                                         <li class="nav-item dropdown">
                                             <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
                                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -359,30 +380,19 @@
                                     </li>
                                     {{-- DistribusiDokumen --}}
                                     <li class="nav-item dropdown baru">
-                                        <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                            aria-haspopup="true" aria-expanded="false"
-                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen/*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                        <ul aria-labelledby="dokumendropdown"
-                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen/pengumuman*') ? 'text-success' : '' }} "
-                                                    aria-current="page"
-                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen/arsip*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                            </li>
-                                        </ul>
+                                        <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
                                     </li>
                                 @endif
 
                                 @if (Auth::guard('web')->user()->role_id == 1)
                                     <ul class="navbar-nav">
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                                aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                        </li>
                                         <li class="nav-item dropdown">
                                             <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
                                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -429,29 +439,10 @@
                                     </li>
                                     {{-- DistribusiDokumen --}}
                                     <li class="nav-item dropdown baru">
-                                        <a id="dokumendropdown" href="{{ route('doc.index') }}" aria-current="page"
-                                            aria-haspopup="true" aria-expanded="false"
-                                            class="nav-link dropdown-toggle {{ Request::is('/distribusi-dokumen*') ? 'text-success' : '' }}">DOKUMEN</a>
-                                        <ul aria-labelledby="dokumendropdown"
-                                            class="dropdown-menu border-0 shadow"style="border-radius:10px;">
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }}"
-                                                    aria-current="page" href="{{ route('doc.index') }}">Terbaru</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen/pengumuman*') ? 'text-success' : '' }} "
-                                                    aria-current="page"
-                                                    href="{{ route('pengumuman.index') }}">Pengumuman</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('distribusi-dokumen/arsip*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="{{ route('doc.arsip') }}">Arsip</a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link {{ Request::is('doc/pengaturan*') ? 'text-success' : '' }} "
-                                                    aria-current="page" href="#">Pengaturan</a>
-                                            </li>
-                                        </ul>
+                                        <a id="dokumendropdown" href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
                                     </li>
 
                                     <ul class="navbar-nav">
@@ -500,7 +491,6 @@
                                 @endif
                             @endif
 
-                            {{-- Dosen TI --}}
                             @if (Str::length(Auth::guard('dosen')->user()) > 0)
                                 @if (Auth::guard('dosen')->user()->prodi_id == 3)
                                     <ul class="navbar-nav">
@@ -533,118 +523,119 @@
                                         </li>
 
                                     </ul>
+                    </div>
+                    </li>
+                    </ul>
+
+                    @endif
+                    @endif
 
 
-                                @endif
-                            @endif
+                    @if (Str::length(Auth::guard('web')->user()) > 0)
+                        @if (Auth::guard('web')->user()->role_id == 2)
+                            <ul class="navbar-nav">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        DATA
+                                    </a>
+                                    <div>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                            {{-- Staf Prodi D3 TE --}}
-                            @if (Str::length(Auth::guard('web')->user()) > 0)
-                                @if (Auth::guard('web')->user()->role_id == 2)
-                                    <ul class="navbar-nav">
-                                        <li class="nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
-                                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                DATA
-                                            </a>
-                                            <div>
-                                                <ul class="dropdown-menu dropdown-menu-end"
-                                                    aria-labelledby="navbarDropdown">
+                                            <li class="nav-item"><a class="nav-link" href="/mahasiswa"
+                                                    class="dropdown-item mb-1 {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link"
+                                                    href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
+                                                    target="_blank" class="dropdown-item mb-1">SK-SK</a>
+                                            </li>
 
-                                                    <li class="nav-item"><a class="nav-link" href="/mahasiswa"
-                                                            class="dropdown-item mb-1 {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link"
-                                                            href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
-                                                            target="_blank" class="dropdown-item mb-1">SK-SK</a>
-                                                    </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        @endif
+                    @endif
 
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                @endif
-                            @endif
-                            {{-- Staf prodi S1 TE --}}
-                            @if (Str::length(Auth::guard('web')->user()) > 0)
-                                @if (Auth::guard('web')->user()->role_id == 3)
-                                    <ul class="navbar-nav">
-                                        <li class="nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
-                                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                DATA
-                                            </a>
-                                            <div>
-                                                <ul class="dropdown-menu dropdown-menu-end"
-                                                    aria-labelledby="navbarDropdown">
+                    @if (Str::length(Auth::guard('web')->user()) > 0)
+                        @if (Auth::guard('web')->user()->role_id == 3)
+                            <ul class="navbar-nav">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        DATA
+                                    </a>
+                                    <div>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                                                    <li class="nav-item"><a class="nav-link" href="/mahasiswa"
-                                                            class="dropdown-item mb-1 {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
-                                                    </li>
-                                                    <li class="nav-item"><a class="nav-link"
-                                                            href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
-                                                            target="_blank" class="dropdown-item mb-1">SK-SK</a>
-                                                    </li>
+                                            <li class="nav-item"><a class="nav-link" href="/mahasiswa"
+                                                    class="dropdown-item mb-1 {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
+                                            </li>
+                                            <li class="nav-item"><a class="nav-link"
+                                                    href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
+                                                    target="_blank" class="dropdown-item mb-1">SK-SK</a>
+                                            </li>
 
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                @endif
-                            @endif
-                            {{-- Staf Prodi S1 TI --}}
-                            @if (Str::length(Auth::guard('web')->user()) > 0)
-                                @if (Auth::guard('web')->user()->role_id == 4)
-                                    <ul class="navbar-nav">
-                                        <li class="nav-item dropdown">
-                                            <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
-                                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                DATA
-                                            </a>
-                                            <div>
-                                                <ul class="dropdown-menu dropdown-menu-end"
-                                                    aria-labelledby="navbarDropdown">
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        @endif
+                    @endif
 
-                                                    <li class="nav-item"><a href="/mahasiswa"
-                                                            class="dropdown-item nav-link {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
-                                                    </li>
-                                                    <li class="nav-item"><a
-                                                            href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
-                                                            target="_blank" class="dropdown-item nav-link">SK-SK</a>
-                                                    </li>
-                                                    <li class="nav-item"><a
-                                                            href="https://classroom.google.com/u/0/c/MTIwOTM4MDc3MzNa"
-                                                            target="_blank"
-                                                            class="dropdown-item nav-link">Classroom</a></li>
-                                                    <li class="nav-item"><a href="#"
-                                                            class="dropdown-item cursor-default nav-link"><b>Upload
-                                                                File</b></a> </li>
-                                                    <li class="nav-item"><a
-                                                            href="https://drive.google.com/drive/folders/1BXXXZdm36DWkm69hI6EZdNznXaGClwL9"
-                                                            target="_blank" class="dropdown-item nav-link"><span
-                                                                class="ml-2">- Seminar KP </span></a></li>
-                                                    <li class="nav-item"><a
-                                                            href="https://drive.google.com/drive/folders/1CHKVAqnQqgxeONsETBhuQWbasaVcGcdT"
-                                                            target="_blank" class="dropdown-item nav-link"><span
-                                                                class="ml-2">- SemPro </span></a></li>
-                                                    <li class="nav-item"><a
-                                                            href="https://drive.google.com/drive/folders/1BIsESymd0P8k0UBcnDehn70ymNvl4rbi"
-                                                            target="_blank" class="dropdown-item nav-link"><span
-                                                                class="ml-2">- Sidang Skripsi </span></a></li>
-                                                    <li class="nav-item"><a
-                                                            href="https://docs.google.com/spreadsheets/d/15FjdAPpexgB_zHlVlXMIiaqMgyDoXVwn-b6xHHZ0Tlg/"
-                                                            target="_blank" class="dropdown-item nav-link">Arsip
-                                                            Database</a>
-                                                    </li>
+                    @if (Str::length(Auth::guard('web')->user()) > 0)
+                        @if (Auth::guard('web')->user()->role_id == 4)
+                            <ul class="navbar-nav">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
+                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        DATA
+                                    </a>
+                                    <div>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                                                </ul>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                @endif
-                            @endif
-                        </ul>
+                                            <li class="nav-item"><a href="/mahasiswa"
+                                                    class="dropdown-item nav-link {{ Request::is('mahasiswa*') ? 'text-success' : '' }}">Mahasiswa</a>
+                                            </li>
+                                            <li class="nav-item"><a
+                                                    href="https://drive.google.com/drive/folders/1dlJcsWnzLx7P82PQ976YVRL9qS9WIrol"
+                                                    target="_blank" class="dropdown-item nav-link">SK-SK</a>
+                                            </li>
+                                            <li class="nav-item"><a
+                                                    href="https://classroom.google.com/u/0/c/MTIwOTM4MDc3MzNa"
+                                                    target="_blank" class="dropdown-item nav-link">Classroom</a></li>
+                                            <li class="nav-item"><a href="#"
+                                                    class="dropdown-item cursor-default nav-link"><b>Upload
+                                                        File</b></a> </li>
+                                            <li class="nav-item"><a
+                                                    href="https://drive.google.com/drive/folders/1BXXXZdm36DWkm69hI6EZdNznXaGClwL9"
+                                                    target="_blank" class="dropdown-item nav-link"><span
+                                                        class="ml-2">- Seminar KP </span></a></li>
+                                            <li class="nav-item"><a
+                                                    href="https://drive.google.com/drive/folders/1CHKVAqnQqgxeONsETBhuQWbasaVcGcdT"
+                                                    target="_blank" class="dropdown-item nav-link"><span
+                                                        class="ml-2">- SemPro </span></a></li>
+                                            <li class="nav-item"><a
+                                                    href="https://drive.google.com/drive/folders/1BIsESymd0P8k0UBcnDehn70ymNvl4rbi"
+                                                    target="_blank" class="dropdown-item nav-link"><span
+                                                        class="ml-2">- Sidang Skripsi </span></a></li>
+                                            <li class="nav-item"><a
+                                                    href="https://docs.google.com/spreadsheets/d/15FjdAPpexgB_zHlVlXMIiaqMgyDoXVwn-b6xHHZ0Tlg/"
+                                                    target="_blank" class="dropdown-item nav-link">Arsip Database</a>
+                                            </li>
 
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        @endif
+                    @endif
+                    </ul>
+                    @if (!Auth::guard('web')->check() && !Auth::guard('dosen')->check() && !Auth::guard('mahasiswa')->check())
+                        <div class="navbar-nav ml-auto">
+                            <a href="/" class="btn btn-success rounded-2">Login</a>
+                        </div>
+                    @else
                         <ul class="navbar-nav ml-auto">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
@@ -704,210 +695,246 @@
                                 </div>
                             </li>
                         </ul>
-                    </div>
+                    @endif
                 </div>
-            </nav>
-
         </div>
+        </nav>
 
-        <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
-            <div class="content-header">
-                <div class="container">
-                    <div>
-                        <div class="sub-title">
-                            <h4>@yield('sub-title')</h4>
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- /.container-fluid -->
-            </div>
-            <!-- /.content-header -->
+    </div>
 
-            <!-- Main content -->
-            <div class="content">
-                <div class="container">
-                    @yield('content')
-                </div><!-- /.container-fluid -->
-            </div>
-            <!-- /.content -->
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container">
+                <div>
+                    <div class="anak-judul sub-title">
+                        <h4>@yield('sub-title')</h4>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
         </div>
-        <!-- /.content-wrapper -->
+        <!-- /.content-header -->
 
-        <!-- Main Footer -->
+        <!-- Main content -->
+        <div class="content">
+            <div class="container">
+                @yield('content')
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
 
-        @yield('footer')
+    <!-- Main Footer -->
+
+    @yield('footer')
+    <!-- <div class="footer bg-dark">
+        <div class="container">
+          <p class="developer">Dikembangkan oleh Prodi Teknik Informatika UNRI</p>
+        </div>
+      </div> -->
 
 
-        <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+
+
+    <!-- jQuery -->
+    <!--<script src="{{ asset('/assets/plugins/jquery/jquery.min.js') }}"></script>-->
+    <!--<script src="{{ asset('/assets/dataTables/datatables.min.js') }}"></script>-->
+
+
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
 
 
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap4.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
-        <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
-        <script src="https://cdn.datatables.net/rowgroup/1.4.0/js/dataTables.rowGroup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.colVis.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/rowgroup/1.4.0/js/dataTables.rowGroup.min.js"></script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables').DataTable({
-                    "lengthMenu": [50, 100, 150, 200, 250],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
+
+    {{-- <script type="text/javascript">
+$(document).ready(function() {
+    var table = $('#datatables').DataTable( {
+        "lengthMenu": [ 50, 100, 150, 200, 250 ],
+        buttons: [ 'copy', 'excel','print', 'pdf' ],
+        dom:
+        "<'row'<'col-md-2'l><'col-md-5'B><'col-md-4'f>>" +
+        "<'row'<'col-md-12'tr>>" +
+        "<'row'<'col-md-5'i><'col-md-7'p>>"
+        
+    } );
+ 
+    table.buttons().container()
+        .appendTo( '#datatables_wrapper .col-md-5:eq(0)' );
+} );
+</script> --}}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.filter').removeClass("d-none")
+            $('.filter').addClass("d-flex")
+            var table = $('#datatables').DataTable({
+                "lengthMenu": [50, 100, 150, 200, 250],
+                "language": {
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
                     }
+                }
 
-                })
-                $("#statusFilter").on('change', e => {
-                    const val = e.target.value
-                    table.column(3).search(val ? '^' + val + '$' : '', true, false).draw();
-                })
-                $("#kategoriFilter").on('change', e => {
-                    const val = e.target.value
-                    table.column(5).search(val ? '^' + val + '$' : '', true, false).draw();
-                })
-                $("#semesterFilter").on('change', e => {
-                    const val = e.target.value
-                    table.column(7).search(val ? '^' + val + '$' : '', true, false).draw();
-                })
-            });
-        </script>
+            })
+            $("#statusFilter").on('change', e => {
+                const val = e.target.value
+                table.column(3).search(val ? '^' + val + '$' : '', true, false).draw();
+            })
+            $("#kategoriFilter").on('change', e => {
+                const val = e.target.value
+                table.column(5).search(val ? '^' + val + '$' : '', true, false).draw();
+            })
+            $("#semesterFilter").on('change', e => {
+                const val = e.target.value
+                table.column(7).search(val ? '^' + val + '$' : '', true, false).draw();
+            })
+        });
+    </script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables3').DataTable({
-                    "lengthMenu": [50, 100, 150, 200, 250],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $('#datatables3').DataTable({
+                "lengthMenu": [50, 100, 150, 200, 250],
+                "language": {
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
                     }
-                })
-            });
-        </script>
+                }
+            })
+        });
+    </script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables4').DataTable({
-                    "lengthMenu": [50, 100, 150, 200, 250],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $('#datatables4').DataTable({
+                "lengthMenu": [50, 100, 150, 200, 250],
+                "language": {
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
                     }
-                })
-            });
-        </script>
+                }
+            })
+        });
+    </script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables5').DataTable({
-                    "lengthMenu": [50, 100, 150, 200, 250],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $('#datatables5').DataTable({
+                "lengthMenu": [50, 100, 150, 200, 250],
+                "language": {
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
                     }
-                })
-            });
-        </script>
+                }
+            })
+        });
+    </script>
 
-        <script type="text/javascript">
-            $(document).ready(function() {
-                var table = $('#datatables2').DataTable({
-                    "lengthMenu": [50, 100, 150, 200, 250],
-                    "language": {
-                        "sProcessing": "Sedang memproses...",
-                        "sLengthMenu": "Tampilkan _MENU_ entri",
-                        "sZeroRecords": "Tidak ditemukan data yang sesuai",
-                        "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                        "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                        "sInfoPostFix": "",
-                        "sSearch": "Cari:",
-                        "sUrl": "",
-                        "oPaginate": {
-                            "sFirst": "Pertama",
-                            "sPrevious": "Sebelumnya",
-                            "sNext": "Selanjutnya",
-                            "sLast": "Terakhir"
-                        }
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var table = $('#datatables2').DataTable({
+                "lengthMenu": [50, 100, 150, 200, 250],
+                "language": {
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Selanjutnya",
+                        "sLast": "Terakhir"
                     }
-                })
-            });
-        </script>
+                }
+            })
+        });
+    </script>
 
 
 
-        <!-- Bootstrap 4 -->
-        <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <!-- AdminLTE App -->
-        <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
-        <script src="{{ asset('assets/dist/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/dist/js/sweetalert2.all.min.js') }}"></script>
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{{ asset('/assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ asset('assets/dist/js/adminlte.min.js') }}"></script>
+    <script src="{{ asset('assets/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/dist/js/sweetalert2.all.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-        <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
-        @yield('js')
-        @stack('scripts')
+    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    @yield('js')
+    @stack('scripts')
 
 
 </body>

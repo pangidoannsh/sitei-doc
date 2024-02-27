@@ -2,6 +2,7 @@
 
 @php
     use Carbon\Carbon;
+    $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
     function getKeteranganCuti($status)
     {
         switch ($status) {
@@ -62,23 +63,45 @@
         <ul class="breadcrumb col-lg-12">
             <li>
                 <a href="{{ route('doc.index') }}" class="px-1">
-                    Usulan Terbaru
-                </a>
-            </li>
-            <span class="px-2">|</span>
-            <li>
-                <a href="{{ route('pengumuman.index') }}" class="px-1">
-                    Pengumuman
+                    Usulan (<span>{{ $countUsulan }}</span>)
                 </a>
             </li>
             <span class="px-2">|</span>
             <li>
                 <a href="#" class="breadcrumb-item active fw-bold text-success px-1">
-                    Arsip(<span>{{ count($dokumens) }}</span>)
+                    Arsip (<span>{{ count($dokumens) }}</span>)
                 </a>
             </li>
         </ul>
-
+        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+            <label>
+                Status:
+                <select id="statusFilter" class="custom-select  form-control form-control-sm pr-4" text-capitalize>
+                    <option value="" selected>Semua</option>
+                    <option value="dokumen">Dokumen</option>
+                    <option value="surat">Surat</option>
+                    <option value="sertifikat">Sertifikat</option>
+                </select>
+            </label>
+            <label>
+                Kategori:
+                <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                Semester:
+                <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
@@ -189,7 +212,7 @@
                                                     @if ($penerima->user_penerima)
                                                         <div class="ellipsis-2">
                                                             <span>{{ $loop->iteration }}.</span>
-                                                            <span>{{ $penerima->mahasiswa->nama }}</span>
+                                                            <span>{{ data_get($penerima, $penerima->jenis_penerima . '.nama') }}</span>
                                                         </div>
                                                     @else
                                                         <div class="ellipsis-2">
@@ -378,6 +401,11 @@
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </form>
+                                            @elseif($dokumen->status == 'diterima')
+                                                <a class="badge btn btn-success p-1 rounded-lg" style="cursor:pointer;"
+                                                    title="Unduh Surat" href="{{ route('suratcuti.download', $dokumen->id) }}">
+                                                    <i class="fa-solid fa-download"></i>
+                                                </a>
                                             @endif
                                         @endif
                                     @break

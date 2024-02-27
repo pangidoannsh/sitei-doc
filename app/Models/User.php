@@ -24,7 +24,12 @@ class User extends Authenticatable
     // ];
     // protected $table = 'user';
     protected $guarded = [];
+    protected $appends = ['jenisUser'];
 
+    public function getJenisUserAttribute()
+    {
+        return "admin";
+    }
     public function prodi()
     {
         return $this->belongsTo(Prodi::class);
@@ -34,7 +39,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
-    
+
 
     /**
      * The attributes that should be hidden for serialization.

@@ -40,19 +40,16 @@
                     @if (!$data->url_dokumen && !$data->url_dokumen_lokal)
                         (Tidak ada dokumen dilampirkan)
                     @endif
-                    @php
-                        $i = 1;
-                    @endphp
                     @if ($data->url_dokumen)
                         <a href="{{ $data->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-3"
                             style="width:max-content">
-                            Lihat Dokumen {{ $data->url_dokumen_lokal ? $i++ : '' }}
+                            Lihat Dokumen
                         </a>
                     @endif
                     @if ($data->url_dokumen_lokal)
                         <a href="{{ asset('storage/' . $data->url_dokumen_lokal) }}" target="_blank"
                             class="btn btn-success px-5 rounded-3" style="width:max-content">
-                            Lihat Dokumen {{ $i }}
+                            Lihat Lampiran
                         </a>
                     @endif
                 </div>

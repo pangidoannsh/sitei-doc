@@ -2,20 +2,15 @@
 
 @php
     use Carbon\Carbon;
-    $batasPengajuan = Carbon::parse($data->created_at)->addDays(3);
-    $sisaHari = now()->diffInDays($batasPengajuan, false);
 @endphp
 
 @section('title')
     SITEI | Distribusi Dokuen & Surat
 @endsection
 
-@section('sub-title')
-    Sertifikat
-@endsection
-
 @section('content')
-    <section class="row">
+    @include('doc.components.preview-sertif')
+    <section class="row pb-5" style="margin-top: -24px">
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
@@ -36,15 +31,10 @@
                 </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Sertifikat</div>
-                    <div class="d-flex gap-2">
-                        <a href="#" target="_blank" class="btn btn-success px-3 rounded-3" style="width:max-content">
-                            Lihat Sertifikat
-                        </a>
-                        <a href="#" target="_blank" class="btn btn-outline-success  rounded-3"
-                            style="width:max-content" title="download sertifikat">
-                            <i class="fa-solid fa-download"></i>
-                        </a>
-                    </div>
+                    <a href="{{ route('sertif.download', $data->slug) }}" class="btn btn-success px-3 rounded-3 btnDownload"
+                        style="width:max-content" title="unduh sertifikat">
+                        <i class="fa-solid fa-download"></i> Unduh Sertifikat
+                    </a>
                 </div>
             </div>
         </div>
@@ -54,23 +44,24 @@
                     <h2>Penerima Sertifikat</h2>
                     <div class="divider-green"></div>
                 </div>
-                @if ($data->user_penerima)
+                @if ($data->jenis_penerima == 'dosen' || $data->jenis_penerima == 'mahasiswa')
                     <div class="d-flex flex-column gap-1">
-                        <div class="label">NIM</div>
-                        <div class="value text-capitalize">{{ $data->user_penerima }}</div>
+                        <div class="label">{{ $data->jenis_penerima == 'dosen' ? 'NIP' : 'NIM' }}</div>
+                        <div class="value text-capitalize">{{ $data->user_penerima }}
+                        </div>
                     </div>
                 @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama</div>
                     <div class="value text-capitalize">
                         @if ($data->user_penerima)
-                            {{ $data->mahasiswa->nama }}
+                            {{ data_get($data, $data->jenis_penerima . '.nama') }}
                         @else
                             {{ $data->nama_penerima }}
                         @endif
                     </div>
                 </div>
-                @if ($data->user_penerima)
+                @if ($data->jenis_penerima == 'mahasiswa')
                     <div class="d-flex flex-column gap-1">
                         <div class="label">Prodi</div>
                         <div class="value text-capitalize">{{ $data->mahasiswa->prodi->nama_prodi }}</div>
@@ -116,39 +107,21 @@
                 }
             })
         })
-    </script>
-    {{-- <script>
-        function rejectSurat() {
+        $(".btnDownload").click(function() {
             Swal.fire({
-                title: 'Tolak Pengajuan Surat',
-                text: 'Apakah Anda Yakin?',
-                icon: 'question',
-                showCancelButton: true,
-                cancelButtonText: 'Batal',
-                confirmButtonText: 'Tolak',
-                confirmButtonColor: '#dc3545'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Tolak Pengajuan Surat',
-                        html: `
-                        <form id="reasonForm" action="{{ route('surat.reject', $data->id) }}" method="POST">
-                            @csrf
-                            @method('post')
-                            <label for="alasan">Alasan Penolakan :</label>
-                            <textarea class="form-control" id="alasan" name="alasan" rows="4" cols="50" required></textarea>
-                            <br>
-                            <button type="submit" class="btn btn-danger p-2 px-3">Kirim</button>
-                            <button type="button" onclick="Swal.close();" class="btn btn-secondary p-2 px-3">Batal</button>
-                        </form>
-                    `,
-                        showCancelButton: false,
-                        showConfirmButton: false,
-                    });
+                toast: true,
+                icon: 'info',
+                title: 'Sedang memproses sertifikat',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 12000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
                 }
-            });
-        }
-
-        $("#btnReject").on("click", rejectSurat)
-    </script> --}}
+            })
+        })
+    </script>
 @endpush

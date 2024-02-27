@@ -56,7 +56,6 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-image: url('../icon/arrow-down.svg');
     background-size: 12px;
     background-origin: content-box;
     background-repeat: no-repeat;
@@ -160,10 +159,34 @@
 }
 
 .filter {
-    margin-top: -24px;
+    width: max-content;
+    margin: 0 auto;
     position: relative;
     z-index: 50;
     translate: 0 28px;
+    align-items: end;
+}
+
+
+.filter select:focus {
+    outline: none;
+    border-color: #28A745;
+    /* box-shadow: 0 0 5px 2px #C7F9C9; */
+}
+
+.filter select {
+    padding: 2px 4px;
+    text-transform: capitalize;
+    border-radius: 6px;
+    border-color: #CED4DA;
+}
+
+.filter label {
+    margin: 0px;
+    font-weight: 500 !important;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .sub-title h4 {
@@ -282,6 +305,40 @@
     position: absolute;
 }
 
+.sertif-nama-penerima {
+    text-align: center;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 100%;
+    margin: 16px 0;
+    font-family: 'Poppins', sans-serif;
+
+}
+
+.sertif-title {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 100%;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sertif-content {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    translate: -50% 0;
+    text-align: center;
+    width: 60%;
+}
+
+.common {
+    margin-top: 6px;
+    font-size: 14px;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
 
 @media screen and (max-width:600px) {
     .large-modal {

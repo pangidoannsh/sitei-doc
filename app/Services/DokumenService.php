@@ -2,11 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\DistribusiDokumen\Dokumen;
 use App\Models\DistribusiDokumen\DokumenMention;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DokumenService
 {
+    public static function countLatestByUser($userId)
+    {
+        return Dokumen::where('user_created', $userId)
+            ->whereDate("created_at", ">=", Carbon::today()->subDays(5))->count();
+    }
+    public static function countAchive($userId)
+    {
+        return Dokumen::where('user_created', $userId)
+            ->whereDate("created_at", "<", Carbon::today()->subDays(5))->count();
+    }
     public static function saveMentions(Request $request, $dokumenId)
     {
         //  Dosen
@@ -40,5 +52,14 @@ class DokumenService
                 ]);
             }
         }
+    }
+
+    public static function countDokumenMention($userId)
+    {
+        return DokumenMention::where('user_mentioned', $userId)->where("accepted", false)->count();
+    }
+    public static function countDokumenMentionArchive($userId)
+    {
+        return DokumenMention::where('user_mentioned', $userId)->where("accepted", true)->count();
     }
 }

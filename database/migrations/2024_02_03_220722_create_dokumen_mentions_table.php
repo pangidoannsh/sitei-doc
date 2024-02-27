@@ -17,7 +17,7 @@ class CreateDokumenMentionsTable extends Migration
             $table->id();
             $table->foreignId('dokumen_id');
             $table->string("user_mentioned");
-            $table->enum('jenis_user', ['dosen', 'plp', 'admin', 'mahasiswa']);
+            $table->enum('jenis_user', ['dosen', 'plp', 'admin', 'mahasiswa', 'angkatan']);
             $table->boolean('accepted')->default(false);
             $table->timestamps();
         });

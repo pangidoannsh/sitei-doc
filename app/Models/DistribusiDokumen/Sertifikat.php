@@ -51,6 +51,17 @@ class Sertifikat extends Model
         return $this->hasMany(PenerimaSertifikat::class, "sertifikat_id", "id");
     }
 
+
+    public static function getAllOnProgress()
+    {
+        return self::with("penerimas")->where("status", "!=", "selesai")->where("status", "!=", "ditolak")->get();
+    }
+
+    public static function countAllOnProgress()
+    {
+        return self::with("penerimas")->where("status", "!=", "selesai")->where("status", "!=", "ditolak")->count();
+    }
+
     public static function getOnProgressByUserOrAdmin($userId, $jenisUser)
     {
         $sertifQuery = self::with("penerimas")->where("status", "!=", "selesai")->where("status", "!=", "ditolak");
@@ -61,6 +72,25 @@ class Sertifikat extends Model
         }
         return $sertifQuery->get();
     }
+    public static function countOnProgressByUserOrAdmin($userId, $jenisUser)
+    {
+        $sertifQuery = self::with("penerimas")->where("status", "!=", "selesai")->where("status", "!=", "ditolak");
+        if ($jenisUser != "admin") {
+            $sertifQuery->where(function ($query) use ($userId) {
+                $query->where("user_created", $userId)->orWhere("sign_by", $userId);
+            });
+        }
+        return $sertifQuery->count();
+    }
+
+    public static function getAllOnDone()
+    {
+        return self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak")->get();
+    }
+    public static function countAllOnDone()
+    {
+        return self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak")->count();
+    }
     public static function getOnDoneByUserOrAdmin($userId, $jenisUser)
     {
         $query = self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak");
@@ -69,8 +99,22 @@ class Sertifikat extends Model
         }
         return $query->get();
     }
+
+    public static function countOnDoneByUserOrAdmin($userId, $jenisUser)
+    {
+        $query = self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak");
+        if ($jenisUser != "admin") {
+            $query->where("user_created", $userId);
+        }
+        return $query->count();
+    }
+
     public static function getOnKajurAcc()
     {
         return self::with("penerimas")->where("status", "kajur")->get();
+    }
+    public static function countOnKajurAcc()
+    {
+        return self::with("penerimas")->where("status", "kajur")->count();
     }
 }

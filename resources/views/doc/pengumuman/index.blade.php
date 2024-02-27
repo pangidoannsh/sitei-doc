@@ -2,6 +2,7 @@
 
 @php
     use Carbon\Carbon;
+    $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
     function getKeteranganCuti($status)
     {
         switch ($status) {
@@ -68,21 +69,21 @@
 @endphp
 
 @section('title')
-    SITEI | Distribusi Surat & Dokumen
+    SITEI | Pengumuman
 @endsection
 @section('sub-title')
-    Distribusi Surat & Dokumen
+    Pengumuman
 @endsection
 @section('content')
-    @include('doc.components.add-usulan')
+    @if (Auth::guard('web')->check() || Auth::guard('dosen')->check())
+        <a href="{{ route('pengumuman.create') }}"
+            class="btn btn-success w-content mb-3 d-flex align-items-center justify-content-center fw-bold gap-2 rounded-2">
+            <i class="fa-solid fa-plus"></i>
+            Pengumuman
+        </a>
+    @endif
     <div class="contariner card p-4">
         <ul class="breadcrumb col-lg-12">
-            <li>
-                <a href="{{ route('doc.index') }}" class="px-1">
-                    Usulan Terbaru
-                </a>
-            </li>
-            <span class="px-2">|</span>
             <li>
                 <a href="#" class="breadcrumb-item active fw-bold text-success px-1">
                     Pengumuman (<span>{{ count($pengumumans) }}</span>)
@@ -90,24 +91,42 @@
             </li>
             <span class="px-2">|</span>
             <li>
-                <a href="{{ route('doc.arsip') }}" class="px-1">
-                    Arsip
+                <a href="{{ route('pengumuman.arsip') }}" class="px-1">
+                    Arsip (<span>{{ $arsipCount }}</span>)
                 </a>
             </li>
         </ul>
-
+        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+            <label>
+                Kategori:
+                <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                Semester:
+                <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
-                    {{-- <th class="text-center" scope="col">Status</th> --}}
                     <th class="text-center" scope="col">Tanggal Usulan</th>
                     <th class="text-center" scope="col">Batas Pengumuman</th>
-                    <th class="text-center" scope="col">Jenis/Kategori</th>
+                    <th class="text-center" scope="col">Kategori</th>
                     <th class="text-center" scope="col">Keterangan</th>
-                    {{-- <th class="text-center" scope="col">Semester</th> --}}
+                    <th class="text-center" scope="col">Semester</th>
                     <th class="text-center" scope="col">Aksi</th>
                 </tr>
             </thead>
@@ -154,27 +173,6 @@
                                 @endforeach
                             </div>
                         </td>
-                        {{-- Status --}}
-                        {{-- <td
-                            class="text-center text-uppercase 
-                        @switch($pengumuman->jenisDokumen)
-                            @case('pengumuman')
-                                bg-status-pengumuman
-                            @break
-
-                            @case('dokumen')
-                               bg-status-dokumen
-                            @break
-                            @case('surat_cuti')
-                                bg-status-suratcuti
-                            @break
-
-                            @default
-                        @endswitch">
-                            @foreach (explode('_', $pengumuman->jenisDokumen) as $name)
-                                {{ $name }}
-                            @endforeach
-                        </td> --}}
                         {{-- Tanggal Usulan --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis-2">
@@ -196,11 +194,9 @@
                             </div>
                         </td>
                         {{-- Semester --}}
-                        {{-- <td class="text-center text-capitalize">
-                            @if ($pengumuman->jenisDokumen == 'dokumen')
-                                {{ $pengumuman->semester }}
-                            @endif
-                        </td> --}}
+                        <td class="text-center text-capitalize">
+                            {{ $pengumuman->semester ?? '-' }}
+                        </td>
                         {{-- Aksi --}}
                         <td class="text-center" style="width: max-content">
                             <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">
