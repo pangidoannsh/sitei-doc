@@ -2,6 +2,8 @@
 
 @php
     use Carbon\Carbon;
+    $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
+
     function getKeteranganCuti($status)
     {
         switch ($status) {
@@ -72,7 +74,8 @@
     SITEI | Distribusi Surat & Dokumen
 @endsection
 @section('sub-title')
-    Pengelola Distribusi Surat & Dokumen {{ str_replace('Ketua', '', Auth::guard('dosen')->user()->role->role_akses) }}
+    Pengelola Distribusi Surat & Dokumen
+    {{ str_replace(['TE', 'TI', 'Jurusan'], ['Teknik Elektro', 'Teknik Informatika', 'Jurusan Teknik Elektro'], str_replace('Ketua', '', optional(Auth::guard('dosen')->user())->role->role_akses)) }}
 @endsection
 @section('content')
     <div class="contariner card p-4">
@@ -85,7 +88,7 @@
             <span class="px-2">|</span>
             <li>
                 <a href="{{ route('pengelola.pengumuman') }}" class="px-1">
-                    Pengumuman
+                    Pengumuman (<span>{{ $countPengumuman }}</span>)
                 </a>
             </li>
             <span class="px-2">|</span>
@@ -95,9 +98,47 @@
                 </a>
             </li>
         </ul>
+        {{-- Filter --}}
+        <div class="gap-3 filter d-none" style="height: 0">
+            <label>
+                <span class="fw-bold">
+                    Status
+                </span>
+                <select id="statusFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    <option value="dokumen">Dokumen</option>
+                    <option value="surat">Surat</option>
+                    <option value="surat cuti">Surat Cuti</option>
+                    <option value="sertifikat">Sertifikat</option>
+                </select>
+            </label>
+            <label>
+                <span class="fw-bold">
+                    Kategori
+                </span>
+                <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                <span class="fw-bold">
+                    Semester
+                </span>
+                <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-center" scope="col">Nomor</th>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
@@ -112,6 +153,16 @@
             <tbody>
                 @foreach ($dokumens->sortByDesc('created_at') as $dokumen)
                     <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden;max-width: 80px">
+                            <div class="ellipsis-1 text-capitalize">
+                                @if ($dokumen->jenisDokumen == 'dokumen' || $dokumen->jenisDokumen == 'surat')
+                                    {{ $dokumen->nomor_dokumen ?? $dokumen->nomor_surat }}
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </td>
                         {{-- Nama --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis text-capitalize">
@@ -288,9 +339,7 @@
                         </td>
                         {{-- Semester --}}
                         <td class="text-center text-capitalize">
-                            @if ($dokumen->jenisDokumen == 'dokumen')
-                                {{ $dokumen->semester }}
-                            @endif
+                            {{ $dokumen->semester ?? '-' }}
                         </td>
                         {{-- Aksi --}}
                         <td class="text-center" style="width: max-content">
@@ -320,6 +369,23 @@
                                         @endswitch">
                                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                                     </a>
+                                </div>
+                                {{-- Button Share --}}
+                                <div>
+                                    <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                        title="Bagikan"
+                                        data-slug="@switch($dokumen->jenisDokumen)
+                                            @case('surat_cuti')
+                                            {{ route('suratcuti.detail.public', Crypt::encrypt($dokumen->id)) }}
+                                            @break
+                                            @case('sertifikat')
+                                            {{ route('sertif.detail', $dokumen->id) }}
+                                                @break
+                                            @default
+                                            {{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}
+                                        @endswitch">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                    </button>
                                 </div>
                             </div>
                         </td>

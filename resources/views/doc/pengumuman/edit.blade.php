@@ -19,6 +19,17 @@
             enctype="multipart/form-data">
             @method('put')
             @csrf
+            {{-- Nomor Pengumuman --}}
+            <div>
+                <label for="nomor_pengumuman" class="fw-semibold">Nomor Pengumuman</label>
+                <input type="text" class="form-control @error('nomor_pengumuman') is-invalid @enderror rounded-3 py-4"
+                    name="nomor_pengumuman" id="nomor_pengumuman"
+                    value="{{ old('nomor_pengumuman') ?? $data->nomor_pengumuman }}">
+                @error('nomor_pengumuman')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
+            </div>
+            {{-- Nama --}}
             <div>
                 <label for="nama" class="fw-semibold">Nama Pengumuman<span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4" name="nama"
@@ -153,8 +164,8 @@
                     {{-- Dosen --}}
                     <div id="dosenCheckList">
                         <div class="form-check mb-3" style="padding: 0 24px">
-                            <input class="form-check-input" type="checkbox" value="all_dosen" id="all_dosen"
-                                name="select_all_dosen">
+                            <input class="form-check-input all-dosen-selector" type="checkbox" value="all_dosen"
+                                id="all_dosen" name="select_all_dosen">
                             <label class="form-check-label" for="all_dosen">
                                 Semua Dosen Teknik Elektro
                             </label>
@@ -200,8 +211,8 @@
                     {{-- Staff --}}
                     <div id="stafCheckList" class="d-none" style="min-height: 460px">
                         <div class="form-check mb-3" style="padding: 0 24px">
-                            <input class="form-check-input" type="checkbox" value="all_staf" id="all_staf"
-                                name="select_all_staf">
+                            <input class="form-check-input all-staf-selector" type="checkbox" value="all_staf"
+                                id="all_staf" name="select_all_staf">
                             <label class="form-check-label" for="all_staf">
                                 Semua Staf Administrasi Teknik Elektro
                             </label>
@@ -831,16 +842,20 @@
         @if ($data->for_all_dosen)
             selectAllDosen.prop('checked', true)
             $(".dosen-selector").prop('checked', true)
+            $(".all-dosen-selector").prop('checked', true)
             @php ++$isSelectAll; @endphp
         @endif
         @if ($data->for_all_staf)
             selectAllStaf.prop('checked', true)
             $(".staf-selector").prop('checked', true)
+            $(".all-staf-selector").prop('checked', true)
             @php ++$isSelectAll; @endphp
         @endif
         @if ($data->for_all_mahasiswa)
             selectAllMhs.prop('checked', true)
             $(".mahasiswa-selector").prop('checked', true)
+            $(".angkatan-selector").prop('checked', true)
+            $(".prodi-selector").prop('checked', true)
             @php ++$isSelectAll; @endphp
         @endif
         @if ($isSelectAll == 3)

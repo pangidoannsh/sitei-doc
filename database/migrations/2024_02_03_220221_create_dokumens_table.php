@@ -18,11 +18,11 @@ class CreateDokumensTable extends Migration
             $table->string('user_created');
             $table->enum('jenis_user', ['dosen', 'plp', 'admin']);
             $table->string('nama');
+            $table->string('nomor_dokumen')->nullable();
             $table->string('keterangan')->nullable();
             $table->date('tgl_dokumen');
             $table->string('kategori', 20)->default('lainnya');
             $table->string('semester',);
-            $table->string('nomor_dokumen')->nullable();
             $table->string('url_dokumen')->nullable();
             $table->string('url_dokumen_lokal')->nullable();
             $table->timestamps();

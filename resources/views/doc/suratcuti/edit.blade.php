@@ -34,6 +34,12 @@
                 <input type="text" class="form-control rounded-3 py-4 text-capitalize" name="jabatan"
                     value="{{ $jabatan }}" id="jabatan" disabled>
             </div>
+            {{-- Nomor Telepon --}}
+            <div>
+                <label for="nomor_telepon" class="fw-semibold">Nomor Telepon<span class="text-danger">*</span></label>
+                <input type="tel" class="form-control rounded-3 py-4" name="nomor_telepon" id="nomor_telepon"
+                    placeholder="08***" value="{{ old('nomor_telepon') ?? $suratCuti->nomor_telepon }}" required>
+            </div>
             <div>
                 <label for="jenis_cuti" class="fw-semibold">Jenis Cuti</label>
                 <div class="input-group">
@@ -123,13 +129,26 @@
                         name="url_lampiran" placeholder="https://drive.google.com/..." id="url_lampiran">
                 </div>
             </div>
-            <div style="margin-bottom: 120px">
+            <div>
                 <label for="alamat_cuti" class="fw-semibold">Alamat Selama Cuti</label>
                 <textarea class="form-control rounded-3 py-4 @error('alamat_cuti') is-invalid @enderror"
                     placeholder="Alamat Selama Cuti" name="alamat_cuti" id="alamat_cuti" cols="3">{{ $suratCuti->alamat_cuti }}</textarea>
                 @error('alamat_cuti')
                     <div class="invalid-feedback">{{ $message }} </div>
                 @enderror
+            </div>
+            {{-- Tanda Tangan --}}
+            <div style="margin-bottom: 120px">
+                <label for="tanda_tangan" class="fw-semibold">Tanda Tangan <span class="text-secondary"
+                        style="font-size: 12px">(max:256KB)
+                        <a href="{{ asset('assets/img/ttd-sample.png') }}" target="_blank" style="font-size: 12px">Lihat
+                            Contoh</a></span></label>
+                <input type="file" class="form-control rounded-3 @error('tanda_tangan') is-invalid @enderror"
+                    name="tanda_tangan" id="tanda_tangan">
+                @error('tanda_tangan')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
+                <div id="preview_tanda_tangan" class="my-3" style="height: 144px"></div>
             </div>
             <div class="footer-submit">
                 <button type="submit" class="btn btn-success">Ubah Pengjuan Cuti</button>
@@ -164,5 +183,28 @@
             $("#input-dokumen").removeClass("d-flex")
             $("#input-dokumen").addClass("d-none")
         })
+    </script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    $('#preview_tanda_tangan').html('<img src="' + e.target.result +
+                        '" style="max-width: 100%; max-height: 100%;">');
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Menangkap perubahan pada input file
+        $("#tanda_tangan").change(function() {
+            readURL(this);
+        });
+
+        $('#preview_tanda_tangan').html(
+            `<img src="{{ asset('storage/' . $suratCuti->tanda_tangan) }}" style="max-width: 100%; max-height: 100%;">`
+        );
     </script>
 @endpush

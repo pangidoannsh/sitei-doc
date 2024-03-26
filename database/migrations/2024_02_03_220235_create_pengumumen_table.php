@@ -16,8 +16,9 @@ class CreatePengumumenTable extends Migration
         Schema::create('doc_pengumuman', function (Blueprint $table) {
             $table->id();
             $table->string('user_created');
-            $table->enum('jenis_user', ['dosen', 'admin']);
+            $table->enum('jenis_user', ['dosen', 'admin', 'plp']);
             $table->string('nama');
+            $table->string('nomor_pengumuman')->nullable();
             $table->string('isi');
             $table->date('tgl_batas_pengumuman');
             $table->string('kategori', 20);

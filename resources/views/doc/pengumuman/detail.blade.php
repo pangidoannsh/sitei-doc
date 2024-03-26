@@ -13,15 +13,30 @@
 @endsection
 
 @section('content')
-    <section class="row">
+    <section class="row pb-5">
         {{-- <a href="{{ url()->previous() }}" class="btn btn-outline-success mt-4 py-1 fw-semibold"><i
                     class="fa-solid fa-arrow-left"></i>
                 Kembali</a> --}}
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
-                    <h2>{{ $data->nama }}</h2>
+                    <div class="d-flex align-items-center">
+                        <h2 style="width: 100%">{{ $data->nama }}</h2>
+                        <button class="btn text-secondary fw-semibold rounded-3" id="btnCopy" style="width:max-content"
+                            title="Bagikan" data-slug="{{ route('pengumuman.detail.public', Crypt::encrypt($data->id)) }}">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                    </div>
                     <div class="divider-green"></div>
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Nomor Pengumuman</div>
+                    @if ($data->nomor_pengumuman)
+                        <div class="value text-capitalize">
+                            {{ $data->nomor_pengumuman }}</div>
+                    @else
+                        (Tidak Ada nomor Pengumuman)
+                    @endif
                 </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Kategori</div>
@@ -41,15 +56,15 @@
                         (Tidak ada dokumen dilampirkan)
                     @endif
                     @if ($data->url_dokumen)
-                        <a href="{{ $data->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-3"
+                        <a href="{{ $data->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-2"
                             style="width:max-content">
-                            Lihat Dokumen
+                            Lihat Lampiran
                         </a>
                     @endif
                     @if ($data->url_dokumen_lokal)
                         <a href="{{ asset('storage/' . $data->url_dokumen_lokal) }}" target="_blank"
-                            class="btn btn-success px-5 rounded-3" style="width:max-content">
-                            Lihat Lampiran
+                            class="btn btn-success px-5 rounded-2" style="width:max-content">
+                            Lihat Dokumen
                         </a>
                     @endif
                 </div>
@@ -57,7 +72,7 @@
                     <hr>
                     <div class="d-flex flex-column gap-1">
                         <a href="{{ route('pengumuman.edit', $data->id) }}"
-                            class="btn btn-success py-2 fw-semibold rounded-3">
+                            class="btn btn-outline-success py-2 fw-semibold rounded-3">
                             Ubah Pengumuman
                         </a>
                         <form action="{{ route('pengumuman.delete', $data->id) }}" method="POST" id="show-delete-confirm"
@@ -169,6 +184,36 @@
 @endsection
 
 @push('scripts')
+    <script>
+        $('#btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan sertifikat berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
+    </script>
     <script>
         $('#show-delete-confirm').submit((e) => {
             const form = $(this).closest("form");

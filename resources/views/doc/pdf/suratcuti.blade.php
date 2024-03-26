@@ -67,6 +67,7 @@
 
         .check {
             width: 16px;
+            position: relative
         }
 
         th {
@@ -79,14 +80,14 @@
             position: absolute;
             right: 0;
             width: max-content;
-            font-size: 12px;
+            font-size: 14px;
             margin-right: 1.5cm;
         }
 
         .title {
             font-size: 14px;
             font-weight: 700;
-            margin-top: 86px;
+            margin-top: 108px;
             margin-bottom: 12px;
         }
 
@@ -101,7 +102,7 @@
         <div class="section-1">
             <div>Pekanbaru, {{ Carbon::parse($data->created_at)->translatedFormat('d F Y') }}</div>
             <p>Kepada Yth. <br>
-                Wakil Dekan Bidang Umum dan Keuangan, <br>
+                {{ $data->jabatan_penandatangan_akhir }}, <br>
                 Fakultas Teknik Universitas Riau
             </p>
         </div>
@@ -117,17 +118,18 @@
                     <td class="label">Nama</td>
                     <td>{{ data_get($data, $data->jenis_user . '.nama') }}</td>
                     <td class="label">NIP</td>
-                    <td>{{ $data->jenis_user ? nipFormat($data->dosen->nip) : '' }}</td>
+                    <td>{{ $data->jenis_user == 'dosen' ? nipFormat($data->dosen->nip) : '' }}</td>
                 </tr>
                 <tr>
                     <td class="label">Jabatan</td>
-                    <td>{{ data_get($data, $data->jenis_user . '.role.role_akses') }}</td>
+                    <td>{{ data_get($data, $data->jenis_user . '.role.role_akses') ?? 'Dosen ' . $data->dosen->prodi->nama_prodi }}
+                    </td>
                     <td class="label">Masa Kerja</td>
-                    <td></td>
+                    <td>{{ $masa_kerja }}</td>
                 </tr>
                 <tr>
                     <td class="label">Unit Kerja</td>
-                    <td colspan="3"></td>
+                    <td colspan="3">Jurusan Teknik Elektro</td>
                 </tr>
             </table>
             <table style="margin-top: -11px;">
@@ -135,22 +137,52 @@
                     <th colspan="4">II. JENIS CUTI YANG DIAMBIL</th>
                 </tr>
                 <tr>
-                    <td>1. Cuti Tahunan</td>
-                    <td class="check"></td>
-                    <td>4. Cuti Melahirkan</td>
-                    <td class="check"></td>
+                    <td style="width:40%">1. Cuti Tahunan</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'tahunan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
+                    <td style="width:40%">4. Cuti Melahirkan</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'melahirkan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
-                    <td>2. Cuti Besar</td>
-                    <td class="check"></td>
-                    <td>5. Cuti Karena Alasan Penting</td>
-                    <td class="check"></td>
+                    <td style="width:40%">2. Cuti Besar</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'besar')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
+                    <td style="width:40%">5. Cuti Karena Alasan Penting</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'kepentingan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
-                    <td>3. Cuti Sakit</td>
-                    <td class="check"></td>
-                    <td>6. Cuti Diluar Tanggungan Negara</td>
-                    <td class="check"></td>
+                    <td style="width:40%">3. Cuti Sakit</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'sakit')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
+                    <td style="width:40%">6. Cuti Diluar Tanggungan Negara</td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'diluar tanggungan negara')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th colspan="4">III. ALASAN CUTI</th>
@@ -179,9 +211,19 @@
                 </tr>
                 <tr>
                     <td colspan="3">1. CUTI TAHUNAN</td>
-                    <td class="check"></td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'tahunan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                     <td>2. CUTI BESAR</td>
-                    <td class="check"></td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'besar')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td class="text-center">Tahun</td>
@@ -195,21 +237,36 @@
                     <td></td>
                     <td colspan="2"></td>
                     <td>4. CUTI MELAHIRKAN</td>
-                    <td class="check"></td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'melahirkan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td>N-1</td>
                     <td></td>
                     <td colspan="2"></td>
                     <td>5. CUTI KARENA ALASAN PENTING</td>
-                    <td class="check"></td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'kepentingan')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <td>N-2</td>
                     <td></td>
                     <td colspan="2"></td>
                     <td>6. CUTI DILUAR TANGGUNAN NEGARA</td>
-                    <td class="check"></td>
+                    <td class="check">
+                        @if ($data->jenis_cuti == 'diluar tanggungan negara')
+                            <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/icon/check.svg'))) }}"
+                                width="16px" style="position: absolute;top:0; left:2px;">
+                        @endif
+                    </td>
                 </tr>
             </table>
             <table style="margin-top: -11px;">
@@ -220,16 +277,23 @@
                     <td style="width:50%;vertical-align: center">
                         {{ $data->alamat_cuti }}
                     </td>
-                    <td style="padding: 1px 0;width:50%;">
-                        <div style="border-bottom: 1px solid black;padding: 0 2px;">
-                            <div style="border-right: 1px solid black; width: 56px">TELP/HP</div>
+                    <td style="width:50%;padding: 0">
+                        <div style="border-bottom: 1px solid black;padding: 0 4px">
+                            <span style="border-right: 1px solid black; width: 56px;padding: 2px 0">
+                                TELP/HP
+                            </span>
+                            <span>{{ $data->nomor_telepon }}</span>
                         </div>
                         <div style="padding: 0 36px; padding-bottom: 2px; padding-top: 4px">
                             <div class="text-center">Hormat Saya,</div>
-                            <div style="height: 64px"></div>
+                            <div style="height: 64px;text-align: center">
+                                <img width="98"
+                                    src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('storage/' . $data->tanda_tangan))) }}">
+                            </div>
                             <div class="text-center">{{ data_get($data, $data->jenis_user . '.nama') }}</div>
                             <div style="border-bottom: 1px solid black"></div>
-                            <div class="text-center">NIP {{ $data->jenis_user ? nipFormat($data->dosen->nip) : '' }}
+                            <div class="text-center" style="height: 16px">
+                                {{ $data->jenis_user == 'dosen' ? 'NIP ' . nipFormat($data->dosen->nip) : '' }}
                             </div>
                         </div>
                     </td>
@@ -282,9 +346,9 @@
                     <td colspan="2">
                         <div style="padding: 0 36px; padding-bottom: 2px; padding-top: 4px">
                             <div style="height: 64px"></div>
-                            <div class="text-center">Yohannes Firzal, ST., MT., Ph.D.</div>
+                            <div class="text-center">{{ $data->nama_penandatangan_akhir }}</div>
                             <div style="border-bottom: 1px solid black"></div>
-                            <div class="text-center">NIP 19760213 200321 1 005</div>
+                            <div class="text-center">NIP {{ $data->nip_penandatangan_akhir }}</div>
                         </div>
                     </td>
                 </tr>

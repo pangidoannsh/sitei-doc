@@ -42,20 +42,28 @@
         foreach ($data->mentions as $index => $mention) {
             if ($index <= $jumlahTampil) {
                 if (!$mention->dosen && !$mention->admin && !$mention->mahasiswa) {
-                    switch ($mention->user_mentioned) {
-                        case 's1ti_all':
-                            array_push($penerima, 'Seluruh Teknik Informatika S1');
+                    $exp = explode('_', $mention->user_mentioned);
+                    $builder = '';
+                    switch ($exp[0]) {
+                        case 's1ti':
+                            $builder = 'Seluruh Teknik Informatika S1';
+                            // array_push($penerima, 'Seluruh Teknik Informatika S1');
                             break;
-                        case 's1te_all':
-                            array_push($penerima, 'Seluruh Teknik Elektro S1');
+                        case 's1te':
+                            $builder = 'Seluruh Teknik Elektro S1';
+                            // array_push($penerima, 'Seluruh Teknik Elektro S1');
                             break;
-                        case 'd3te_all':
-                            array_push($penerima, 'Seluruh Teknik Elektro D3');
+                        case 'd3te':
+                            $builder = 'Seluruh Teknik Elektro D3';
+                            // array_push($penerima, 'Seluruh Teknik Elektro D3');
                             break;
-
                         default:
                             break;
                     }
+                    if ($exp[1] != 'all') {
+                        $builder = $builder . " angkatan $exp[1]";
+                    }
+                    array_push($penerima, $builder);
                 } else {
                     if ($mention->jenis_user == 'dosen') {
                         array_push($penerima, $mention->dosen->nama_singkat);
@@ -95,9 +103,11 @@
                 </a>
             </li>
         </ul>
-        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+        <div class="gap-3 filter d-none" style="height: 0">
             <label>
-                Kategori:
+                <span class="fw-bold">
+                    Kategori
+                </span>
                 <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($kategoris as $kategori)
@@ -106,7 +116,9 @@
                 </select>
             </label>
             <label>
-                Semester:
+                <span class="fw-bold">
+                    Semester
+                </span>
                 <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($semesters as $semester)
@@ -118,6 +130,7 @@
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-center" scope="col">Nomor</th>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
@@ -132,6 +145,12 @@
             <tbody>
                 @foreach ($pengumumans->sortByDesc('created_at') as $pengumuman)
                     <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden">
+                            <div class="ellipsis-1 " style="max-width: 80px">
+                                {{ $pengumuman->nomor_pengumuman ?? '-' }}
+                            </div>
+                        </td>
                         {{-- Nama --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis">
@@ -197,19 +216,26 @@
                             {{ $pengumuman->semester ?? '-' }}
                         </td>
                         {{-- Aksi --}}
-                        <td class="text-center" style="width: max-content">
-                            <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">
+                        <td class="text-center" style="width: 56px">
+                            <div class="row row-cols-2" style="width: 100%">
                                 <div>
                                     <a class="badge btn btn-info p-1 rounded-lg" style="cursor:pointer;"
                                         title="Lihat detail" href="{{ route('pengumuman.detail', $pengumuman->id) }}">
                                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                                     </a>
                                 </div>
-                                @if ($pengumuman->dosen->nip === $userId)
+                                <div>
+                                    <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                        title="Bagikan"
+                                        data-slug="{{ route('pengumuman.detail.public', Crypt::encrypt($pengumuman->id)) }}">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                    </button>
+                                </div>
+                                @if ($pengumuman->user_created === $userId)
                                     <div>
                                         <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                             href="{{ route('pengumuman.edit', $pengumuman->id) }}" title="Edit dokumen">
-                                            <i class="fa-solid fa-file-pen"></i>
+                                            <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
                                     </div>
                                     <div>
@@ -303,5 +329,33 @@
                 }
             })
         })
+        $('.btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan usulan surat berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
     </script>
 @endpush()

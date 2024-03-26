@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\DistribusiDokumen\Pengumuman;
 use App\Models\DistribusiDokumen\PengumumanMention;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -287,5 +288,47 @@ class PengumumanService
                 }
             }
         }
+    }
+
+    static function queryCurrentByProdi($prodi)
+    {
+        return Pengumuman::whereDate('tgl_batas_pengumuman', '>=', Carbon::today())
+            ->where(function ($query) use ($prodi) {
+                $query->whereHas("dosen", function ($has) use ($prodi) {
+                    $has->where("prodi_id", $prodi);
+                })->orWhereHas("admin", function ($has) use ($prodi) {
+                    $has->where("role_id", ($prodi + 1));
+                });
+            });
+    }
+
+    public static function getCurrentByProdi($prodi)
+    {
+        return self::queryCurrentByProdi($prodi)->get();
+    }
+    public static function countCurrentByProdi($prodi)
+    {
+        return self::queryCurrentByProdi($prodi)->count();
+    }
+
+    static function queryArchiveByProdi($prodi)
+    {
+        return Pengumuman::whereDate('tgl_batas_pengumuman', '<', Carbon::today())
+            ->where(function ($query) use ($prodi) {
+                $query->whereHas("dosen", function ($has) use ($prodi) {
+                    $has->where("prodi_id", $prodi);
+                })->orWhereHas("admin", function ($has) use ($prodi) {
+                    $has->where("role_id", ($prodi + 1));
+                });
+            });
+    }
+
+    public static function getArchiveByProdi($prodi)
+    {
+        return self::queryArchiveByProdi($prodi)->get();
+    }
+    public static function countArchiveByProdi($prodi)
+    {
+        return self::queryArchiveByProdi($prodi)->count();
     }
 }

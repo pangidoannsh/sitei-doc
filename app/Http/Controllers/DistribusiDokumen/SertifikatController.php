@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\DistribusiDokumen;
 
 use App\Http\Controllers\Controller;
+use App\Models\DistribusiDokumen\Logo;
 use App\Models\DistribusiDokumen\PenerimaSertifikat;
 use App\Models\DistribusiDokumen\Sertifikat;
+use App\Models\DistribusiDokumen\SertifikatLogo;
 use App\Models\Dosen;
 use App\Models\User;
 use App\Services\DosenService;
@@ -21,11 +23,6 @@ class SertifikatController extends Controller
         $user_id  = $request->user_id;
         // GET DOSEN
         $dosens = DosenService::getWithOriginalName();
-        if ($jenis_user == "dosen") {
-            $dosens = $dosens->filter(function ($dosen) use ($user_id) {
-                return $dosen->nip != $user_id;
-            });
-        }
         // GET STAF
         $queryStaf = User::select("username", "nama")->orderBy("nama");
         if ($jenis_user == "admin") {
@@ -34,8 +31,8 @@ class SertifikatController extends Controller
         $staffs = $queryStaf->get();
 
         $mahasiswas = MahasiswaService::groupByProdiAngkatan();
-
-        return view("doc.sertifikat.create", compact('mahasiswas', 'dosens', 'staffs'));
+        $logos = Logo::all();
+        return view("doc.sertifikat.create", compact('mahasiswas', 'dosens', 'staffs', 'logos'));
     }
 
 
@@ -46,21 +43,34 @@ class SertifikatController extends Controller
             "nama" => "required",
             'tanggal' => "required",
             'sign_by' => "required",
+            'signer_role' => "required",
         ], [
             'nama.required' => 'Nama dokumen harus diisi.',
             'tanggal.required' => 'Tanggal sertifikat harus diisi.',
             'sign_by.required' => "Pilih penandatangan sertifikat",
+            'signer_role.required' => "Isi Jabatan Penandatangan Sertifikat",
         ]);
 
         $userId = $request->user_id;
+        $logos = $request->logo;
 
         $sertif = Sertifikat::create([
             "nama" => $request->nama,
             "tanggal" => $request->tanggal,
             "user_created" => $userId,
             "sign_by" => $request->sign_by,
+            "signer_role" => $request->signer_role,
             "isi" => $request->isi,
+            "jenis_user" => $request->jenis_user,
         ]);
+
+        // Save Logo
+        foreach ($logos as  $logoId) {
+            SertifikatLogo::create([
+                "sertifikat_id" => $sertif->id,
+                'logo_id' => $logoId
+            ]);
+        }
 
         // DOSEN
         if ($request->has("dosen")) {
@@ -149,6 +159,7 @@ class SertifikatController extends Controller
             "mahasiswas" => MahasiswaService::groupByProdiAngkatan(),
             "dosens" => $dosens,
             "staffs" => $staffs,
+            "logos" => Logo::all()
         ]);
     }
 
@@ -170,6 +181,17 @@ class SertifikatController extends Controller
         $sertif->isi = $request->isi;
         $sertif->tanggal = $request->tanggal;
         $sertif->sign_by = $request->sign_by;
+        $sertif->signer_role = $request->signer_role;
+
+        $logos = $request->logo;
+        SertifikatLogo::where("sertifikat_id", $id)->delete();
+        // Save Logo
+        foreach ($logos as  $logoId) {
+            SertifikatLogo::create([
+                "sertifikat_id" => $sertif->id,
+                'logo_id' => $logoId
+            ]);
+        }
 
         PenerimaSertifikat::where("sertifikat_id", $id)->delete();
 
@@ -229,10 +251,15 @@ class SertifikatController extends Controller
     {
         $sertif = Sertifikat::find($id);
         if ($sertif->user_created == $request->user_id) {
-            PenerimaSertifikat::where("sertifikat_id", $sertif->id)->delete();
-            $sertif->delete();
-            Alert::success('Berhasil!', 'Berhasil membuat sertifikat baru')->showConfirmButton('Ok', '#28a745');
-            return redirect()->route("doc.index");
+            if ($sertif->status !== "selesai") {
+                PenerimaSertifikat::where("sertifikat_id", $sertif->id)->delete();
+                $sertif->delete();
+                Alert::success('Berhasil!', 'Berhasil menghapus sertifikat')->showConfirmButton('Ok', '#28a745');
+                return redirect()->route("doc.index");
+            } else {
+                Alert::error('Gagal!', 'Sertifikat telah dibagikan, tidak dapat dihapus')->showConfirmButton('Ok', '#F27474');
+                return back();
+            }
         } else {
             return abort(403);
         }

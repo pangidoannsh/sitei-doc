@@ -24,11 +24,11 @@
                     <div class="divider-green"></div>
                 </div>
                 @if ($data->status == 'selesai')
-                    <div class="bg-success rounded-2 py-3 text-center fw-semibold text-white">
+                    <div class="status-success rounded-2 py-3 text-center fw-semibold">
                         Sertifikat Telah Dibagikan
                     </div>
                 @elseif($data->status == 'ditolak')
-                    <div class="bg-danger rounded-2 py-3 text-center fw-semibold text-white">
+                    <div class="status-danger rounded-2 py-3 text-center fw-semibold">
                         <div>Pengajuan Ditolak: <span class="fw-medium">{{ $data->alasan_ditolak }}</span></div>
                         <div>Ditolak Oleh : <span class="fw-medium">
                                 @if ($data->rejectByDosen)
@@ -39,7 +39,7 @@
                             </span></div>
                     </div>
                 @else
-                    <div class="rounded-2 py-3 text-center fw-semibold text-white" style="background-color: #fbbf24">
+                    <div class="rounded-2 py-3 text-center fw-semibold status-warning">
                         @switch($data->status)
                             @case('staf_jurusan')
                                 Menunggu Persetujun Staf Administrasi Jurusan
@@ -128,7 +128,7 @@
                             </a>
                         @endif
                     @else
-                        @if (Auth::guard('dosen')->user()->role_id == 5)
+                        @if (Auth::guard($jenisUser == 'plp' ? 'web' : $jenisUser)->user()->role_id == 5)
                             @if ($data->status == 'kajur')
                                 @if ($data->sign_by === $userId)
                                     <a href="{{ route('sertif.acc.sign', $data->id) }}"

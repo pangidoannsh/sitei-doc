@@ -23,8 +23,11 @@
     function getKeteranganCuti($status)
     {
         switch ($status) {
+            case 'staf_jurusan':
+                return 'Dalam Pemeriksaan Admin Jurusan';
+                break;
             case 'proses':
-                return 'Sedang Dalam Pengajuan';
+                return 'Sedang Dalam Pengajuan ke Ketua Jurusan';
                 break;
             case 'ditolak':
                 return 'Pengajuan Ditolak';
@@ -72,7 +75,17 @@
 
                         default:
                             [$prodi, $angkatan] = explode('_', $mention->user_mentioned);
-                            array_push($penerima, 'Mahasiswa ' . ($prodi == 'd3te' ? 'Teknik Elektro D3' : ($prodi == 's1te' ? 'Teknik Elektro S1' : 'Teknik Informatika S1')) . ' ' . $angkatan);
+                            array_push(
+                                $penerima,
+                                'Mahasiswa ' .
+                                    ($prodi == 'd3te'
+                                        ? 'Teknik Elektro D3'
+                                        : ($prodi == 's1te'
+                                            ? 'Teknik Elektro S1'
+                                            : 'Teknik Informatika S1')) .
+                                    ' ' .
+                                    $angkatan,
+                            );
                             break;
                     }
                 } else {
@@ -85,6 +98,21 @@
             }
         }
         return $penerima;
+    }
+
+    function formatNama($nama)
+    {
+        $kata = explode(' ', $nama);
+        if (count($kata) <= 2) {
+            return $nama;
+        }
+        $singkatan =
+            substr($kata[count($kata) - 3], 0, 1) .
+            substr($kata[count($kata) - 2], 0, 1) .
+            substr($kata[count($kata) - 1], 0, 1);
+        $namaPendek = implode(' ', array_slice($kata, 0, count($kata) - 3)) . ' ' . $singkatan;
+
+        return $namaPendek;
     }
 @endphp
 
@@ -110,9 +138,12 @@
                 </a>
             </li>
         </ul>
-        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+        {{-- Filter --}}
+        <div class="gap-3 filter d-none" style="height: 0">
             <label>
-                Status:
+                <span class="fw-bold">
+                    Status
+                </span>
                 <select id="statusFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     <option value="dokumen">Dokumen</option>
@@ -122,7 +153,9 @@
                 </select>
             </label>
             <label>
-                Kategori:
+                <span class="fw-bold">
+                    Kategori
+                </span>
                 <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($kategoris as $kategori)
@@ -131,7 +164,9 @@
                 </select>
             </label>
             <label>
-                Semester:
+                <span class="fw-bold">
+                    Semester
+                </span>
                 <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($semesters as $semester)
@@ -143,6 +178,7 @@
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-center" scope="col">Nomor</th>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
@@ -157,6 +193,17 @@
             <tbody>
                 @foreach ($dokumens->sortByDesc('created_at') as $dokumen)
                     <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden"
+                            @if ($dokumen->nomor_dokumen || $dokumen->nomor_surat) title="{{ $dokumen->nomor_dokumen ?? $dokumen->nomor_surat }}" @endif>
+                            <div class="ellipsis-1 text-capitalize" style="max-width: 80px">
+                                @if ($dokumen->jenisDokumen == 'dokumen' || $dokumen->jenisDokumen == 'surat')
+                                    {{ $dokumen->nomor_dokumen ?? ($dokumen->nomor_surat ?? '-') }}
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </td>
                         {{-- Nama --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis text-capitalize">
@@ -170,10 +217,11 @@
                         {{-- Pengusul --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis-2">
-                                @if (data_get($dokumen, $dokumen->jenis_user . '.role_id'))
+                                @if (data_get($dokumen, $dokumen->jenis_user . '.role_id') &&
+                                        data_get($dokumen, $dokumen->jenis_user . '.role_id') != 12)
                                     {{ data_get($dokumen, $dokumen->jenis_user . '.role.role_akses') }}
                                 @else
-                                    {{ data_get($dokumen, $dokumen->jenis_user . '.nama') }}
+                                    {{ data_get($dokumen, ($dokumen->jenis_user == 'plp' ? 'admin' : $dokumen->jenis_user) . '.nama') }}
                                 @endif
                             </div>
                         </td>
@@ -209,17 +257,24 @@
                                     <div class="d-flex flex-column gap-2">
                                         @foreach ($dokumen->mentions as $index => $mention)
                                             @if ($index < 2)
-                                                @if ($mention->jenis_user == 'dosen')
-                                                    <div>
-                                                        <span>{{ $loop->iteration }}.</span>
-                                                        <span>{{ $mention->dosen->nama_singkat }}</span>
-                                                    </div>
-                                                @else
-                                                    <div>
-                                                        <span>{{ $loop->iteration }}.</span>
-                                                        <span>{{ $mention->admin->nama }}</span>
-                                                    </div>
-                                                @endif
+                                                <div>
+                                                    <span>{{ $loop->iteration }}.</span>
+                                                    @switch($mention->jenis_user)
+                                                        @case('dosen')
+                                                            <span>{{ $mention->dosen->nama_singkat }}</span>
+                                                        @break
+
+                                                        @case('admin')
+                                                            <span>{{ $mention->admin->nama }}</span>
+                                                        @break
+
+                                                        @case('mahasiswa')
+                                                            <span>{{ formatNama($mention->mahasiswa->nama ?? '') }}</span>
+                                                        @break
+
+                                                        @default
+                                                    @endswitch
+                                                </div>
                                             @endif
                                         @endforeach
                                         @if (count($dokumen->mentions) > 2)
@@ -342,38 +397,9 @@
                             {{ $dokumen->semester ?? '-' }}
                         </td>
                         {{-- Aksi --}}
-                        <td class="text-center" style="width: max-content">
-                            <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">
+                        <td class="text-center" style="width: 56px">
+                            <div class="row row-cols-2 " style="width: 100%">
                                 @switch($dokumen->jenisDokumen)
-                                    @case('pengumuman')
-                                        {{-- Button Detail --}}
-                                        <div>
-                                            <a class="badge btn btn-info p-1 rounded-lg" style="cursor:pointer;"
-                                                title="Lihat detail" href="{{ route('pengumuman.detail', $dokumen->id) }}">
-                                                <i class="fas fa-info-circle" aria-hidden="true"></i>
-                                            </a>
-                                        </div>
-                                        {{-- Button Edit --}}
-                                        @if ($dokumen->user_created === $user_id)
-                                            <div>
-                                                <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
-                                                    href="{{ route('pengumuman.edit', $dokumen->id) }}" title="Edit pengumuman">
-                                                    <i class="fa-solid fa-file-pen"></i>
-                                                </a>
-                                            </div>
-                                            {{-- Button Delete --}}
-                                            <form class="show-delete-confirm" method="POST"
-                                                action="{{ route('pengumuman.delete', $dokumen->id) }}">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                    style="cursor:pointer;" title="Hapus pengumuman">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @break
-
                                     @case('dokumen')
                                         {{-- Button Detail --}}
                                         <div>
@@ -382,12 +408,20 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id)
                                             {{-- Button Edit --}}
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('dokumen.edit', $dokumen->id) }}" title="Edit dokumen">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                             {{-- Button Delete --}}
@@ -432,13 +466,21 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route('suratcuti.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id)
                                             {{-- Button Edit --}}
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('suratcuti.edit', ['id' => $dokumen->id]) }}"
-                                                    title="Edit dokumen">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    title="Edit pengajuan">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                             @if ($dokumen->status == 'ditolak')
@@ -485,13 +527,21 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id)
                                             {{-- Button Edit --}}
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('surat.edit', ['id' => $dokumen->id]) }}"
                                                     title="Edit Pengajuan">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                         @endif
@@ -516,13 +566,20 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan" data-slug="{{ route('sertif.detail', $dokumen->id) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id && !$dokumen->is_done)
                                             {{-- Button Edit --}}
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('sertif.edit', ['id' => $dokumen->id]) }}"
                                                     title="Edit Sertifikat">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                             {{-- Button Delete --}}
@@ -653,5 +710,33 @@
                 }
             })
         })
+        $('.btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan usulan berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
     </script>
 @endpush

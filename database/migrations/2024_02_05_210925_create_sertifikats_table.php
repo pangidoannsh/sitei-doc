@@ -16,8 +16,9 @@ class CreateSertifikatsTable extends Migration
         Schema::create('doc_sertifikat', function (Blueprint $table) {
             $table->id();
             $table->string("user_created");
-            $table->enum("jenis_user", ['dosen', 'admin']);
+            $table->enum("jenis_user", ['dosen', 'admin', "plp"]);
             $table->string("sign_by");
+            $table->string("signer_role");
             $table->string("rejected_by")->nullable();
             $table->string("nama");
             $table->string("isi")->nullable();

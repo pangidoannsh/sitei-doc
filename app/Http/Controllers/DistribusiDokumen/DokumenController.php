@@ -5,7 +5,7 @@ namespace App\Http\Controllers\DistribusiDokumen;
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\Dokumen;
 use App\Models\DistribusiDokumen\DokumenMention;
-use App\Models\DistribusiSurat\Semester;
+use App\Models\Semester;
 use App\Models\Dosen;
 use App\Models\User;
 use App\Services\DokumenService;
@@ -13,6 +13,7 @@ use App\Services\DosenService;
 use App\Services\MahasiswaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class DokumenController extends Controller
@@ -31,13 +32,13 @@ class DokumenController extends Controller
         }
 
         $queryStaf = User::select("username", "nama")->orderBy("nama");
-        if ($jenis_user == "admin") {
+        if ($jenis_user == "admin" || $jenis_user == "plp") {
             $queryStaf->where("username", "!=", $user_id);
         }
         $staffs = $queryStaf->get();
         $mahasiswas = MahasiswaService::groupByProdiAngkatan();
         $kategoris = $this->kategoris;
-        $semesters = Semester::all();
+        $semesters = Semester::getSimpleSemester();
         return view("doc.dokumen.create", compact('dosens', 'kategoris', 'staffs', 'semesters', 'mahasiswas'));
     }
 
@@ -92,13 +93,19 @@ class DokumenController extends Controller
         Alert::success('Berhasil!', 'Berhasil membuat usulan baru')->showConfirmButton('Ok', '#28a745');
         return redirect()->route('doc.index');
     }
-
+    public function detailForPublic($encryptId)
+    {
+        $id = decrypt($encryptId);
+        $dokumen = Dokumen::findOrFail($id);
+        $mentioned = [];
+        $userId = null;
+        return view('doc.dokumen.detail', compact('dokumen', 'userId', 'mentioned'));
+    }
     public function detail(Request $request, $id)
     {
         $userId = $request->user_id;
         $dokumen = Dokumen::findOrFail($id);
         $mentioned = DokumenMention::where("dokumen_id", $id)->where("user_mentioned", $userId)->first();
-        // if (!($dokumen->user_created == $userId || $mentioned)) abort(403);
         return view('doc.dokumen.detail', compact('dokumen', 'userId', 'mentioned'));
     }
 
@@ -124,7 +131,7 @@ class DokumenController extends Controller
         $staffs = $queryStaf->get();
         $mahasiswas = MahasiswaService::groupByProdiAngkatan();
         $kategoris = $this->kategoris;
-        $semesters = Semester::all();
+        $semesters = Semester::getSimpleSemester();
         return view('doc.dokumen.edit', compact('dosens', 'dokumen', 'kategoris', 'staffs', 'mahasiswas', 'semesters'));
     }
 
@@ -147,6 +154,7 @@ class DokumenController extends Controller
 
         $dokumenUpload = $request->file('dokumen');
         $dokumen = Dokumen::find($id);
+        $dokumen->nomor_dokumen = $request->nomor_dokumen;
         $dokumen->nama = $request->nama;
         $dokumen->keterangan = $request->keterangan;
         $dokumen->kategori = $request->kategori;
@@ -154,6 +162,7 @@ class DokumenController extends Controller
         $dokumen->tgl_dokumen = $request->tgl_dokumen;
 
         if ($dokumenUpload) {
+            Storage::delete("public/" . $dokumen->url_dokumen_lokal);
             $dokumen->url_dokumen_lokal = str_replace('public/', '', $dokumenUpload->store('public/dokumen'));
         }
         $dokumen->url_dokumen = $request->url_dokumen;
@@ -174,7 +183,10 @@ class DokumenController extends Controller
         //Hapus Mentions
         DokumenMention::where("dokumen_id", $id)->delete();
         // Hapus Data Usulan
-        Dokumen::where("id", $id)->delete();
+        $dokumen = Dokumen::findOrFail($id);
+        // Hapus file dari storage
+        Storage::delete("public/" . $dokumen->url_dokumen_lokal);
+        $dokumen->delete();
         Alert::success('Berhasil!', 'Berhasil menghapus usulan')->showConfirmButton('Ok', '#28a745');
         return redirect()->route('doc.index');
     }

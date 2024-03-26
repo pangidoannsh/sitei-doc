@@ -9,8 +9,10 @@ use App\Models\DistribusiDokumen\PenerimaSertifikat;
 use App\Models\DistribusiDokumen\Sertifikat;
 use App\Models\DistribusiDokumen\Surat;
 use App\Models\DistribusiDokumen\SuratCuti;
-use App\Models\DistribusiSurat\Semester;
+use App\Models\Semester;
 use App\Services\DistribusiDokumenService;
+use App\Services\PengelolaService;
+use App\Services\SuratService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,17 +28,32 @@ class DistribusiDokumenController extends Controller
     {
         $user_id = $request->user_id;
         $jenis_user = $request->jenis_user;
+        $user = Auth::guard($jenis_user == "admin" || $jenis_user == "plp" ? "web" : $jenis_user)->user();
 
         $dokumens = collect([]);
+        // get data surat cuti
         if ($jenis_user != "mahasiswa") {
-            // get data surat cuti
-            $dokumens = $dokumens->merge(SuratCuti::getInProgresStatus($user_id, optional(Auth::guard("dosen")->user())->role_id));
-            if ((Auth::guard("web")->user()->role_id ?? -1) == 1 || $jenis_user == "dosen") {
-                if ($jenis_user == "dosen" && Auth::guard("dosen")->user()->role_id  == 5) {
-                    $dokumens = $dokumens->merge(Sertifikat::getOnKajurAcc());
+            if ($jenis_user == "dosen") {
+                $dokumens = $dokumens->merge(SuratCuti::getInProgresStatus($user_id, $user->role_id));
+            } else {
+                if ($user->role_id == 1) {
+                    $dokumens = $dokumens->merge(
+                        SuratCuti::where("status", "staf_jurusan")
+                            ->orWhere("user_created", $user_id)
+                            ->get()
+                    );
                 } else {
-                    $dokumens = $dokumens->merge(Sertifikat::getOnProgressByUserOrAdmin($user_id, $jenis_user));
+                    $dokumens = $dokumens->merge(
+                        SuratCuti::where(function ($query) {
+                            $query->where("status", "staf_jurusan")->orWhere("status", "proses");
+                        })->where("user_created", $user_id)->get()
+                    );
                 }
+            }
+            if ($jenis_user == "dosen" && $user->role_id  == 5) {
+                $dokumens = $dokumens->merge(Sertifikat::getOnKajurAcc());
+            } else {
+                $dokumens = $dokumens->merge(Sertifikat::getOnProgressByUserOrAdmin($user_id, $jenis_user));
             }
         }
         // get data dokumen
@@ -49,30 +66,40 @@ class DistribusiDokumenController extends Controller
         }
 
         // Get data pengajuan surat
-        $ajuanSurat = Surat::where("status", "!=", "selesai");
+        $ajuanSurat = SuratService::getOnProgres(
+            $jenis_user,
+            $user_id,
+            $user->role_id,
+            $user->prodi_id ?? 0,
+        );
+
+        $dokumens = $dokumens->merge($ajuanSurat->get());
+        $semesters = Semester::getSimpleSemester();
+
+        $roleUser = $user->role_id ?? 0;
+        $prodiUser = 0;
 
         if ($jenis_user == "admin") {
-            if (Auth::guard("web")->user()->role_id == 1) {
-                $ajuanSurat->where("status", "staf_jurusan");
-            } else {
-                $ajuanSurat->where("role_handler", Auth::guard("web")->user()->role_id)->where("status", "!=", "ditolak");
+            // Role Id 2-4 adalah Staff Admin Prodi
+            if (in_array($roleUser, range(2, 4))) {
+                //Saat ini prodi_id dan role_id hanya beda 1 angka, contoh D3 TE id-nya 1 dan Staff Admin D3 TE itu id-nya 2
+                $prodiUser = $roleUser - 1;
             }
         } elseif ($jenis_user == "dosen") {
-            $roleUser = Auth::guard("dosen")->user()->role_id;
-            if ($roleUser === 5) {
-                $ajuanSurat->where("status", "kajur");
-            } elseif (in_array($roleUser, [6, 7, 8])) {
-                $prodi = Auth::guard("dosen")->user()->prodi_id;
-                $ajuanSurat->where(function ($query) use ($prodi) {
-                    $query->where("status", "kaprodi")->where("prodi_user", $prodi);
-                })->orWhere("user_created", $user_id);
+            $prodiUser = $user->prodi_id;
+        } else {
+            $prodiUser = $user->prodi_id;
+        }
+
+        if (in_array($roleUser, range(1, 4))) {
+            if ($roleUser == 1) {
+                $countArsip = PengelolaService::allArchive()->count();
+            } else {
+                $countArsip = PengelolaService::countArhciveByProdi($prodiUser, $user_id);
             }
         } else {
-            $ajuanSurat->where("user_created", $user_id);
+            $countArsip = DistribusiDokumenService::getCountArsip($user_id, $jenis_user);
         }
-        $dokumens = $dokumens->merge($ajuanSurat->get());
-        $semesters = Semester::select("nama")->get();
-        $countArsip = DistribusiDokumenService::getCounArsip($user_id, $jenis_user);
         return view('doc.index', compact('dokumens', 'jenis_user', 'user_id', 'semesters', 'countArsip'));
     }
 
@@ -81,45 +108,59 @@ class DistribusiDokumenController extends Controller
     {
         $user_id = $request->user_id;
         $jenis_user = $request->jenis_user;
+        $user = Auth::guard($jenis_user == "admin" || $jenis_user == "plp" ? "web" : $jenis_user)->user();
+        $roleUser = $user->role_id ?? 0;
+        $prodiUser = 0;
+
+        if ($jenis_user == "admin") {
+            // Role Id 2-4 adalah Staff Admin Prodi
+            if (in_array($roleUser, range(2, 4))) {
+                //Saat ini prodi_id dan role_id hanya beda 1 angka, contoh D3 TE id-nya 1 dan Staff Admin D3 TE itu id-nya 2
+                $prodiUser = $roleUser - 1;
+            }
+        } elseif ($jenis_user == "dosen") {
+            $prodiUser = $user->prodi_id;
+        } else {
+            $prodiUser = $user->prodi_id;
+        }
 
         $dokumens = collect([]);
-        if ($jenis_user != "mahasiswa") {
-            // get data surat cuti
-            $dokumens = $dokumens->merge(SuratCuti::getArchive($user_id));
-            $dokumens = $dokumens->merge(Sertifikat::getOnDoneByUserOrAdmin($user_id, $jenis_user));
-        } else {
-            $sertifikats = PenerimaSertifikat::getMahasiswaSertifikat($user_id);
-            foreach ($sertifikats as $value) {
-                $dokumens = $dokumens->merge([$value->sertifikat->setAttribute('slug', $value->slug)]);
+        if ($jenis_user == "admin" && in_array($user->role_id, range(1, 4))) {
+            if ($user->role_id == 1) {
+                $dokumens = $dokumens->merge(PengelolaService::allArchive());
+            } else {
+                $dokumens = $dokumens->merge(PengelolaService::archiveByProdi($prodiUser, $user_id));
             }
-        }
-        // get data dokumen
-        $dokumens = $dokumens->merge(Dokumen::getArchive($user_id));
-
-        // get data dokumen dari mentions
-        $dokumenMentioned = DokumenMention::where('user_mentioned', $user_id)->where("accepted", true)->get();
-        foreach ($dokumenMentioned as $mention) {
-            $dokumens = $dokumens->merge([$mention->dokumen]);
-        }
-
-        // Get data pengajuan surat
-        $ajuanSurat = Surat::where(function ($query) {
-            $query->where("status", "selesai")->orWhere("status", "ditolak");
-        });
-        if ($jenis_user != "admin") {
-            $ajuanSurat->where("user_created", $user_id);
-        }
-        $dokumens = $dokumens->merge($ajuanSurat->get());
-
-        $semesters = Semester::select("nama")->get();
-        $roleUser = 0;
-        $prodiuser = 0;
-        if ($jenis_user == "admin") {
-            $roleUser = Auth::guard("web")->user()->role_id;
         } else {
-            $roleUser = Auth::guard("dosen")->user()->role_id;
-            $prodiUser = Auth::guard("dosen")->user()->prodi_id;
+            if ($jenis_user != "mahasiswa") {
+                // get data surat cuti
+                $dokumens = $dokumens->merge(SuratCuti::getArchive($user_id));
+                $dokumens = $dokumens->merge(Sertifikat::getOnDoneByUserOrAdmin($user_id, $jenis_user));
+            }
+            $sertifikats = PenerimaSertifikat::getDoneSertifikat($user_id);
+            foreach ($sertifikats as $value) {
+                $dokumens = $dokumens->merge([$value->sertifikat->setAttribute('slug', $value->slug)->setAttribute('penerima_id', $value->user_penerima)]);
+            }
+            // get data dokumen
+            $dokumens = $dokumens->merge(Dokumen::getArchive($user_id));
+
+            // get data dokumen dari mentions
+            $dokumenMentioned = DokumenMention::where('user_mentioned', $user_id)->where("accepted", true)->get();
+            foreach ($dokumenMentioned as $mention) {
+                $dokumens = $dokumens->merge([$mention->dokumen]);
+            }
+
+            // Get data pengajuan surat
+            $ajuanSurat = Surat::where(function ($query) {
+                $query->where("status", "selesai")->orWhere("status", "ditolak");
+            });
+            if ($jenis_user != "admin") {
+                $ajuanSurat->where("user_created", $user_id);
+            }
+            $dokumens = $dokumens->merge($ajuanSurat->get());
         }
+
+        $semesters = Semester::getSimpleSemester();
 
         $countUsulan = DistribusiDokumenService::getCountUsulan($user_id, $jenis_user, $roleUser, $prodiUser);
         return view('doc.arsip', compact('dokumens', 'jenis_user', 'user_id', 'semesters', 'countUsulan'));

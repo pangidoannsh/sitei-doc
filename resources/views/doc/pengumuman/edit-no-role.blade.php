@@ -12,6 +12,16 @@
             style="position: relative;padding-bottom: 200px" enctype="multipart/form-data">
             @method('put')
             @csrf
+            {{-- Nomor Pengumuman --}}
+            <div>
+                <label for="nomor_pengumuman" class="fw-semibold">Nomor Pengumuman</label>
+                <input type="text" class="form-control @error('nomor_pengumuman') is-invalid @enderror rounded-3 py-4"
+                    name="nomor_pengumuman" id="nomor_pengumuman"
+                    value="{{ old('nomor_pengumuman') ?? $data->nomor_pengumuman }}">
+                @error('nomor_pengumuman')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
+            </div>
             {{-- Nama --}}
             <div>
                 <label for="nama" class="fw-semibold">Nama Pengumuman<span class="text-danger">*</span></label>
@@ -347,7 +357,7 @@
             </div>
 
             <div class="footer-submit">
-                <button type="submit" class="btn btn-success">Buat Pengumuman</button>
+                <button type="submit" class="btn btn-success">Ubah Pengumuman</button>
                 <a type="button" class="btn btn-outline-success" href={{ url()->previous() }}>Kembali</a>
             </div>
         </form>
@@ -611,6 +621,8 @@
         @if ($data->for_all_mahasiswa)
             selectAllMhs.prop('checked', true)
             $(".mahasiswa-selector").prop('checked', true)
+            $(".angkatan-selector").prop('checked', true)
+            $(".prodi-selector").prop('checked', true)
         @endif
         @if (in_array('d3te_all', $data->mentions->pluck('user_mentioned')->toArray()))
             selectAllD3TE.prop('checked', true)

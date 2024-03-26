@@ -73,18 +73,23 @@
                 </a>
             </li>
         </ul>
-        <div class="justify-content-center gap-3 filter d-none" style="height: 0">
+        <div class="gap-3 filter d-none" style="height: 0">
             <label>
-                Status:
-                <select id="statusFilter" class="custom-select  form-control form-control-sm pr-4" text-capitalize>
+                <span class="fw-bold">
+                    Status
+                </span>
+                <select id="statusFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     <option value="dokumen">Dokumen</option>
                     <option value="surat">Surat</option>
+                    <option value="surat cuti">Surat Cuti</option>
                     <option value="sertifikat">Sertifikat</option>
                 </select>
             </label>
             <label>
-                Kategori:
+                <span class="fw-bold">
+                    Kategori
+                </span>
                 <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($kategoris as $kategori)
@@ -93,7 +98,9 @@
                 </select>
             </label>
             <label>
-                Semester:
+                <span class="fw-bold">
+                    Semester
+                </span>
                 <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
                     <option value="" selected>Semua</option>
                     @foreach ($semesters as $semester)
@@ -105,6 +112,7 @@
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-center" scope="col">Nomor</th>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
@@ -119,6 +127,17 @@
             <tbody>
                 @foreach ($dokumens->sortByDesc('created_at') as $dokumen)
                     <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden"
+                            @if ($dokumen->nomor_dokumen || $dokumen->nomor_surat) title="{{ $dokumen->nomor_dokumen ?? $dokumen->nomor_surat }}" @endif>
+                            <div class="ellipsis-1 text-capitalize" style="max-width: 80px">
+                                @if ($dokumen->jenisDokumen == 'dokumen' || $dokumen->jenisDokumen == 'surat')
+                                    {{ $dokumen->nomor_dokumen ?? ($dokumen->nomor_surat ?? '-') }}
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </td>
                         {{-- Nama --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis">
@@ -135,7 +154,11 @@
                                 {{ data_get($dokumen, $dokumen->jenis_user . '.role.role_akses') }}
                                 {{-- ({{ optional($dokumen->dosen)->nama_singkat }}) --}}
                             @else
-                                {{ data_get($dokumen, $dokumen->jenis_user . '.nama') }}
+                                @if ($dokumen->jenis_user == 'dosen')
+                                    {{ $dokumen->dosen->nama_singkat }}
+                                @else
+                                    {{ data_get($dokumen, $dokumen->jenis_user . '.nama') }}
+                                @endif
                             @endif
                         </td>
                         {{-- Penerima --}}
@@ -166,25 +189,19 @@
                                             @if ($index < 2)
                                                 <div>
                                                     <span>{{ $loop->iteration }}.</span>
-                                                    <span>{{ $mention->dosen->nama_singkat }}</span>
+                                                    <span>
+                                                        @if ($mention->jenis_user == 'dosen')
+                                                            {{ $mention->dosen->nama_singkat }}
+                                                        @else
+                                                            {{ $mention->admin->nama }}
+                                                        @endif
+                                                    </span>
                                                 </div>
                                             @endif
                                         @endforeach
                                         @if (count($dokumen->mentions) > 2)
                                             <a class="" style="cursor:pointer;font-size: 12px" title="Lihat detail"
-                                                href="@switch($dokumen->jenisDokumen)
-                                        @case('dokumen')
-                                            {{ route('dokumen.detail', $dokumen->id) }}
-                                            @break
-                                        @case('pengumuman')
-                                            {{-- {{ route('pengumuman.detail', $dokumen->id) }} --}}
-                                            @break
-                                        @case('surat_cuti')
-                                            {{ route('suratcuti.detail', $dokumen->id) }}
-                                            @break
-                                        @default
-                                            #
-                                    @endswitch">Lainnya...</a>
+                                                href="{{ route('dokumen.detail', $dokumen->id) }}">Lainnya...</a>
                                         @endif
                                     </div>
                                 @break
@@ -268,12 +285,8 @@
                                     Cuti {{ $dokumen->jenis_cuti }}
                                 @break
 
-                                @case('sertifikat')
-                                    {{ $dokumen->jenis }}
-                                @break
-
                                 @default
-                                    (Kosong)
+                                    -
                             @endswitch
                         </td>
                         {{-- Isi/Keterangan --}}
@@ -306,11 +319,11 @@
                         </td>
                         {{-- Semester --}}
                         <td class="text-center text-capitalize">
-                            {{ $dokumen->semester ?? '' }}
+                            {{ $dokumen->semester ?? '-' }}
                         </td>
                         {{-- Aksi --}}
-                        <td class="text-center" style="width: max-content">
-                            <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">
+                        <td class="text-center" style="width: 56px">
+                            <div class="row row-cols-2" style="width: 100%">
                                 @switch($dokumen->jenisDokumen)
                                     @case('pengumuman')
                                         {{-- Button Detail --}}
@@ -320,12 +333,20 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         {{-- Button Edit --}}
                                         @if ($dokumen->user_created === $user_id)
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('pengumuman.edit', $dokumen->id) }}" title="Edit pengumuman">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
                                             {{-- Button Delete --}}
@@ -349,35 +370,51 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id)
                                             {{-- Button Edit --}}
                                             <div>
                                                 <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
                                                     href="{{ route('dokumen.edit', $dokumen->id) }}" title="Edit dokumen">
-                                                    <i class="fa-solid fa-file-pen"></i>
+                                                    <i class="fa-solid fa-pen-to-square"></i>
                                                 </a>
                                             </div>
-                                            {{-- Button Delete --}}
-                                            <form class="show-delete-confirm" method="POST"
-                                                action="{{ route('dokumen.delete', $dokumen->id) }}">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                    style="cursor:pointer;" title="Hapus Dokumen">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
                                         @else
-                                            {{-- Button Tolak Kiriman Dokumen --}}
-                                            <form method="POST" class="show-reject-dokumen"
-                                                action="{{ route('dokumen.mention.delete', ['dokumen_id' => $dokumen->id, 'user_mentioned' => $user_id]) }}">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                    style="cursor:pointer;" title="Tolak Kiriman">
-                                                    <i class="fas fa-times-circle" aria-hidden="true"></i>
-                                                </button>
-                                            </form>
+                                            @if (
+                                                !data_get($dokumen, $dokumen->jenis_user . '.role_id') &&
+                                                    in_array($user_id, $dokumen->mentions->pluck('user_mentioned')->toArray()))
+                                                {{-- Button Tolak Kiriman Dokumen --}}
+                                                <form method="POST" class="show-reject-dokumen"
+                                                    action="{{ route('dokumen.mention.delete', ['dokumen_id' => $dokumen->id, 'user_mentioned' => $user_id]) }}">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
+                                                        style="cursor:pointer;" title="Tolak Kiriman">
+                                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        @endif
+                                        @if ($dokumen->user_created === $user_id || optional(Auth::guard('web')->user())->role_id == 1)
+                                            {{-- Button Delete --}}
+                                            <div>
+                                                <form class="show-delete-confirm" method="POST"
+                                                    action="{{ route('dokumen.delete', $dokumen->id) }}">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
+                                                        style="cursor:pointer;" title="Hapus Dokumen">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         @endif
                                     @break
 
@@ -389,6 +426,14 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route('suratcuti.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
                                         @if ($dokumen->user_created === $user_id)
                                             @if ($dokumen->status == 'ditolak')
                                                 {{-- Button Delete Surat Cuti --}}
@@ -397,15 +442,31 @@
                                                     @csrf
                                                     @method('delete')
                                                     <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                        style="cursor:pointer;" title="Hapus Usulan">
+                                                        style="cursor:pointer;" title="hapus usulan">
                                                         <i class="fa-solid fa-trash"></i>
                                                     </button>
                                                 </form>
-                                            @elseif($dokumen->status == 'diterima')
-                                                <a class="badge btn btn-success p-1 rounded-lg" style="cursor:pointer;"
-                                                    title="Unduh Surat" href="{{ route('suratcuti.download', $dokumen->id) }}">
-                                                    <i class="fa-solid fa-download"></i>
-                                                </a>
+                                            @endif
+                                        @endif
+                                        @if (optional(Auth::guard('dosen')->user())->role_id == 5)
+                                            @if ($dokumen->status == 'proses')
+                                                {{-- Button Approval Surat Cuti --}}
+                                                <div>
+                                                    <a title="Setujui Cuti" href="{{ route('suratcuti.approve', $dokumen->id) }}"
+                                                        class="badge btn btn-success p-1 rounded-lg" style="cursor:pointer;">
+                                                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                                    </a>
+                                                </div>
+                                                {{-- Button Reject Surat Cuti --}}
+                                                <form action="{{ route('suratcuti.reject', $dokumen->id) }}" method="POST"
+                                                    class="show-reject-suratcuti">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" title="Tolak Pengajuan"
+                                                        class="badge btn btn-danger p-1 rounded-lg" style="cursor:pointer;">
+                                                        <i class="fas fa-times-circle" aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
                                             @endif
                                         @endif
                                     @break
@@ -418,22 +479,35 @@
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
-                                        @php
-                                            $batasPengajuan = Carbon::parse($dokumen->created_at)->addDays(3);
-                                            $sisaHari = now()->diffInDays($batasPengajuan, false);
-                                        @endphp
-                                        @if ($dokumen->status == 'ditolak' || ($sisaHari < 0 && $dokumen->status != 'diterima'))
-                                            {{-- Button Delete Surat --}}
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="{{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
+                                        @if ($dokumen->user_created == $user_id && $dokumen->status == 'ditolak')
+                                            {{-- Button Delete --}}
                                             <form class="show-delete-surat" method="POST"
                                                 action="{{ route('surat.delete', $dokumen->id) }}">
                                                 @csrf
                                                 @method('delete')
                                                 <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
-                                                    style="cursor:pointer;" title="Hapus Usulan">
+                                                    style="cursor:pointer;" title="Hapus Surat">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
                                         @endif
+                                        {{-- @if ($jenis_user == 'admin' && $dokumen->role_handler == Auth::guard('web')->user()->role_id && $dokumen->status == 'staf_prodi')
+                                            <div>
+                                                <a title="Setujui Pengajuan"
+                                                    href="{{ route('surat.acc.stafprodi', $dokumen->id) }}"
+                                                    class="badge btn btn-success p-1 rounded-lg" style="cursor:pointer;">
+                                                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                                </a>
+                                            </div>
+                                        @endif --}}
                                     @break
 
                                     @case('sertifikat')
@@ -441,11 +515,41 @@
                                         <div>
                                             <a class="badge btn btn-info p-1 rounded-lg" style="cursor:pointer;"
                                                 title="Lihat Detail"
-                                                href="@if ($jenis_user === 'mahasiswa') {{ route('sertif.penerima', $dokumen->slug) }}
-                                            @else {{ route('sertif.detail', $dokumen->id) }} @endif">
+                                                href="@if ($dokumen->penerima_id == $user_id) {{ route('sertif.penerima', $dokumen->slug) }}
+                                                @else {{ route('sertif.detail', $dokumen->id) }} @endif">
                                                 <i class="fas fa-info-circle" aria-hidden="true"></i>
                                             </a>
                                         </div>
+                                        {{-- Button Share --}}
+                                        <div>
+                                            <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                                title="Bagikan"
+                                                data-slug="@if ($dokumen->user_created == $user_id || $jenis_user == 'admin') {{ route('sertif.detail', $dokumen->id) }}
+                                                @else
+                                                {{ route('sertif.penerima', $dokumen->slug) }} @endif">
+                                                <i class="fa-solid fa-share-nodes"></i>
+                                            </button>
+                                        </div>
+                                        @if ($dokumen->user_created === $user_id && $dokumen->status == 'ditolak')
+                                            {{-- Button Edit --}}
+                                            <div>
+                                                <a class="badge btn btn-warning p-1 rounded-lg text-white" style="cursor:pointer;"
+                                                    href="{{ route('sertif.edit', ['id' => $dokumen->id]) }}"
+                                                    title="Edit Sertifikat">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </a>
+                                            </div>
+                                            {{-- Button Delete --}}
+                                            <form class="show-delete-sertif" method="POST"
+                                                action="{{ route('sertif.delete', $dokumen->id) }}">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" class="badge btn btn-danger p-1 rounded-lg"
+                                                    style="cursor:pointer;" title="Hapus Sertifikat">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endif
                                     @break
 
                                     @default
@@ -548,5 +652,33 @@
                 }
             })
         })
+        $('.btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan usulan surat berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
     </script>
 @endpush()

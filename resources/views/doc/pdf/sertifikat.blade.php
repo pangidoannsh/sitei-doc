@@ -35,6 +35,33 @@
             position: relative;
         }
 
+        .sign-sertif {
+            text-align: start;
+            margin: 24px auto;
+            border: 1px solid #BDBDBD;
+            padding: 8px;
+            max-width: 240px;
+        }
+
+        .sign-sertif div:nth-child(1) {
+            font-size: 10px;
+            margin: 0;
+        }
+
+        .sign-sertif div:nth-child(2) {
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .sign-sertif div:nth-child(3) {
+            margin: 0;
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
         .content {
             position: relative;
             width: max-content;
@@ -107,12 +134,24 @@
         <div class="container">
             <div class="header">
                 <div class="left-logos">
-                    <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/logo/unri.svg'))) }}"
-                        height="42">
+                    @foreach ($data->sertifikat->logos as $item)
+                        @if (optional($item->logo)->position == 'kiri')
+                            <div style="margin-right: 16px;display: inline-block">
+                                <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('storage/' . $item->logo->url))) }}"
+                                    height="42">
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
                 <div class="right-logos">
-                    <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('assets/logo/km.svg'))) }}"
-                        height="42">
+                    @foreach ($data->sertifikat->logos as $item)
+                        @if (optional($item->logo)->position == 'kanan')
+                            <div style="margin-left: 16px;display: inline-block">
+                                <img src="{{ 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('storage/' . $item->logo->url))) }}"
+                                    height="42">
+                            </div>
+                        @endif
+                    @endforeach
                 </div>
             </div>
             <div class="content">
@@ -126,10 +165,17 @@
                         {{ $data->nama_penerima }}
                     @endif
                 </div>
-                {{-- <div class="common">telah menyelesaikan pelatihan</div> --}}
                 <div class="common" style="line-height: 0.8;">{{ $data->sertifikat->isi }}</div>
                 <div class="date">Pekanbaru,
                     {{ Carbon::parse($data->sertifikat->tanggal)->translatedFormat('d M Y') }}
+                </div>
+                <div class="sign-sertif">
+                    <div>Ditandatangani secara elektronik oleh:</div>
+                    <div>
+                        {{ $data->sertifikat->signer_role }}</div>
+                    <div>
+                        {{ $data->sertifikat->signed->nama }}
+                    </div>
                 </div>
             </div>
             @if ($qrcode)

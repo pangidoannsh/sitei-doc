@@ -19,7 +19,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="{{ asset('/assets/plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" />
+    {{-- <link rel="stylesheet" href="font-awesome/css/font-awesome.min.css" /> --}}
 
     <link rel="stylesheet" href="{{ asset('/assets/css/dokumen.css') }}">
     <!-- Theme style -->
@@ -152,10 +152,32 @@
                             @if (Str::length(Auth::guard('dosen')->user()) > 0)
 
                                 <ul class="navbar-nav">
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
-                                            aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
-                                    </li>
+                                    @if (in_array(Auth::guard('dosen')->user()->role_id, [5, 6, 7, 8]))
+                                        <li class="nav-item dropdown ">
+                                            <a class="nav-link dropdown-toggle" id="pengumumanDropdown" role="button"
+                                                data-bs-toggle="dropdown" class="nav-link ">
+                                                <span
+                                                    class="fw-bold {{ Request::is('pengumuman*') ? 'text-success' : '' }}">
+                                                    PENGUMUMAN
+                                                </span>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="pengumumanDropdown">
+                                                <li class="nav-item">
+                                                    <a href="{{ route('pengumuman') }}"
+                                                        class="nav-link {{ Request::is('pengumuman') || Request::is('pengumuman/arsip') ? 'text-success' : '' }}">Pribadi</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link {{ Request::is('pengumuman/pengelola*') ? 'text-success' : '' }}"
+                                                        href="{{ route('pengumuman.pengelola') }}">Pengelola</a>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    @else
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ Request::is('pengumuman*') ? 'text-success' : '' }} "
+                                                aria-current="page" href="{{ route('pengumuman') }}">PENGUMUMAN</a>
+                                        </li>
+                                    @endif
                                     <li class="nav-item dropdown">
                                         <a class="nav-link dropdown-toggle " href="" id="navbarDropdown"
                                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -231,7 +253,7 @@
                                         <ul class="dropdown-menu" aria-labelledby="dokumenDropdown">
                                             <li class="nav-item">
                                                 <a href="{{ route('doc.index') }}"
-                                                    class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">Usulan</a>
+                                                    class="nav-link {{ Request::is('distribusi-dokumen') ? 'text-success' : '' }}">Pribadi</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link {{ Request::is('distribusi-dokumen/pengelola*') ? 'text-success' : '' }}"
@@ -260,6 +282,12 @@
                                     <li class="nav-item">
                                         <a class="nav-link {{ Request::is('inventaris*') ? 'text-success' : '' }} "
                                             aria-current="page" href="/inventaris/peminjaman-plp">INVENTARIS</a>
+                                    </li>
+                                    <li class="nav-item dropdown baru">
+                                        <a href="{{ route('doc.index') }}"
+                                            class="nav-link {{ Request::is('distribusi-dokumen*') ? 'text-success' : '' }}">
+                                            DOKUMEN
+                                        </a>
                                     </li>
                                 @endif
                             @endif
@@ -468,6 +496,14 @@
                                                     <li class="nav-item"><a href="/kapasitas-bimbingan/index"
                                                             class="dropdown-item nav-link  {{ Request::is('kapasitas-bimbingan*') ? 'text-success' : '' }}">Kuota
                                                             Bimbingan</a></li>
+                                                    <li class="nav-item"><a href="/semester"
+                                                            class="dropdown-item nav-link  {{ Request::is('semester*') ? 'text-success' : '' }}">
+                                                            Semester
+                                                        </a></li>
+                                                    <li class="nav-item"><a href="/logo"
+                                                            class="dropdown-item nav-link  {{ Request::is('logo*') ? 'text-success' : '' }}">
+                                                            Logo
+                                                        </a></li>
                                                     <li class="nav-item"><a href="#"
                                                             class="dropdown-item cursor-default nav-link"><b>Akun</b></a>
                                                     </li>
@@ -710,6 +746,9 @@
                 <div>
                     <div class="anak-judul sub-title">
                         <h4>@yield('sub-title')</h4>
+                        @hasSection('sub-title')
+                            <hr>
+                        @endif
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
@@ -764,39 +803,22 @@
     <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/rowgroup/1.4.0/js/dataTables.rowGroup.min.js"></script>
 
-
-    {{-- <script type="text/javascript">
-$(document).ready(function() {
-    var table = $('#datatables').DataTable( {
-        "lengthMenu": [ 50, 100, 150, 200, 250 ],
-        buttons: [ 'copy', 'excel','print', 'pdf' ],
-        dom:
-        "<'row'<'col-md-2'l><'col-md-5'B><'col-md-4'f>>" +
-        "<'row'<'col-md-12'tr>>" +
-        "<'row'<'col-md-5'i><'col-md-7'p>>"
-        
-    } );
- 
-    table.buttons().container()
-        .appendTo( '#datatables_wrapper .col-md-5:eq(0)' );
-} );
-</script> --}}
-
     <script type="text/javascript">
         $(document).ready(function() {
             $('.filter').removeClass("d-none")
             $('.filter').addClass("d-flex")
             var table = $('#datatables').DataTable({
+                "order": [],
                 "lengthMenu": [50, 100, 150, 200, 250],
                 "language": {
                     "sProcessing": "Sedang memproses...",
-                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sLengthMenu": "Tampilkan _MENU_",
                     "sZeroRecords": "Tidak ditemukan data yang sesuai",
                     "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                     "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
                     "sInfoPostFix": "",
-                    "sSearch": "Cari:",
+                    "sSearch": "Cari",
                     "sUrl": "",
                     "oPaginate": {
                         "sFirst": "Pertama",
@@ -809,15 +831,15 @@ $(document).ready(function() {
             })
             $("#statusFilter").on('change', e => {
                 const val = e.target.value
-                table.column(3).search(val ? '^' + val + '$' : '', true, false).draw();
+                table.column(4).search(val ? '^' + val + '$' : '', true, true).draw();
             })
             $("#kategoriFilter").on('change', e => {
                 const val = e.target.value
-                table.column(5).search(val ? '^' + val + '$' : '', true, false).draw();
+                table.column(6).search(val ? '^' + val + '$' : '', true, false).draw();
             })
             $("#semesterFilter").on('change', e => {
                 const val = e.target.value
-                table.column(7).search(val ? '^' + val + '$' : '', true, false).draw();
+                table.column(8).search(val ? '^' + val + '$' : '', true, false).draw();
             })
         });
     </script>
@@ -828,13 +850,13 @@ $(document).ready(function() {
                 "lengthMenu": [50, 100, 150, 200, 250],
                 "language": {
                     "sProcessing": "Sedang memproses...",
-                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sLengthMenu": "Tampilkan _MENU_",
                     "sZeroRecords": "Tidak ditemukan data yang sesuai",
                     "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                     "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
                     "sInfoPostFix": "",
-                    "sSearch": "Cari:",
+                    "sSearch": "Cari",
                     "sUrl": "",
                     "oPaginate": {
                         "sFirst": "Pertama",
@@ -853,13 +875,13 @@ $(document).ready(function() {
                 "lengthMenu": [50, 100, 150, 200, 250],
                 "language": {
                     "sProcessing": "Sedang memproses...",
-                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sLengthMenu": "Tampilkan _MENU_",
                     "sZeroRecords": "Tidak ditemukan data yang sesuai",
                     "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                     "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
                     "sInfoPostFix": "",
-                    "sSearch": "Cari:",
+                    "sSearch": "Cari",
                     "sUrl": "",
                     "oPaginate": {
                         "sFirst": "Pertama",
@@ -878,13 +900,13 @@ $(document).ready(function() {
                 "lengthMenu": [50, 100, 150, 200, 250],
                 "language": {
                     "sProcessing": "Sedang memproses...",
-                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sLengthMenu": "Tampilkan _MENU_",
                     "sZeroRecords": "Tidak ditemukan data yang sesuai",
                     "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                     "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
                     "sInfoPostFix": "",
-                    "sSearch": "Cari:",
+                    "sSearch": "Cari",
                     "sUrl": "",
                     "oPaginate": {
                         "sFirst": "Pertama",
@@ -903,13 +925,13 @@ $(document).ready(function() {
                 "lengthMenu": [50, 100, 150, 200, 250],
                 "language": {
                     "sProcessing": "Sedang memproses...",
-                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sLengthMenu": "Tampilkan _MENU_",
                     "sZeroRecords": "Tidak ditemukan data yang sesuai",
                     "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
                     "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
                     "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
                     "sInfoPostFix": "",
-                    "sSearch": "Cari:",
+                    "sSearch": "Cari",
                     "sUrl": "",
                     "oPaginate": {
                         "sFirst": "Pertama",
@@ -918,6 +940,18 @@ $(document).ready(function() {
                         "sLast": "Terakhir"
                     }
                 }
+            })
+            $("#statusFilter2").on('change', e => {
+                const val = e.target.value
+                table.column(4).search(val ? '^' + val + '$' : '', true, true).draw();
+            })
+            $("#kategoriFilter2").on('change', e => {
+                const val = e.target.value
+                table.column(6).search(val ? '^' + val + '$' : '', true, false).draw();
+            })
+            $("#semesterFilter2").on('change', e => {
+                const val = e.target.value
+                table.column(8).search(val ? '^' + val + '$' : '', true, false).draw();
             })
         });
     </script>
@@ -932,7 +966,7 @@ $(document).ready(function() {
     <script src="{{ asset('assets/dist/js/sweetalert2.all.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <script src="{{ asset('js/sweetalert2.min.js') }}"></script>
+    {{-- <script src="{{ asset('js/sweetalert2.min.js') }}"></script> --}}
     @yield('js')
     @stack('scripts')
 

@@ -33,27 +33,68 @@ class SuratCuti extends Model
 
     public static function getInProgresStatus($userId, $roleId)
     {
-        $query = self::where("status", "proses");
-        if ($roleId != 5) {
-            $query->where("user_created", $userId);
+        if ($roleId == 5) {
+            $query = self::where("status", "proses");
+        } else {
+            $query = self::where(function ($statusQuery) {
+                $statusQuery->where("status", "proses")->orWhere("status", "staf_jurusan");
+            })->where("user_created", $userId);
         }
         return $query->get();
     }
     public static function countInProgresStatus($userId, $roleId)
     {
-        $query = self::where("status", "proses");
-        if ($roleId != 5) {
-            $query->where("user_created", $userId);
+        if ($roleId == 5) {
+            $query = self::where("status", "proses");
+        } else {
+            $query = self::where(function ($statusQuery) {
+                $statusQuery->where("status", "proses")->orWhere("status", "staf_jurusan");
+            })->where("user_created", $userId);
         }
         return $query->count();
     }
 
     public static function getArchive($userId)
     {
-        return self::where("user_created", $userId)->where("status", "!=", "proses")->get();
+        return self::where("user_created", $userId)->where(function ($status) {
+            $status->where("status", "diterima")->orWhere("status", "ditolak");
+        })->get();
+    }
+
+    public static function getAllArchive()
+    {
+        return self::where("status", "diterima")->orWhere("status", "ditolak")->get();
+    }
+    public static function countAllArchive()
+    {
+        return self::where("status", "diterima")->orWhere("status", "ditolak")->count();
+    }
+
+    static function queryAllArchiveByProdi($prodiId)
+    {
+        return self::where(function ($query) {
+            $query->where("status", "diterima")->orWhere("status", "ditolak");
+        })->where(function ($query) use ($prodiId) {
+            $query->whereHas("dosen", function ($has) use ($prodiId) {
+                $has->where("prodi_id", $prodiId);
+            })->orWhereHas("admin", function ($has) use ($prodiId) {
+                $has->where("role_id", ($prodiId + 1));
+            });
+        });
+    }
+
+    public static function getAllArchiveByProdi($prodiId)
+    {
+        return self::queryAllArchiveByProdi($prodiId)->get();
+    }
+    public static function countAllArchiveByProdi($prodiId)
+    {
+        return self::queryAllArchiveByProdi($prodiId)->count();
     }
     public static function countArchive($userId)
     {
-        return self::where("user_created", $userId)->where("status", "!=", "proses")->count();
+        return self::where("user_created", $userId)->where(function ($status) {
+            $status->where("status", "diterima")->orWhere("status", "ditolak");
+        })->count();
     }
 }

@@ -26,6 +26,9 @@ class CekJenisUser
             $user_id = Auth::guard('mahasiswa')->user()->nim;
         } elseif (Auth::guard('web')->check()) {
             $jenis_user = "admin";
+            if (Auth::guard("web")->user()->role_id == 12) {
+                $jenis_user = "plp";
+            }
             $user_id = Auth::guard('web')->user()->username;
         }
         if ($jenis_user !== null) {

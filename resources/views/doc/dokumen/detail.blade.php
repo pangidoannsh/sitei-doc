@@ -13,14 +13,24 @@
 @endsection
 
 @section('content')
-    <section class="row">
+    <section class="row pb-5">
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
-                    <h2>Arsip Dokumen</h2>
+                    <div class="d-flex align-items-center">
+                        <h2 style="width: 100%">Arsip Dokumen</h2>
+                        <button class="btn text-secondary fw-semibold rounded-3" id="btnCopy" style="width:max-content"
+                            title="Bagikan" data-slug="{{ route('dokumen.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                    </div>
                     <div class="divider-green"></div>
                 </div>
 
+                <div class="d-flex flex-column gap-1">
+                    <div class="label">Nomor Dokumen</div>
+                    <div class="value text-capitalize">{{ $dokumen->nomor_dokumen }}</div>
+                </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama Dokumen</div>
                     <div class="value text-capitalize">{{ $dokumen->nama }}</div>
@@ -31,7 +41,7 @@
                 </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Keterangan</div>
-                    <div class="value">{{ $dokumen->keterangan }}</div>
+                    <div class="value">{{ $dokumen->keterangan ?? '-' }}</div>
                 </div>
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Semester</div>
@@ -61,15 +71,15 @@
                         (Tidak ada dokumen dilampirkan)
                     @endif
                     @if ($dokumen->url_dokumen)
-                        <a href="{{ $dokumen->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-3"
+                        <a href="{{ $dokumen->url_dokumen }}" target="_blank" class="btn btn-success px-5 rounded-2"
                             style="width:max-content">
-                            Lihat Dokumen
+                            Lihat Lampiran
                         </a>
                     @endif
                     @if ($dokumen->url_dokumen_lokal)
                         <a href="{{ asset('storage/' . $dokumen->url_dokumen_lokal) }}" target="_blank"
-                            class="btn btn-success px-5 rounded-3" style="width:max-content">
-                            Lihat Lampiran
+                            class="btn btn-success px-5 rounded-2" style="width:max-content">
+                            Lihat Dokumen
                         </a>
                     @endif
                 </div>
@@ -127,7 +137,9 @@
                 @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama</div>
-                    <div class="value text-capitalize">{{ data_get($dokumen, $dokumen->jenis_user . '.nama') }}</div>
+                    <div class="value text-capitalize">
+                        {{ data_get($dokumen, ($dokumen->jenis_user == 'plp' ? 'admin' : $dokumen->jenis_user) . '.nama') }}
+                    </div>
                 </div>
                 @if ($dokumen->jenis_user == 'dosen')
                     @if (optional($dokumen->dosen)->role_id)
@@ -139,7 +151,7 @@
                 @else
                     <div class="d-flex flex-column gap-1">
                         <div class="label">Jabatan</div>
-                        <div class="value text-capitalize">{{ $dokumen->dosen->role->role_akses }}</div>
+                        <div class="value text-capitalize">{{ $dokumen->admin->role->role_akses }}</div>
                     </div>
                 @endif
             </div>
@@ -212,5 +224,35 @@
                 }
             })
         })
+    </script>
+    <script>
+        $('#btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan sertifikat berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
     </script>
 @endpush

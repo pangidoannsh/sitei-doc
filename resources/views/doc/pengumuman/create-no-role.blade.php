@@ -12,6 +12,15 @@
             style="position: relative;padding-bottom: 200px" enctype="multipart/form-data">
             @method('post')
             @csrf
+            {{-- Nomor Pengumuman --}}
+            <div>
+                <label for="nomor_pengumuman" class="fw-semibold">Nomor Pengumuman</label>
+                <input type="text" class="form-control @error('nomor_pengumuman') is-invalid @enderror rounded-3 py-4"
+                    name="nomor_pengumuman" id="nomor_pengumuman" value="{{ old('nomor_pengumuman') }}">
+                @error('nomor_pengumuman')
+                    <div class="invalid-feedback">{{ $message }} </div>
+                @enderror
+            </div>
             {{-- Nama --}}
             <div>
                 <label for="nama" class="fw-semibold">Nama Pengumuman<span class="text-danger">*</span></label>
@@ -100,7 +109,7 @@
                     <div id="mahasiswaCheckList" style="min-height: 460px">
                         <div class="form-check mb-3" style="padding: 0 24px">
                             <input class="form-check-input" type="checkbox" value="all_mahasiswa" id="all_mahasiswa"
-                                name="select_all_mahasiswa">
+                                name="select_all_mahasiswa" {{ old('select_all_mahasiswa') ? 'checked' : '' }}>
                             <label class="form-check-label" for="all_mahasiswa">
                                 Semua Mahasiswa
                             </label>
@@ -124,7 +133,7 @@
                         <div id="d3TE" style="min-height: 460px">
                             <div class="form-check mb-3" style="padding: 0 24px">
                                 <input class="form-check-input prodi-selector" type="checkbox" value="all_d3te"
-                                    id="all_1" name="select_all_d3te">
+                                    id="all_1" name="select_all_d3te" {{ old('select_all_d3te') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="all_1">
                                     Semua Mahasiswa D3 Teknik Elektro
                                 </label>
@@ -143,7 +152,8 @@
                                             class="d3te-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
                                             <input class="form-check-input angkatan-selector d3te-selector"
                                                 type="checkbox" value="{{ $angkatan }}"
-                                                id="selector_1_{{ $angkatan }}" name="d3te_angkatan[]">
+                                                id="selector_1_{{ $angkatan }}" name="d3te_angkatan[]"
+                                                {{ old('d3te_angkatan') && in_array($angkatan, old('d3te_angkatan')) ? 'checked' : '' }}>
                                             {{ $angkatan }}
                                         </div>
                                         @php
@@ -163,7 +173,8 @@
                                                     <input class="form-check-input mahasiswa-selector d3te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="1_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="d3te[{{ $angkatan }}][]">
+                                                        name="d3te[{{ $angkatan }}][]"
+                                                        {{ old('d3te') && in_array($mahasiswa->nim, array_merge(...old('d3te'))) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="1_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
@@ -184,7 +195,7 @@
                         <div id="s1TE" class="d-none" style="min-height: 460px">
                             <div class="form-check mb-3" style="padding: 0 24px">
                                 <input class="form-check-input prodi-selector" type="checkbox" value="all_s1te"
-                                    id="all_2" name="select_all_s1te">
+                                    id="all_2" name="select_all_s1te" {{ old('select_all_s1te') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="all_2">
                                     Semua Mahasiswa S1 Teknik Elektro
                                 </label>
@@ -201,7 +212,8 @@
                                             class="s1te-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
                                             <input class="form-check-input angkatan-selector s1te-selector"
                                                 type="checkbox" value="{{ $angkatan }}"
-                                                id="selector_2_{{ $angkatan }}" name="s1te_angkatan[]">
+                                                id="selector_2_{{ $angkatan }}" name="s1te_angkatan[]"
+                                                {{ old('s1te_angkatan') && in_array($angkatan, old('s1te_angkatan')) ? 'checked' : '' }}>
                                             {{ $angkatan }}
                                         </div>
                                         @php
@@ -221,7 +233,8 @@
                                                     <input class="form-check-input mahasiswa-selector s1te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="2_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="s1te[{{ $angkatan }}][]">
+                                                        name="s1te[{{ $angkatan }}][]"
+                                                        {{ old('s1te') && in_array($mahasiswa->nim, array_merge(...old('s1te'))) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="2_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ Str::ucfirst($mahasiswa->nama) }} ({{ $mahasiswa->nim }})
@@ -242,7 +255,7 @@
                         <div id="s1TI" class="d-none" style="min-height: 460px">
                             <div class="form-check mb-3" style="padding: 0 24px">
                                 <input class="form-check-input prodi-selector" type="checkbox" value="all_s1ti"
-                                    id="all_3" name="select_all_s1ti">
+                                    id="all_3" name="select_all_s1ti" {{ old('select_all_s1ti') ? 'checked' : '' }}>
                                 <label class="form-check-label" for="all_3">
                                     Semua Mahasiswa S1 Teknik Informatika
                                 </label>
@@ -260,7 +273,8 @@
                                             class="s1ti-tab-angkatan text-center {{ $isActive ? 'active fw-bold text-success' : '' }}">
                                             <input class="form-check-input angkatan-selector s1ti-selector"
                                                 type="checkbox" value="{{ $angkatan }}"
-                                                id="selector_3_{{ $angkatan }}" name="s1ti_angkatan[]">
+                                                id="selector_3_{{ $angkatan }}" name="s1ti_angkatan[]"
+                                                {{ old('s1ti_angkatan') && in_array($angkatan, old('s1ti_angkatan')) ? 'checked' : '' }}>
                                             {{ $angkatan }}
                                         </div>
                                         @php
@@ -279,7 +293,8 @@
                                                 <div class="col form-check mb-2">
                                                     <input class="form-check-input mahasiswa-selector s1ti-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="s1ti[{{ $angkatan }}][]">
+                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="s1ti[{{ $angkatan }}][]"
+                                                        {{ old('s1ti') && in_array($mahasiswa->nim, array_merge(...old('s1ti'))) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="3_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})

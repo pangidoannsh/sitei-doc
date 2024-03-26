@@ -13,14 +13,14 @@ class PenerimaSertifikatController extends Controller
 {
     public function show($slug)
     {
-        $data = PenerimaSertifikat::with("sertifikat")->where("slug", $slug)->first();
+        $data = PenerimaSertifikat::with(['sertifikat', 'sertifikat.logos'])->where("slug", $slug)->first();
         if (!$data) abort(404);
         return view("doc.sertifikat.penerima", compact("data"));
     }
 
     public function download($slug)
     {
-        $data = PenerimaSertifikat::with("sertifikat")->where("slug", $slug)->first();
+        $data = PenerimaSertifikat::with(['sertifikat', 'sertifikat.logos'])->where("slug", $slug)->first();
         $qrcode = base64_encode(QrCode::format('svg')->size(80)->errorCorrection('H')->generate(URL::to('/sertifikat') . '/' . $slug));
         $pdf = Pdf::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->setPaper("a4", 'landscape');
         $pdf->loadView("doc.pdf.sertifikat", compact('data', 'qrcode'));

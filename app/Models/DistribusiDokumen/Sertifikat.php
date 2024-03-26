@@ -51,6 +51,10 @@ class Sertifikat extends Model
         return $this->hasMany(PenerimaSertifikat::class, "sertifikat_id", "id");
     }
 
+    public function logos()
+    {
+        return $this->hasMany(SertifikatLogo::class, "sertifikat_id", "id");
+    }
 
     public static function getAllOnProgress()
     {
@@ -82,18 +86,44 @@ class Sertifikat extends Model
         }
         return $sertifQuery->count();
     }
-
+    private static function queryAllDone()
+    {
+        return self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak");
+    }
     public static function getAllOnDone()
     {
-        return self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak")->get();
+        return self::queryAllDone()->get();
     }
     public static function countAllOnDone()
     {
-        return self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak")->count();
+        return self::queryAllDone()->count();
+    }
+
+    private static function queryDoneByProdi($prodiId)
+    {
+        return self::with("penerimas")->where(function ($query) {
+            $query->where("status", "selesai")->orWhere("status", "ditolak");
+        })->where(function ($query) use ($prodiId) {
+            $query->whereHas("dosen", function ($has) use ($prodiId) {
+                $has->where("prodi_id", $prodiId);
+            })->orWhereHas("admin", function ($has) use ($prodiId) {
+                $has->where("role_id", ($prodiId + 1));
+            });
+        });
+    }
+    public static function onDoneByProdi($prodiId)
+    {
+        return self::queryDoneByProdi($prodiId)->get();
+    }
+    public static function countOnDoneByProdi($prodiId)
+    {
+        return self::queryDoneByProdi($prodiId)->count();
     }
     public static function getOnDoneByUserOrAdmin($userId, $jenisUser)
     {
-        $query = self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak");
+        $query = self::with("penerimas")->where(function ($queryStatus) {
+            $queryStatus->where("status", "selesai")->orWhere("status", "ditolak");
+        });
         if ($jenisUser != "admin") {
             $query->where("user_created", $userId);
         }
@@ -102,7 +132,9 @@ class Sertifikat extends Model
 
     public static function countOnDoneByUserOrAdmin($userId, $jenisUser)
     {
-        $query = self::with("penerimas")->where("status", "selesai")->orWhere("status", "ditolak");
+        $query = self::with("penerimas")->where(function ($query) {
+            $query->where("status", "selesai")->orWhere("status", "ditolak");
+        });
         if ($jenisUser != "admin") {
             $query->where("user_created", $userId);
         }

@@ -14,7 +14,7 @@ class Surat extends Model
     use HasFactory;
     protected $table = "doc_surat";
     protected $guarded = [];
-    protected $with = ["dosen", "mahasiswa", "penerima"];
+    protected $with = ["dosen", "mahasiswa", "penerima", "admin"];
     protected $appends = ['jenisDokumen'];
 
     // Aksesor untuk jenisDokumen
@@ -34,6 +34,11 @@ class Surat extends Model
     public function mahasiswa()
     {
         return $this->belongsTo(Mahasiswa::class, 'user_created', 'nim');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'user_created', 'username');
     }
 
     public function handler()

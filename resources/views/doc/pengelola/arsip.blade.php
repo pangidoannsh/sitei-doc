@@ -2,6 +2,8 @@
 
 @php
     use Carbon\Carbon;
+    $kategoris = ['pendidikan', 'penelitian', 'pengabdian', 'penunjang', 'KP/Skripsi', 'lainnya'];
+
     function getKeteranganCuti($status)
     {
         switch ($status) {
@@ -72,9 +74,11 @@
     SITEI | Distribusi Surat & Dokumen
 @endsection
 @section('sub-title')
-    Pengelola Distribusi Surat & Dokumen {{ str_replace('Ketua', '', Auth::guard('dosen')->user()->role->role_akses) }}
+    Pengelola Distribusi Surat & Dokumen
+    {{ str_replace(['TE', 'TI', 'Jurusan'], ['Teknik Elektro', 'Teknik Informatika', 'Jurusan Teknik Elektro'], str_replace('Ketua', '', optional(Auth::guard('dosen')->user())->role->role_akses)) }}
 @endsection
 @section('content')
+    {{-- Arsip Dokumen --}}
     <div class="contariner card p-4">
         <ul class="breadcrumb col-lg-12">
             <li>
@@ -85,19 +89,63 @@
             <span class="px-2">|</span>
             <li>
                 <a href="{{ route('pengelola.pengumuman') }}" class="px-1">
-                    Pengumuman
+                    Pengumuman (<span>{{ $countPengumuman }}</span>)
                 </a>
             </li>
             <span class="px-2">|</span>
             <li>
                 <a href="" class="breadcrumb-item active fw-bold text-success  px-1">
-                    Arsip ({{ count($dokumens) }})
+                    Arsip ({{ count($dokumens) + count($pengumumans) }})
                 </a>
             </li>
         </ul>
+        <div class="bg-light p-2 pt-3 mb-4">
+            <h5>
+                Arsip Dokumen
+            </h5>
+            <hr>
+        </div>
+        {{-- Filter --}}
+        <div class="gap-3 filter d-none" style="height: 0">
+            <label>
+                <span class="fw-bold">
+                    Status
+                </span>
+                <select id="statusFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    <option value="dokumen">Dokumen</option>
+                    <option value="surat">Surat</option>
+                    <option value="surat cuti">Surat Cuti</option>
+                    <option value="sertifikat">Sertifikat</option>
+                </select>
+            </label>
+            <label>
+                <span class="fw-bold">
+                    Kategori
+                </span>
+                <select id="kategoriFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                <span class="fw-bold">
+                    Semester
+                </span>
+                <select id="semesterFilter" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
         <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables">
             <thead class="table-dark">
                 <tr>
+                    <th class="text-center" scope="col">Nomor</th>
                     <th class="text-center" scope="col">Nama</th>
                     <th class="text-center" scope="col">Pengusul</th>
                     <th class="text-center" scope="col">Penerima</th>
@@ -112,6 +160,12 @@
             <tbody>
                 @foreach ($dokumens->sortByDesc('created_at') as $dokumen)
                     <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden;max-width: 80px">
+                            <div class="ellipsis-1 text-capitalize">
+                                {{ $dokumen->nomor_dokumen ?? ($dokumen->nomor_surat ?? '-') }}
+                            </div>
+                        </td>
                         {{-- Nama --}}
                         <td class="text-center" style="overflow: hidden">
                             <div class="ellipsis text-capitalize">
@@ -194,7 +248,7 @@
                                                 @if ($penerima->user_penerima)
                                                     <div class="ellipsis-2">
                                                         <span>{{ $loop->iteration }}.</span>
-                                                        <span>{{ $penerima->mahasiswa->nama }}</span>
+                                                        <span>{{ data_get($penerima, $penerima->jenis_penerima . '.nama') }}</span>
                                                     </div>
                                                 @else
                                                     <div class="ellipsis-2">
@@ -318,6 +372,172 @@
                                         @endswitch">
                                         <i class="fas fa-info-circle" aria-hidden="true"></i>
                                     </a>
+                                </div>
+                                {{-- Button Share --}}
+                                <div>
+                                    <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                        title="Bagikan"
+                                        data-slug="@switch($dokumen->jenisDokumen)
+                                            @case('surat_cuti')
+                                            {{ route('suratcuti.detail.public', Crypt::encrypt($dokumen->id)) }}
+                                            @break
+                                            @case('sertifikat')
+                                            {{ route('sertif.detail', $dokumen->id) }}
+                                                @break
+                                            @default
+                                            {{ route($dokumen->jenisDokumen . '.detail.public', Crypt::encrypt($dokumen->id)) }}
+                                        @endswitch">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    {{-- Arsip Pengumuman --}}
+    <div class="contariner card p-4">
+        <div class="bg-light p-2 pt-3 mb-4">
+            <h5>
+                Arsip Pengumuman
+            </h5>
+            <hr>
+        </div>
+        {{-- Filter --}}
+        <div class="gap-3 filter d-none" style="height: 0">
+            <label>
+                <span class="fw-bold">
+                    Kategori
+                </span>
+                <select id="kategoriFilter2" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($kategoris as $kategori)
+                        <option value="{{ $kategori }}" class="text-capitalize">{{ $kategori }}</option>
+                    @endforeach
+                </select>
+            </label>
+            <label>
+                <span class="fw-bold">
+                    Semester
+                </span>
+                <select id="semesterFilter2" class="custom-select form-control form-control-sm pr-4">
+                    <option value="" selected>Semua</option>
+                    @foreach ($semesters as $semester)
+                        <option value="{{ $semester->nama }}" class="text-capitalize">{{ $semester->nama }}</option>
+                    @endforeach
+                </select>
+            </label>
+        </div>
+        <table class="table table-responsive-lg table-bordered table-striped" style="width:100%" id="datatables2">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center" scope="col">Nomor</th>
+                    <th class="text-center" scope="col">Nama</th>
+                    <th class="text-center" scope="col">Pengusul</th>
+                    <th class="text-center" scope="col">Penerima</th>
+                    <th class="text-center" scope="col">Tanggal Usulan</th>
+                    <th class="text-center" scope="col">Batas Pengumuman</th>
+                    <th class="text-center" scope="col">Jenis/Kategori</th>
+                    <th class="text-center" scope="col">Keterangan</th>
+                    <th class="text-center" scope="col">Semester</th>
+                    <th class="text-center" scope="col">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($pengumumans->sortByDesc('created_at') as $pengumuman)
+                    <tr>
+                        {{-- Nomor --}}
+                        <td class="text-center" style="overflow: hidden;max-width: 80px">
+                            <div class="ellipsis-1 text-capitalize">
+                                @if ($dokumen->jenisDokumen == 'dokumen' || $dokumen->jenisDokumen == 'surat')
+                                    {{ $dokumen->nomor_dokumen ?? $dokumen->nomor_surat }}
+                                @else
+                                    -
+                                @endif
+                            </div>
+                        </td>
+                        {{-- Nama --}}
+                        <td class="text-center" style="overflow: hidden">
+                            <div class="ellipsis">
+                                @if ($pengumuman->jenisDokumen == 'surat_cuti')
+                                    Cuti Pengajuan Cuti {{ $pengumuman->jenis_cuti }}
+                                @else
+                                    {{ $pengumuman->nama }}
+                                @endif
+                            </div>
+                        </td>
+                        {{-- Pengusul --}}
+                        <td class="text-center">
+                            @if (data_get($pengumuman, $pengumuman->jenis_user . '.role_id'))
+                                {{ data_get($pengumuman, $pengumuman->jenis_user . '.role.role_akses') }}
+                                ({{ optional($pengumuman->dosen)->nama_singkat }})
+                            @else
+                                {{ data_get($pengumuman, $pengumuman->jenis_user . '.nama') }}
+                            @endif
+                        </td>
+                        {{-- Penerima --}}
+                        <td class="text-center" style="overflow: hidden">
+                            @php
+                                $penerimas = displayPenerimaPengumuman($pengumuman);
+                            @endphp
+                            <div class="ellipsis">
+                                @if (count($penerimas) == 0)
+                                    <div>(Tidak Ada)</div>
+                                @endif
+                                @foreach ($penerimas as $penerima)
+                                    <div>
+                                        @if (count($penerimas) == 1)
+                                            <span>{{ $penerima }}</span>
+                                        @else
+                                            <span>{{ $loop->iteration }}.</span>
+                                            <span>{{ $penerima }}</span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </td>
+                        {{-- Tanggal Usulan --}}
+                        <td class="text-center" style="overflow: hidden">
+                            <div class="ellipsis-2">
+                                {{ Carbon::parse($pengumuman->created_at)->translatedFormat('l, d F Y') }}
+                            </div>
+                        </td>
+                        {{-- Batas Pengumuman --}}
+                        <td class="text-center">
+                            {{ Carbon::parse($pengumuman->tgl_batas_pengumuman)->translatedFormat('l, d F Y') }}
+                        </td>
+                        {{-- Jenis/Kategori --}}
+                        <td class="text-center text-capitalize">
+                            {{ $pengumuman->kategori }}
+                        </td>
+                        {{-- Isi/Keterangan --}}
+                        <td class="text-center" style="overflow: hidden">
+                            <div class="ellipsis-2">
+                                {{ $pengumuman->isi }}
+                            </div>
+                        </td>
+                        {{-- Semester --}}
+                        <td class="text-center text-capitalize">
+                            {{ $pengumuman->semester ?? '-' }}
+                        </td>
+                        {{-- Aksi --}}
+                        <td class="text-center" style="width: max-content">
+                            <div class="d-flex gap-lg-3 gap-2 justify-content-center" style="width: 100%">
+                                <div>
+                                    <a class="badge btn btn-info p-1 rounded-lg" style="cursor:pointer;"
+                                        title="Lihat detail" href="{{ route('pengumuman.detail', $pengumuman->id) }}">
+                                        <i class="fas fa-info-circle" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                                {{-- Button Share --}}
+                                <div>
+                                    <button class="btnCopy badge btn btn-secondary p-1 rounded-lg" style="cursor:pointer;"
+                                        title="Bagikan"
+                                        data-slug="{{ route('pengumuman.detail.public', Crypt::encrypt($dokumen->id)) }}">
+                                        <i class="fa-solid fa-share-nodes"></i>
+                                    </button>
                                 </div>
                             </div>
                         </td>

@@ -13,9 +13,12 @@ class CreateSemestersTable extends Migration
      */
     public function up()
     {
-        Schema::create('doc_semester', function (Blueprint $table) {
+        Schema::create('semester', function (Blueprint $table) {
             $table->id();
-            $table->string("nama", 25);
+            $table->enum("semester", ['Ganjil', 'Genap']);
+            $table->string("tahun_ajaran");
+            $table->date("tanggal_mulai");
+            $table->date("tanggal_selesai");
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateSemestersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('doc_semester');
+        Schema::dropIfExists('semester');
     }
 }

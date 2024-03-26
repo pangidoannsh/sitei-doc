@@ -30,11 +30,17 @@
 @endsection
 
 @section('content')
-    <section class="row">
+    <section class="row pb-5">
         <div class="col-lg-8">
             <div class="dokumen-card">
                 <div>
-                    <h2>Pengajuan Surat</h2>
+                    <div class="d-flex align-items-center">
+                        <h2 style="width: 100%">Pengajuan Surat</h2>
+                        <button class="btn text-secondary fw-semibold rounded-3" id="btnCopy" style="width:max-content"
+                            title="Bagikan" data-slug="{{ route('surat.detail.public', Crypt::encrypt($surat->id)) }}">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </button>
+                    </div>
                     <div class="divider-green"></div>
                 </div>
                 @switch($surat->status)
@@ -43,7 +49,7 @@
 
                     @case('staf_jurusan')
                     @case('kajur')
-                        <div class="rounded-2 py-3 text-center fw-semibold text-white" style="background-color: #fbbf24">
+                        <div class="rounded-2 py-3 text-center fw-semibold status-warning">
                             {{ $surat->keterangan_status }}
                             @if ($surat->status == 'staf_prodi' || $surat->status == 'kaprodi')
                                 {{ getProdi($surat->prodi_user) }}
@@ -53,12 +59,12 @@
 
                     @case('diterima')
                     @case('selesai')
-                        <div class="bg-success rounded-2 py-3 text-center fw-semibold text-white">{{ $surat->keterangan_status }}
+                        <div class="status-success rounded-2 py-3 text-center fw-semibold">{{ $surat->keterangan_status }}
                         </div>
                     @break
 
                     @case('ditolak')
-                        <div class="bg-danger rounded-2 py-3 text-center fw-semibold text-white">
+                        <div class="status-danger rounded-2 py-3 text-center fw-semibold">
                             <div>Pengajuan Ditolak: <span class="fw-medium">{{ $surat->alasan_ditolak }}</span></div>
                             <div>Ditolak Oleh : <span class="fw-medium">{{ $surat->rejection->role_akses }}</span></div>
                         </div>
@@ -70,6 +76,12 @@
                     <div class="label">Ditujukan Kepada</div>
                     <div class="value text-capitalize">{{ $surat->penerima->role_akses }}</div>
                 </div>
+                @if ($surat->nomor_surat)
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">Nomor Surat</div>
+                        <div class="value text-capitalize">{{ $surat->nomor_surat }}</div>
+                    </div>
+                @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama Surat</div>
                     <div class="value text-capitalize">{{ $surat->nama }}</div>
@@ -100,7 +112,7 @@
                             </a>
                         @endif
                     @else
-                        <div class="value">(Tidak ada file terlampir)</div>
+                        <div class="value opacity-75">(Tidak ada file terlampir)</div>
                     @endif
                 </div>
                 @if ($surat->status === 'selesai')
@@ -157,12 +169,12 @@
                         <div class="modal fade w-100" id="change_tujuan_modal" tabindex="-1" role="dialog"
                             aria-labelledby="accepted" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
+                                <div class="modal-content p-4 rounded-4 d-flex flex-column gap-4">
                                     <form action="{{ route('surat.edit.tujuan', $surat->id) }}" method="POST"
                                         enctype="multipart/form-data" class="d-flex gap-1 flex-column">
                                         @csrf
                                         @method('post')
-                                        <h5 class="modal-title">Detail Surat</h5>
+                                        <h5 class="modal-title">Ubah Tujuan Surat</h5>
                                         <div class="divider-green"></div>
                                         <div class="mt-2">
                                             <label for="kepada" class="fw-semibold">Tujuan Surat</label>
@@ -197,19 +209,20 @@
                             </div>
                         </div>
                     @elseif($surat->status === 'diterima' && $surat->role_handler == Auth::guard('web')->user()->role_id)
-                        <button data-toggle="modal" data-target="#done_modal" class="btn btn-success rounded-3 py-2 px-4">
+                        <button data-toggle="modal" data-target="#done_modal"
+                            class="btn btn-success rounded-3 py-2 px-4">
                             Selesaikan Surat
                         </button>
                         {{-- Modal Penyelesaian Surat --}}
                         <div class="modal fade w-100" id="done_modal" tabindex="-1" role="dialog"
                             aria-labelledby="accepted" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                                <div class="modal-content p-4 rounded-lg d-flex flex-column gap-4">
+                                <div class="modal-content p-4 rounded-4 d-flex flex-column gap-4">
                                     <form action="{{ route('surat.done', $surat->id) }}" method="POST"
                                         enctype="multipart/form-data" class="d-flex gap-1 flex-column">
                                         @csrf
                                         @method('post')
-                                        <h5 class="modal-title">Ubah Tujuan Surat</h5>
+                                        <h5 class="modal-title">Penyelesaian Surat</h5>
                                         <div class="divider-green"></div>
                                         <div class="mt-2">
                                             <label for="nomor_surat" class="fw-semibold">Nomor Surat<span
@@ -265,13 +278,16 @@
                     <h2>Pengaju Surat</h2>
                     <div class="divider-green"></div>
                 </div>
-                <div class="d-flex flex-column gap-1">
-                    <div class="label">{{ $surat->jenis_user == 'dosen' ? 'NIP' : 'NIM' }}</div>
-                    <div class="value text-capitalize">{{ $surat->user_created }}</div>
-                </div>
+                @if (!in_array($surat->jenis_user, ['admin', 'plp']))
+                    <div class="d-flex flex-column gap-1">
+                        <div class="label">{{ $surat->jenis_user == 'dosen' ? 'NIP' : 'NIM' }}</div>
+                        <div class="value text-capitalize">{{ $surat->user_created }}</div>
+                    </div>
+                @endif
                 <div class="d-flex flex-column gap-1">
                     <div class="label">Nama</div>
-                    <div class="value text-capitalize">{{ data_get($surat, $surat->jenis_user . '.nama') }}</div>
+                    <div class="value text-capitalize">
+                        {{ data_get($surat, ($surat->jenis_user == 'plp' ? 'admin' : $surat->jenis_user) . '.nama') }}</div>
                 </div>
                 @if (optional($surat->dosen)->role_id)
                     <div class="d-flex flex-column gap-1">
@@ -297,7 +313,7 @@
                         <div class="divider-green"></div>
                     </div>
                     <div class="d-flex flex-column gap-1">
-                        <div class="label">Nama</div>
+                        <div class="label">Jabatan</div>
                         <div class="value text-capitalize">
                             {{ $surat->handler->role_akses }}
                         </div>
@@ -320,6 +336,36 @@
 @endsection
 
 @push('scripts')
+    <script>
+        $('#btnCopy').click(function() {
+            var slugToCopy = $(this).data('slug');
+
+            var tempTextarea = $('<textarea>');
+            $('body').append(tempTextarea);
+            tempTextarea.val(slugToCopy).select();
+            document.execCommand('copy');
+
+            tempTextarea.remove();
+
+            Swal.fire({
+                toast: true,
+                icon: 'success',
+                title: 'Tautan usulan surat berhasil disalin ke clipboard!',
+                animation: false,
+                position: 'bottom',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: false,
+                showClass: {
+                    popup: "",
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+        });
+    </script>
     <script>
         $('#show-delete-confirm').submit((e) => {
             const form = $(this).closest("form");

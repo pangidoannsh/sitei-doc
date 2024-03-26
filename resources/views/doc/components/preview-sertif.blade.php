@@ -25,11 +25,18 @@
 
             <div class="d-flex justify-content-between" style="padding: 48px;">
                 <div class="d-flex gap-4">
-                    <img src="{{ asset('assets/logo/unri.svg') }}" alt="logounri" height="42">
-                    {{-- <img src="{{ asset('assets/logo/google.png') }}" alt="goole" height="42"> --}}
+                    @foreach ($data->sertifikat->logos ?? $data->logos as $item)
+                        @if (optional($item->logo)->position == 'kiri')
+                            <img src="{{ asset('storage/' . $item->logo->url) }}" height="42">
+                        @endif
+                    @endforeach
                 </div>
                 <div>
-                    <img src="{{ asset('assets/logo/km.svg') }}" alt="logounri" height="42">
+                    @foreach ($data->sertifikat->logos ?? $data->logos as $item)
+                        @if (optional($item->logo)->position == 'kanan')
+                            <img src="{{ asset('storage/' . $item->logo->url) }}" height="42">
+                        @endif
+                    @endforeach
                 </div>
             </div>
             <div class="sertif-content">
@@ -51,6 +58,14 @@
                 <div class="common">{{ optional($data->sertifikat)->isi ?? $data->isi }}</div>
                 <div class="common" style="margin-top: 28px">Pekanbaru,
                     {{ Carbon::parse($data->tanggal ?? $data->sertifikat->tanggal)->translatedFormat('d M Y') }}</div>
+                <div class="sign-sertif">
+                    <div>Ditandatangani secara elektronik oleh:</div>
+                    <div id="signer_role_preview">
+                        {{ $data->sertifikat->signer_role ?? $data->signer_role }}</div>
+                    <div id="sign_by_preview">
+                        {{ $data->sertifikat->signed->nama ?? $data->signed->nama }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

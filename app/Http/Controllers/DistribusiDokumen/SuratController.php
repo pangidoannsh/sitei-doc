@@ -4,17 +4,19 @@ namespace App\Http\Controllers\DistribusiDokumen;
 
 use App\Http\Controllers\Controller;
 use App\Models\DistribusiDokumen\Surat;
-use App\Models\DistribusiSurat\Semester;
+use App\Models\Semester;
 use App\Models\Dosen;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class SuratController extends Controller
 {
     public function create(Request $request)
     {
-        $prodiId = Auth::guard($request->jenis_user)->user()->prodi_id;
+        $jenisUser = $request->jenis_user;
+        $prodiId = Auth::guard($jenisUser == "admin" || $jenisUser == "plp"  ? "web" : $request->jenis_user)->user()->prodi_id;
 
         $dosens = Dosen::where("role_id", 5);
         switch ($prodiId) {
@@ -31,7 +33,7 @@ class SuratController extends Controller
             default:
         }
         $dosens = $dosens->get();
-        $semester = Semester::latest("id")->first();
+        $semester = Semester::getSimpleSemester()->last();
         return view("doc.surat.create", compact("dosens", "semester"));
     }
 
@@ -44,13 +46,10 @@ class SuratController extends Controller
             "nama.required" => "Nama Surat harus diisi",
             "tujuan_surat.required" => "Pilih akan ditujuan ke siapa surat yang diajukan"
         ]);
-        $prodiUser = 0;
-        if ($request->jenis_user == "mahasiswa") {
-            $prodiUser = Auth::guard("mahasiswa")->user()->prodi_id;
-        } else {
-            $prodiUser = Auth::guard("dosen")->user()->prodi_id;
-        }
+        $jenisUser = $request->jenis_user;
+        $user = Auth::guard($jenisUser == "admin" || $jenisUser == "plp" ? 'web' : $jenisUser)->user();
 
+        $prodiUser = $user->prodi_id ?? 0;
         switch ($prodiUser) {
             case 1: // D3 TE
                 $rolehandler = 2;
@@ -65,7 +64,7 @@ class SuratController extends Controller
                 $rolehandler = 4;
                 $status = "staf_prodi";
                 break;
-            default: // Dosen/Staf
+            default: // Staf
                 $rolehandler = 1;
                 $status = "staf_jurusan";
                 break;
@@ -78,7 +77,7 @@ class SuratController extends Controller
                 "nama" => $request->nama,
                 "keterangan" => $request->keterangan,
                 "status" => $status,
-                "keterangan_status" => "Surat Sedang Diproses Staf Administrasi Prodi",
+                "keterangan_status" => $rolehandler == 1 ? "Menunggu Persetujuan Staf Administrasi Jurusan" : "Surat Sedang Diproses Staf Administrasi Prodi",
                 "url_lampiran_lokal" => str_replace('public/', '', $lampiran->store('public/surat')),
                 "url_lampiran" => $request->url_lampiran,
                 "role_tujuan" => $request->tujuan_surat,
@@ -93,7 +92,7 @@ class SuratController extends Controller
                 "nama" => $request->nama,
                 "keterangan" => $request->keterangan,
                 "status" => $status,
-                "keterangan_status" => "Surat Sedang Diproses Staf Administrasi Prodi",
+                "keterangan_status" => $rolehandler == 1 ? "Menunggu Persetujuan Staf Administrasi Jurusan" : "Surat Sedang Diproses Staf Administrasi Prodi",
                 "jenis_user" => $request->jenis_user,
                 "user_created" => $request->user_id,
                 "url_lampiran" => $request->url_lampiran,
@@ -105,6 +104,18 @@ class SuratController extends Controller
         }
 
         return redirect()->route("doc.index");
+    }
+
+    public function detailForPublic($encryptId, Request $request)
+    {
+        $id = decrypt($encryptId);
+        $surat = Surat::findOrFail($id);
+        $userId = null;
+        $jenisUser = "guest";
+        $dosens = [];
+        $isKaprodi = false;
+
+        return view("doc.surat.detail", compact('surat', 'userId', 'jenisUser',   'dosens', 'isKaprodi'));
     }
 
     public function detail($id, Request $request)
@@ -155,12 +166,27 @@ class SuratController extends Controller
 
     public function edit($id, Request $request)
     {
+        $jenisUser = $request->jenis_user;
+        $prodiId = Auth::guard(in_array($jenisUser, ["plp", "admin"]) ? "web" : $jenisUser)->user()->prodi_id;
         $surat = Surat::find($id);
         if (!$surat) abort(404);
         $userId = $request->user_id;
-        $roles = Role::getRolePengelola();
+        $dosens = Dosen::where("role_id", 5);
+        switch ($prodiId) {
+            case 1:
+                $dosens->orWhere("role_id", 6);
+                break;
+            case 2:
+                $dosens->orWhere("role_id", 7);
+                break;
+            case 3:
+                $dosens->orWhere("role_id", 8);
+                break;
 
-        return view("doc.surat.edit", compact('surat', 'userId', 'roles'));
+            default:
+        }
+        $dosens = $dosens->get();
+        return view("doc.surat.edit", compact('surat', 'userId', 'dosens'));
     }
 
     public function update($id, Request $request)
@@ -181,7 +207,7 @@ class SuratController extends Controller
         $prodiUser = 0;
         if ($request->jenis_user == "mahasiswa") {
             $prodiUser = Auth::guard("mahasiswa")->user()->prodi_id;
-        } else {
+        } elseif ($request->jenis_user == "dosen") {
             $prodiUser = Auth::guard("dosen")->user()->prodi_id;
         }
 
@@ -192,11 +218,10 @@ class SuratController extends Controller
             case 2: // S1 TE
                 $rolehandler = 3;
                 break;
-
             case 3: // S1 TI
                 $rolehandler = 4;
                 break;
-            default: // Dosen/Staf
+            default: // Staf
                 $rolehandler = 1;
                 break;
         }
@@ -206,6 +231,8 @@ class SuratController extends Controller
 
         $lampiran = $request->file("dokumen");
         if ($lampiran) {
+            // Hapus file dari storage
+            Storage::delete("public/" . $surat->url_lampiran_lokal);
             $surat->url_lampiran_lokal = str_replace('public/', '', $lampiran->store('public/surat'));
         }
         $surat->url_lampiran = $request->url_lampiran;
@@ -217,7 +244,10 @@ class SuratController extends Controller
 
     public function destroy($id)
     {
-        Surat::find($id)->delete();
+        $surat = Surat::findOrFail($id);
+        // Hapus file dari storage
+        Storage::delete("public/" . $surat->url_lampiran_lokal);
+        $surat->delete();
         return redirect()->route("doc.index");
     }
 

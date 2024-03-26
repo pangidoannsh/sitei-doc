@@ -31,10 +31,17 @@ class PenerimaSertifikat extends Model
         return $this->belongsTo(Sertifikat::class, 'sertifikat_id');
     }
 
-    public static function getMahasiswaSertifikat($nim)
+    public static function getDoneSertifikat($userId)
     {
-        return self::where("user_penerima", $nim)->whereHas("sertifikat", function ($query) {
+        return self::where("user_penerima", $userId)->whereHas("sertifikat", function ($query) {
             $query->where("status", "selesai");
         })->get();
+    }
+
+    public static function countDoneSertifikat($userId)
+    {
+        return self::where("user_penerima", $userId)->whereHas("sertifikat", function ($query) {
+            $query->where("status", "selesai");
+        })->count();
     }
 }

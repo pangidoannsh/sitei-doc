@@ -25,10 +25,10 @@
                 <div class="input-group">
                     <select name="tujuan_surat" id="kepada"
                         class="text-secondary text-capitalize rounded-3 text-capitalize @error('tujuan_surat') border border-danger @enderror">
-                        @foreach ($roles as $role)
-                            <option value="{{ $role->id }}" class="text-capitalize"
-                                {{ $surat->role_tujuan == $role->id ? 'selected' : '' }}>
-                                {{ $role->nama_dosen ?? $role->nama_admin }} ({{ $role->akses }})
+                        @foreach ($dosens as $dosen)
+                            <option value="{{ $dosen->role_id }}" class="text-capitalize"
+                                {{ $surat->role_tujuan == $dosen->role_id ? 'selected' : '' }}>
+                                {{ $dosen->nama ?? $role->nama_admin }} ({{ $dosen->role->role_akses }})
                             </option>
                         @endforeach
                     </select>

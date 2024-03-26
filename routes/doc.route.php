@@ -7,9 +7,11 @@ use App\Http\Controllers\DistribusiDokumen\DistribusiDokumenController;
 use App\Http\Controllers\DistribusiDokumen\PengumumanController;
 use App\Http\Controllers\DistribusiDokumen\DokumenController;
 use App\Http\Controllers\DistribusiDokumen\DokumenMentionController;
+use App\Http\Controllers\DistribusiDokumen\LogoController;
 use App\Http\Controllers\DistribusiDokumen\SertifikatController;
 use App\Http\Controllers\DistribusiDokumen\PenerimaSertifikatController;
 use App\Http\Controllers\DistribusiDokumen\PengelolaController;
+use App\Http\Controllers\DistribusiDokumen\SemesterController;
 use App\Http\Controllers\DistribusiDokumen\SuratCutiController;
 use App\Http\Controllers\DistribusiDokumen\SuratController;
 
@@ -21,12 +23,17 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
     //PENGUMUMAN
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman');
     Route::get('/pengumuman/arsip', [PengumumanController::class, 'arsip'])->name('pengumuman.arsip');
+    // Pengelola
+    Route::get('/pengumuman/pengelola', [PengelolaController::class, 'indexPengumuman'])->name('pengumuman.pengelola');
+    Route::get('/pengumuman/pengelola/arsip', [PengelolaController::class, 'arsipPengumuman'])->name('pengumuman.pengelola.arsip');
+    // --- C U D ---
     Route::get('/pengumuman/create', [PengumumanController::class, 'create'])->name('pengumuman.create');
     Route::post('/pengumuman', [PengumumanController::class, 'store'])->name('pengumuman.store');
     Route::get('/pengumuman/{id}', [PengumumanController::class, 'detail'])->name('pengumuman.detail');
     Route::get('/pengumuman/{id}/edit', [PengumumanController::class, 'edit'])->name('pengumuman.edit');
     Route::put('/pengumuman/{id}', [PengumumanController::class, 'update'])->name('pengumuman.update');
     Route::delete('/pengumuman/{id}', [PengumumanController::class, 'destroy'])->name('pengumuman.delete');
+
     //DOKUMEN
     Route::get('/distribusi-dokumen/dokumen/create', [DokumenController::class, 'create'])->name('dokumen.create');
     Route::post('/distribusi-dokumen/dokumen', [DokumenController::class, 'store'])->name('dokumen.store');
@@ -46,6 +53,7 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
     Route::get('/distribusi-dokumen/suratcuti/{id}/edit', [SuratCutiController::class, 'edit'])->name('suratcuti.edit');
     Route::put('/distribusi-dokumen/suratcuti/{id}', [SuratCutiController::class, 'update'])->name('suratcuti.update');
     Route::delete('/distribusi-dokumen/suratcuti/{id}', [SuratCutiController::class, 'destroy'])->name('suratcuti.delete');
+    Route::post('/distribusi-dokumen/suratcuti/{id}/acc/admin', [SuratCutiController::class, 'accAdmin'])->name('suratcuti.acc.admin');
     Route::get('/distribusi-dokumen/suratcuti/{id}/approve', [SuratCutiController::class, 'approve'])->name('suratcuti.approve');
     Route::get('/distribusi-dokumen/suratcuti/{id}/download', [SuratCutiController::class, 'download'])->name('suratcuti.download');
     Route::delete('/distribusi-dokumen/suratcuti/{id}/reject', [SuratCutiController::class, 'reject'])->name('suratcuti.reject');
@@ -98,6 +106,32 @@ Route::middleware(["auth:web,dosen,mahasiswa", "cek-jenis-user"])->group(functio
         Route::get('/distribusi-dokumen/pengelola/pengumuman', [PengelolaController::class, 'pengumuman'])->name('pengelola.pengumuman');
         Route::get('/distribusi-dokumen/pengelola/arsip', [PengelolaController::class, 'arsip'])->name('pengelola.arsip');
     });
+
+    Route::middleware(["auth:web"])->group(function () {
+        // SEMESTER
+        Route::get('/semester', [SemesterController::class, 'index'])->name("semester");
+        Route::get('/semester/create', [SemesterController::class, 'create'])->name("semester.create");
+        Route::post('/semester', [SemesterController::class, 'store'])->name("semester.store");
+        Route::get('/semester/{id}/edit', [SemesterController::class, 'edit'])->name("semester.edit");
+        Route::put('/semester/{id}', [SemesterController::class, 'update'])->name("semester.update");
+        Route::delete('/semester/{id}', [SemesterController::class, 'delete'])->name("semester.delete");
+
+        //LOGO
+        Route::get('/logo', [LogoController::class, 'index'])->name("logo");
+        Route::get('/logo/create', [LogoController::class, 'create'])->name("logo.create");
+        Route::post('/logo', [LogoController::class, 'store'])->name("logo.store");
+        Route::get('/logo/{id}/edit', [LogoController::class, 'edit'])->name("logo.edit");
+        Route::put('/logo/{id}', [LogoController::class, 'update'])->name("logo.update");
+        Route::delete('/logo/{id}', [LogoController::class, 'delete'])->name("logo.delete");
+    });
+});
+
+//PUBLIC DETAIL
+Route::get('/pengumuman/{encryptId}/public', [PengumumanController::class, 'detailForPublic'])->name('pengumuman.detail.public'); //PENGUMUMAN
+Route::prefix('distribusi-dokumen')->group(function () {
+    Route::get('/dokumen/{encryptId}/public', [DokumenController::class, 'detailForPublic'])->name('dokumen.detail.public'); //DOKUMEN
+    Route::get('/surat/{encryptId}/public', [SuratController::class, 'detailForPublic'])->name('surat.detail.public'); //SURAT
+    Route::get('/suratcuti/{encryptId}/public', [SuratCutiController::class, 'detailForPublic'])->name('suratcuti.detail.public'); //SURAT CUTI
 });
 
 // PENERIMA SERTIFIKAT

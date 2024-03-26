@@ -3,7 +3,6 @@
 @section('title')
     SITEI | Distribusi Surat & Dokumen
 @endsection
-
 @section('content')
     <div class="">
         <h2 class="text-center fw-semibold ">Pembuatan Sertifikat</h2>
@@ -12,44 +11,158 @@
             style="position: relative;padding-bottom: 200px" enctype="multipart/form-data">
             @method('post')
             @csrf
-            <div>
-                <label for="sign_by" class="fw-semibold">Penandatangan Sertifikat<span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <select name="sign_by" id="sign_by"
-                        class="text-secondary form-select rounded-3 text-capitalize @error('sign_by') border border-danger @enderror">
-                        @foreach ($dosens->sortBy('nama') as $dosen)
-                            <option value="{{ $dosen->nip }}"
-                                @if (old('sign_by')) {{ old('sign_by') == $dosen->nip ? 'selected' : '' }}
-                                @else
-                                    {{ $dosen->role_id == 5 ? 'selected' : '' }} @endif>
-                                {{ $dosen->nama }} </option>
-                        @endforeach
-                    </select>
-                    @error('sign_by')
-                        <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
-                    @enderror
+            <div class="row align-items-center">
+                {{-- Input --}}
+                <div class="col-xl-5 order-1 order-xl-0 d-flex flex-column gap-3">
+                    {{-- Penandatangan Surat --}}
+                    <div>
+                        <label for="sign_by" class="fw-semibold">Penandatangan Sertifikat<span
+                                class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <select name="sign_by" id="sign_by"
+                                class="text-secondary form-select rounded-3 text-capitalize @error('sign_by') border border-danger @enderror">
+                                @foreach ($dosens->sortBy('nama') as $dosen)
+                                    <option value="{{ $dosen->nip }}"
+                                        @if (old('sign_by')) {{ old('sign_by') == $dosen->nip ? 'selected' : '' }}
+                                        @else
+                                            {{ $dosen->role_id == 5 ? 'selected' : '' }} @endif>
+                                        {{ $dosen->nama }} </option>
+                                @endforeach
+                            </select>
+                            @error('sign_by')
+                                <div class="text-danger mt-1" style="font-size: 11px">{{ $message }} </div>
+                            @enderror
+                        </div>
+                    </div>
+                    {{-- Jabatan Penandatangan --}}
+                    <div>
+                        <label for="signer_role" class="fw-semibold">Jabatan Penandatangan<span
+                                class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('signer_role') is-invalid @enderror rounded-3 py-4"
+                            name="signer_role" placeholder="Contoh: Ketua Pelaksana..." id="signer_role"
+                            value="{{ old('signer_role') }}" required>
+                        @error('signer_role')
+                            <div class="invalid-feedback">{{ $message }} </div>
+                        @enderror
+                    </div>
+                    {{-- Nama Sertifikat --}}
+                    <div>
+                        <label for="nama" class="fw-semibold">Nama Sertifikat<span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4"
+                            name="nama" placeholder="Contoh: Sertifikat..." id="nama" value="{{ old('nama') }}">
+                        @error('nama')
+                            <div class="invalid-feedback">{{ $message }} </div>
+                        @enderror
+                    </div>
+                    {{-- Tanggal Sertifikat --}}
+                    <div>
+                        <label for="tanggal" class="fw-semibold">Tanggal Sertifikat<span
+                                class="text-danger">*</span></label>
+                        <input type="date" class="form-control @error('tanggal') is-invalid @enderror rounded-3 py-4"
+                            name="tanggal" id="tanggal" value="{{ old('tanggal') }}">
+                        @error('tanggal')
+                            <div class="invalid-feedback">{{ $message }} </div>
+                        @enderror
+                    </div>
+                    {{-- Isi --}}
+                    <div>
+                        <label for="isi" class="fw-semibold">Isi Sertifikat</label>
+                        <textarea class="form-control rounded-3 py-4" placeholder="Isi Sertifikat" name="isi" id="isi" cols="3">{{ old('isi') }}</textarea>
+                    </div>
+                </div>
+                {{-- Preview --}}
+                <div class="col-xl-7 order-0 order-xl-1 position-sticky">
+                    <div class="d-flex justify-content-center">
+                        <div class="preview-sertif-create"
+                            style="background-image: url('{{ asset('assets/sertifikat/sertif-bg.jpg') }}')">
+                            <div class="d-flex justify-content-between" style="padding: 32px;">
+                                <div class="d-flex gap-4" id="left-logo">
+                                    @foreach ($logos as $logo)
+                                        @if ($logo->is_mandatory && $logo->position == 'kiri')
+                                            <img src="{{ asset('storage/' . $logo->url) }}" height="28">
+                                        @endif
+                                    @endforeach
+                                </div>
+                                <div class="d-flex gap-4 justify-content-end" id="right-logo">
+                                    @foreach ($logos as $logo)
+                                        @if ($logo->is_mandatory && $logo->position == 'kanan')
+                                            <img src="{{ asset('storage/' . $logo->url) }}" height="28">
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div class="sertif-content">
+                                <div class="sertif-title-small" id="nama_preview">
+                                    -nama sertifikat-
+                                </div>
+                                <div class="common-small">
+                                    {{ $data->nomor_sertif ?? '-nomor sertifikat-' }}</div>
+                                <div class="common-small">Diberikan kepada</div>
+                                <div class="sertif-nama-penerima-small" id="penerima_preview">
+                                    -nama penerima-
+                                </div>
+                                <div class="common-small" id="isi_preview">-isi sertifikat-</div>
+                                <div id="tanggal_preview" class="common-small" style="margin-top: 18px">
+                                    Pekanbaru,-tanggal sertifikat-
+                                </div>
+                                <div class="sign-sertif-small">
+                                    <div>Ditandatangani secara elektronik oleh:</div>
+                                    <div id="signer_role_preview">-Jabatan Penandatangan-</div>
+                                    <div id="sign_by_preview">
+                                        @foreach ($dosens as $dosen)
+                                            {{ $dosen->role_id == 5 ? $dosen->nama : '' }}
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div>
-                <label for="nama" class="fw-semibold">Nama Sertifikat<span class="text-danger">*</span></label>
-                <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4" name="nama"
-                    placeholder="Contoh: Sertifikat..." id="nama" value="{{ old('nama') }}">
-                @error('nama')
-                    <div class="invalid-feedback">{{ $message }} </div>
-                @enderror
-            </div>
-            <div>
-                <label for="tanggal" class="fw-semibold">Tanggal Sertifikat<span class="text-danger">*</span></label>
-                <input type="date" class="form-control @error('tanggal') is-invalid @enderror rounded-3 py-4"
-                    name="tanggal" id="tanggal" value="{{ old('tanggal') }}">
-                @error('tanggal')
-                    <div class="invalid-feedback">{{ $message }} </div>
-                @enderror
-            </div>
-            {{-- Isi --}}
-            <div>
-                <label for="isi" class="fw-semibold">Isi Sertifikat</label>
-                <textarea class="form-control rounded-3 py-4" placeholder="Isi Sertifikat" name="isi" id="isi" cols="3">{{ old('isi') }}</textarea>
+            {{-- Pilih Logp --}}
+            <div class="d-flex flex-lg-row flex-column gap-3 my-4">
+                <div style="width: fit-content">
+                    <div class="fw-semibold" style="translate: 0 4px">
+                        Logo Dalam Sertifikat:
+                    </div>
+                </div>
+                <div class="w-100 d-flex gap-5 mt-2">
+                    <div>
+                        @foreach ($logos as $logo)
+                            @if ($logo->position == 'kiri')
+                                <div class="form-check">
+                                    <input id="logo_{{ $logo->id }}" type="checkbox" name="logo[]"
+                                        value="{{ $logo->id }}" data-url="{{ asset('storage/' . $logo->url) }}"
+                                        data-id="{{ 'preview-' . $logo->id }}" class="form-check-input logo-check"
+                                        data-position="kiri" {{ $logo->is_mandatory ? 'checked disabled' : '' }}>
+                                    @if ($logo->is_mandatory)
+                                        <input type="checkbox" style="display: none" value="{{ $logo->id }}"
+                                            name="logo[]" checked />
+                                    @endif
+                                    <label for="logo_{{ $logo->id }}">{{ $logo->nama }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                    <div>
+                        @foreach ($logos as $logo)
+                            @if ($logo->position == 'kanan')
+                                <div class="form-check">
+                                    <input id="logo_{{ $logo->id }}" type="checkbox" name="logo[]"
+                                        data-id="{{ 'preview-' . $logo->id }}" value="{{ $logo->id }}"
+                                        data-url="{{ asset('storage/' . $logo->url) }}"
+                                        class="form-check-input logo-check" data-position="kanan"
+                                        {{ $logo->is_mandatory ? 'checked disabled' : '' }}>
+                                    @if ($logo->is_mandatory)
+                                        <input type="checkbox" style="display: none" value="{{ $logo->id }}"
+                                            name="logo[]" checked />
+                                    @endif
+                                    <label for="logo_{{ $logo->id }}">{{ $logo->nama }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
             </div>
             {{-- Membuat Penerima --}}
             <div class="d-flex flex-lg-row flex-column gap-3 mt-2">
@@ -422,26 +535,38 @@
         const btnAddPenerima = $("#btnAddPenerima");
         const btnAddPenerimaContainer = $("#btnAddPenerimaContainer");
         let inputCount = 0;
+        const namaPenerimaPreview = $("#penerima_preview")
 
         function handleDeleteInput(element) {
             element.remove()
         }
 
         function createNewInputPenerima(value) {
-            var input = $(`
-                        <div class="d-flex align-items-center gap-1 mt-2">
-                            <input type="text" class="form-control rounded-3 input-penerima" name="penerima[]"
-                                placeholder="Nama Penerima" value="${value??""}">
-                        </div>
+            var inputContainer = $(`
+                        <div class="d-flex align-items-center gap-1 mt-2"></div>
             `)
+            var input = $(`
+            <input type="text" class="form-control rounded-3 input-penerima" name="penerima[]"
+            placeholder="Nama Penerima" value="${value??""}">
+            `)
+
+            input.on('input', function() {
+                const val = $(this).val();
+                if (!val) {
+                    namaPenerimaPreview.text("-nama penerima-")
+                } else {
+                    namaPenerimaPreview.text(val)
+                }
+            })
+            inputContainer.append(input)
             var btnDelete = $(`
                             <button type="button" class="text-secondary btn-text">
                                 <i class="fa-solid fa-circle-xmark"></i>
                             </button>
             `)
-            btnDelete.on("click", () => handleDeleteInput(input))
-            input.append(btnDelete)
-            input.insertBefore(btnAddPenerimaContainer)
+            btnDelete.on("click", () => handleDeleteInput(inputContainer))
+            inputContainer.append(btnDelete)
+            inputContainer.insertBefore(btnAddPenerimaContainer)
         }
 
         btnAddPenerima.on("click", () => {
@@ -801,6 +926,126 @@
                 $(`#selector_${prodiID}_${angkatan}`).prop("checked", false)
                 selectAllMhs.prop("checked", false)
                 selectAll.prop("checked", false)
+            }
+        })
+    </script>
+
+    {{-- function --}}
+    <script>
+        function formatTanggal(inputDate) {
+            const [year, month, day] = inputDate.split('-');
+            const formattedDate = new Date(year, month - 1, day);
+            const monthAbbreviation = formattedDate.toLocaleString('default', {
+                month: 'short'
+            });
+            const formattedResult = `${day} ${monthAbbreviation} ${year}`;
+            return formattedResult;
+        }
+
+        function formatNameMahasiswa(inputString) {
+            // Menggunakan ekspresi reguler untuk menghapus angka dan tanda kurung
+            var hasil = inputString.replace(/\(\d+\)/, '').trim();
+
+            return hasil;
+        }
+
+        function generateName(inputString) {
+            const posisiTandaKoma = inputString.indexOf(',');
+
+            if (posisiTandaKoma !== -1) {
+                inputString = inputString.slice(0, posisiTandaKoma) + inputString.slice(posisiTandaKoma + 1);
+            }
+
+            const originalName = inputString.replace(/Prof\.|Ir\.|Dr\./g, '');
+            return inputString.replace(/Prof\.|Ir\.|Dr\./g, '');
+        }
+        // function clearGelar(nama) {
+        //     // Daftar gelar yang ingin dihapus
+        //     var daftarGelar = ['Ph.D', 'S.T.', 'M.Eng.', 'Prof.', 'M.Kom', 'S.Pd.', 'M.T.', 'S.ST.', 'Dr.', 'Ir.'];
+        //     var regexPattern = new RegExp(daftarGelar.join('|'), 'gi');
+
+        //     // Menghapus gelar dari nama
+        //     var namaTanpaGelar = nama.replace(regexPattern, '').trim();
+
+        //     return namaTanpaGelar.replaceAll(",", '');
+        // }
+    </script>
+
+    {{-- Preview --}}
+    <script>
+        // Penandatangan
+        const selectSignBy = $("#sign_by")
+        const signByPreview = $("#sign_by_preview")
+        selectSignBy.on('change', function() {
+            var selectedText = $(this).find(':selected').text().trim();
+            signByPreview.text(selectedText)
+        })
+        // Jabatan Penandatangan
+        const inputSignerRole = $("#signer_role")
+        const signerRolePreview = $("#signer_role_preview")
+        inputSignerRole.on('input', function() {
+            const val = $(this).val();
+            signerRolePreview.text(val)
+        })
+        // Nama Sertifikat
+        const inputNama = $("#nama")
+        const namaPreview = $("#nama_preview")
+        inputNama.on('input', function() {
+            const val = $(this).val();
+            namaPreview.text(val)
+        })
+        // Tanggal Sertifikat
+        const inputTanggal = $("#tanggal")
+        const tanggalreview = $("#tanggal_preview")
+        inputTanggal.on('input', function() {
+            const val = $(this).val();
+            tanggalreview.text(`Pekanbaru, ${formatTanggal(val)}`)
+        })
+        // Isi Sertifikat
+        const inputIsi = $("#isi")
+        const isiPreview = $("#isi_preview")
+        inputIsi.on('input', function() {
+            const val = $(this).val();
+            isiPreview.text(val)
+        })
+
+        // Nama Penerima
+        $(".dosen-selector, .staf-selector, .mahasiswa-selector").on('change', function() {
+            const isChecked = $(this).prop('checked');
+            if (isChecked) {
+                const label = $(this).siblings('label').text().trim();
+                var namaPenerima = "-nama penerima-"
+                if ($(this).hasClass('dosen-selector') || $(this).hasClass('staf-selector')) {
+                    namaPenerima = generateName(label)
+                    // namaPenerima = clearGelar(label)
+                } else if ($(this).hasClass('mahasiswa-selector')) {
+                    namaPenerima = generateName(formatNameMahasiswa(label))
+                }
+
+                namaPenerimaPreview.text(namaPenerima)
+            }
+        })
+
+        const leftLogoPreview = $("#left-logo")
+        const rightLogoPreview = $("#right-logo")
+        // Logo Check
+        $(".logo-check").on('change', function() {
+            const position = $(this).data('position')
+            const url = $(this).data('url')
+            const id = $(this).data('id')
+            const isChecked = $(this).prop('checked');
+            if (isChecked) {
+                const img = $(`
+                    <img src="${url}" height="28" id="${id}"/>
+                `)
+                if (position === "kiri") {
+                    leftLogoPreview.append(img)
+                } else {
+                    rightLogoPreview.append(img)
+                }
+            } else {
+                console.log(id);
+                $(`#${id}`).remove()
             }
         })
     </script>

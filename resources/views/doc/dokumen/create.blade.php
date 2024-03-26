@@ -12,6 +12,13 @@
             enctype="multipart/form-data">
             @method('post')
             @csrf
+            {{-- Nomor Dokumen --}}
+            <div>
+                <label for="nomor_dokumen" class="fw-semibold">Nomor Dokumen</label>
+                <input type="text" class="form-control rounded-3 py-4" name="nomor_dokumen" placeholder="Nomor Dokumen"
+                    id="nomor_dokumen" value="{{ old('nomor_dokumen') }}">
+            </div>
+            {{-- Nama Dokumen --}}
             <div>
                 <label for="nama" class="fw-semibold">Nama Dokumen<span class="text-danger">*</span></label>
                 <input type="text" class="form-control @error('nama') is-invalid @enderror rounded-3 py-4" name="nama"
@@ -20,6 +27,7 @@
                     <div class="invalid-feedback">{{ $message }} </div>
                 @enderror
             </div>
+            {{-- Kategori --}}
             <div>
                 <label for="kategori" class="fw-semibold">Kategori<span class="text-danger">*</span></label>
                 <div class="input-group">
@@ -37,6 +45,7 @@
                     @enderror
                 </div>
             </div>
+            {{-- Semester --}}
             <div>
                 <label for="semester" class="fw-semibold">Semester<span class="text-danger">*</span></label>
                 <div class="input-group">
@@ -54,18 +63,12 @@
                     @enderror
                 </div>
             </div>
+            {{-- Keterangan --}}
             <div>
                 <label for="keterangan" class="fw-semibold">Keterangan</label>
                 <textarea class="form-control rounded-3 py-4" placeholder="Keterangan" name="keterangan" id="keterangan" cols="3">{{ old('keterangan') }}</textarea>
             </div>
-            <div>
-                <label for="nomor_dokumen" class="fw-semibold">Nomor Dokumen</label>
-                <input type="text" class="form-control @error('nomor_dokumen') is-invalid @enderror rounded-3 py-4"
-                    name="nomor_dokumen" placeholder="Nomor Dokumen" id="nomor_dokumen" value="{{ old('nomor_dokumen') }}">
-                @error('nomor_dokumen')
-                    <div class="invalid-feedback">{{ $message }} </div>
-                @enderror
-            </div>
+            {{-- Dokumen --}}
             <div class="d-flex gap-4 align-items-center">
                 <div class="w-100">
                     <label for="dokumen" class="fw-semibold">Dokumen</label>
@@ -82,6 +85,7 @@
                         name="url_dokumen" placeholder="Contoh: https://drive.google.com/..." id="url_dokumen">
                 </div>
             </div>
+            {{-- Tanggal Dokumen --}}
             <div>
                 <label for="tanggal" class="fw-semibold">Tanggal Dokumen</label>
                 <input type="date" class="form-control @error('tgl_dokumen') is-invalid @enderror rounded-3 py-4"
@@ -137,8 +141,8 @@
                                     @if ($key < $halfIndex)
                                         <div class="form-check">
                                             <input class="form-check-input dosen-selector" type="checkbox"
-                                                value={{ $dosen->nip }} id="select-{{ $dosen->nip }}"
-                                                name="dosen[]">
+                                                value={{ $dosen->nip }} id="select-{{ $dosen->nip }}" name="dosen[]"
+                                                {{ old('dosen') && in_array($dosen->nip, old('dosen')) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="select-{{ $dosen->nip }}">
                                                 {{ $dosen->nama }}
                                             </label>
@@ -152,8 +156,8 @@
                                     @if ($key >= $halfIndex)
                                         <div class="form-check">
                                             <input class="form-check-input dosen-selector" type="checkbox"
-                                                value={{ $dosen->nip }} id="select-{{ $dosen->nip }}"
-                                                name="dosen[]">
+                                                value={{ $dosen->nip }} id="select-{{ $dosen->nip }}" name="dosen[]"
+                                                {{ old('dosen') && in_array($dosen->nip, old('dosen')) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="select-{{ $dosen->nip }}">
                                                 {{ $dosen->nama }}
                                             </label>
@@ -177,7 +181,8 @@
                             @foreach ($staffs as $staff)
                                 <div class="form-check">
                                     <input class="form-check-input staf-selector" type="checkbox"
-                                        value={{ $staff->username }} id="select-{{ $staff->username }}" name="staf[]">
+                                        value={{ $staff->username }} id="select-{{ $staff->username }}" name="staf[]"
+                                        {{ old('staf') && in_array($staff->username, old('staf')) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="select-{{ $staff->username }}">
                                         {{ $staff->nama }}
                                     </label>
@@ -252,7 +257,8 @@
                                                     <input class="form-check-input mahasiswa-selector d3te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="1_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="mahasiswa[]">
+                                                        name="mahasiswa[]"
+                                                        {{ old('mahasiswa') && in_array($mahasiswa->nim, old('mahasiswa')) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="1_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})
@@ -310,7 +316,8 @@
                                                     <input class="form-check-input mahasiswa-selector s1te-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
                                                         id="2_{{ $angkatan }}_{{ $mahasiswa->nim }}"
-                                                        name="mahasiswa[]">
+                                                        name="mahasiswa[]"
+                                                        {{ old('mahasiswa') && in_array($mahasiswa->nim, old('mahasiswa')) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="2_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ Str::ucfirst($mahasiswa->nama) }} ({{ $mahasiswa->nim }})
@@ -368,7 +375,8 @@
                                                 <div class="col form-check mb-2">
                                                     <input class="form-check-input mahasiswa-selector s1ti-selector"
                                                         type="checkbox" value="{{ $mahasiswa->nim }}"
-                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="mahasiswa[]">
+                                                        id="3_{{ $angkatan }}_{{ $mahasiswa->nim }}"name="mahasiswa[]"
+                                                        {{ old('mahasiswa') && in_array($mahasiswa->nim, old('mahasiswa')) ? 'checked' : '' }}>
                                                     <label class="form-check-label text-capitalize"
                                                         for="3_{{ $angkatan }}_{{ $mahasiswa->nim }}">
                                                         {{ $mahasiswa->nama }} ({{ $mahasiswa->nim }})

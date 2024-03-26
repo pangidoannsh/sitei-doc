@@ -16,7 +16,9 @@ class CreateLogosTable extends Migration
         Schema::create('doc_logo', function (Blueprint $table) {
             $table->id();
             $table->string("nama", 20);
-            $table->string("url_logo");
+            $table->string("url");
+            $table->enum("position", ['kiri', 'kanan'])->default('kiri');
+            $table->boolean("is_mandatory")->default(false);
             $table->timestamps();
         });
     }

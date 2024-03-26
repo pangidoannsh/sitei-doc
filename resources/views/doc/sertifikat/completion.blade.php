@@ -47,8 +47,8 @@
                                 ({{ data_get($penerima, $penerima->jenis_penerima . '.nama') ?? $penerima->nama_penerima }})
                             </span>
                         </label>
-                        <input type="text" class="form-control rounded-3 py-4 text-capitalize"
-                            id="nomor_sertif_{{ $penerima->id }}" name="nomor_sertif[{{ $penerima->id }}]">
+                        <input type="text" class="form-control rounded-3 py-4" id="nomor_sertif_{{ $penerima->id }}"
+                            name="nomor_sertif[{{ $penerima->id }}]">
                     </div>
                 @endforeach
             </div>
